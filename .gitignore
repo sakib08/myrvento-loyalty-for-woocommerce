@@ -1,0 +1,3 @@
+node_modules/
+assets/admin/*.map
+assets/frontend/*.map
