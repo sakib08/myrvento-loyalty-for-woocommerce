@@ -89,6 +89,9 @@ export const api = {
     const query = new URLSearchParams(params).toString();
     return request(`analytics/${report}${query ? `?${query}` : ""}`);
   },
+  getDashboard: () => request("dashboard"),
+  getSales: () => request("sales"),
+  getOperations: () => request("operations"),
   getAI: (report) => request(`ai/${report}`),
   refreshAI: () => request("ai/refresh", { method: "POST", body: "{}" }),
   narrateAI: () => request("ai/narrate", { method: "POST", body: "{}" }),

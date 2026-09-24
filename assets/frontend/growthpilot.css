@@ -1,11 +1,11 @@
 
 
-.gp-account {
+.gp-ppros-account {
   display: grid;
   gap: 1.5rem;
 }
 
-.gp-account__hero {
+.gp-ppros-account__hero {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -16,7 +16,7 @@
   background: #f8fafc;
 }
 
-.gp-account__kicker {
+.gp-ppros-account__kicker {
   margin: 0;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -24,84 +24,84 @@
   color: #64748b;
 }
 
-.gp-account__balance {
+.gp-ppros-account__balance {
   margin: 0.25rem 0;
   font-size: 2rem;
   font-weight: 700;
   color: #0f766e;
 }
 
-.gp-account__muted {
+.gp-ppros-account__muted {
   margin: 0;
   color: #64748b;
 }
 
-.gp-account__tier {
+.gp-ppros-account__tier {
   min-width: 10rem;
   padding: 0.85rem 1rem;
   border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--gp-tier, #0f766e) 12%, white);
+  background: color-mix(in srgb, var(--gp-ppros-tier, #0f766e) 12%, white);
   color: #0f172a;
 }
 
-.gp-account__tier ul {
+.gp-ppros-account__tier ul {
   margin: 0.5rem 0 0;
   padding-left: 1.1rem;
 }
 
-.gp-account__stats {
+.gp-ppros-account__stats {
   display: flex;
   gap: 1.25rem;
 }
 
-.gp-account__stats strong {
+.gp-ppros-account__stats strong {
   display: block;
   font-size: 1.25rem;
 }
 
-.gp-account__stats span {
+.gp-ppros-account__stats span {
   color: #64748b;
   font-size: 0.8rem;
 }
 
-.gp-account__grid {
+.gp-ppros-account__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.85rem;
 }
 
-.gp-account__card {
+.gp-ppros-account__card {
   padding: 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.85rem;
 }
 
-.gp-account__card p {
+.gp-ppros-account__card p {
   margin: 0.35rem 0 0.75rem;
   color: #64748b;
 }
 
-.gp-progress {
+.gp-ppros-progress {
   height: 0.5rem;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
 
-.gp-progress span {
+.gp-ppros-progress span {
   display: block;
   height: 100%;
   background: #0d9488;
 }
 
-.gp-account__challenge-head {
+.gp-ppros-account__challenge-head {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.4rem;
 }
 
-.gp-account__badges {
+.gp-ppros-account__badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -110,7 +110,7 @@
   margin: 0;
 }
 
-.gp-account__badges li {
+.gp-ppros-account__badges li {
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
   background: #ccfbf1;
@@ -118,27 +118,27 @@
   font-size: 0.85rem;
 }
 
-.gp-share {
+.gp-ppros-share {
   display: grid;
   gap: 0.75rem;
 }
 
-.gp-share label {
+.gp-ppros-share label {
   display: grid;
   gap: 0.35rem;
 }
 
-.gp-share input {
+.gp-ppros-share input {
   width: 100%;
 }
 
-.gp-share__channels {
+.gp-ppros-share__channels {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.gp-account__birthday {
+.gp-ppros-account__birthday {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;

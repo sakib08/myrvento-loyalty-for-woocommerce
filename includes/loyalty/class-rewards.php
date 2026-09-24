@@ -64,7 +64,7 @@ class GrowthPilot_Rewards {
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'gp_ppros' ) );
 		}
 
 		$row = array(
@@ -110,11 +110,11 @@ class GrowthPilot_Rewards {
 
 		$reward = self::get( $reward_id );
 		if ( ! $reward || ! $reward->enabled ) {
-			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'growthpilot' ) );
+			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'gp_ppros' ) );
 		}
 
 		if ( null !== $reward->stock && (int) $reward->redeemed_count >= (int) $reward->stock ) {
-			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'growthpilot' ) );
+			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'gp_ppros' ) );
 		}
 
 		$balance = GrowthPilot_Points_Ledger::get_balance( $customer_id );
@@ -122,7 +122,7 @@ class GrowthPilot_Rewards {
 			$required = GrowthPilot_VIP_Tiers::get( (int) $reward->tier_id );
 			$current  = $balance->tier_id ? GrowthPilot_VIP_Tiers::get( (int) $balance->tier_id ) : null;
 			if ( $required && ( ! $current || (int) $current->sort_order < (int) $required->sort_order ) ) {
-				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'growthpilot' ) );
+				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'gp_ppros' ) );
 			}
 		}
 
@@ -137,7 +137,7 @@ class GrowthPilot_Rewards {
 					'source_id'   => (int) $reward->id,
 					'description' => sprintf(
 						/* translators: %s reward name */
-						__( 'Redeemed: %s', 'growthpilot' ),
+						__( 'Redeemed: %s', 'gp_ppros' ),
 						$reward->name
 					),
 				)

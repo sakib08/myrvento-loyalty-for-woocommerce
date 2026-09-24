@@ -76,7 +76,7 @@ export default function Rewards() {
   }
 
   return (
-    <div className="gp-grid gp-gap-5">
+    <div className="gp-ppros-grid gp-ppros-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="Reward catalog" description="Redemption debits the ledger and issues a WooCommerce coupon when applicable.">
         <table>
@@ -106,7 +106,7 @@ export default function Rewards() {
                 <td>
                   <Toggle label="" checked={reward.enabled} onChange={(enabled) => save({ ...reward, enabled })} />
                 </td>
-                <td className="gp-flex gp-gap-2">
+                <td className="gp-ppros-flex gp-ppros-gap-2">
                   <Button onClick={() => save(reward)}>Save</Button>
                   <Button variant="danger" onClick={async () => { await api.deleteReward(reward.id); load(); }}>Delete</Button>
                 </td>
@@ -117,7 +117,7 @@ export default function Rewards() {
       </Card>
 
       <Card title="Add reward">
-        <div className="gp-grid gp-gap-3 md:gp-grid-cols-4 md:gp-items-end">
+        <div className="gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-4 md:gp-ppros-items-end">
           <Field label="Name">
             <input className={inputClass} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
           </Field>
@@ -163,14 +163,14 @@ export default function Rewards() {
             {(redemptions.items || []).map((row) => (
               <tr key={row.id}>
                 <td>{row.created_at}</td>
-                <td>{row.customer}<div className="gp-text-xs gp-text-slate-500">{row.email}</div></td>
+                <td>{row.customer}<div className="gp-ppros-text-xs gp-ppros-text-slate-500">{row.email}</div></td>
                 <td>{row.reward}</td>
                 <td><code>{row.coupon_code}</code></td>
                 <td>{row.points_spent}</td>
               </tr>
             ))}
             {(redemptions.items || []).length === 0 && (
-              <tr><td colSpan="5" className="gp-text-slate-500">No redemptions yet.</td></tr>
+              <tr><td colSpan="5" className="gp-ppros-text-slate-500">No redemptions yet.</td></tr>
             )}
           </tbody>
         </table>

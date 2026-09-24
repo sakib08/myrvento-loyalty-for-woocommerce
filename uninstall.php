@@ -11,7 +11,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$tables = array(
+$growthpilot_tables = array(
 	'gp_points_ledger',
 	'gp_points_balances',
 	'gp_point_rules',
@@ -31,9 +31,9 @@ $tables = array(
 	'gp_ai_predictions',
 );
 
-foreach ( $tables as $table ) {
+foreach ( $growthpilot_tables as $growthpilot_table ) {
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$table}" );
+	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$growthpilot_table}" );
 }
 
 delete_option( 'growthpilot_settings' );

@@ -59,7 +59,7 @@ class GrowthPilot_VIP_Tiers {
 		$slug  = sanitize_title( $data['slug'] ?? $data['name'] ?? '' );
 
 		if ( '' === $slug ) {
-			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'gp_ppros' ) );
 		}
 
 		$benefits = $data['benefits'] ?? array();

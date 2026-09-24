@@ -38,6 +38,7 @@ class GrowthPilot_REST {
 		GrowthPilot_REST_Catalog::register();
 		GrowthPilot_REST_Analytics::register();
 		GrowthPilot_REST_AI::register();
+		GrowthPilot_REST_Growth::register();
 	}
 
 	/**

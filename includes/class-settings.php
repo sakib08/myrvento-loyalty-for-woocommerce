@@ -22,13 +22,13 @@ class GrowthPilot_Settings {
 	public static function defaults() {
 		return array(
 			'earn_order_status'          => 'completed',
-			'points_name'                => __( 'Points', 'growthpilot' ),
+			'points_name'                => __( 'Points', 'gp_ppros' ),
 			'cookie_days'                => 30,
 			'expiration_days'            => 0,
 			'downgrade_enabled'          => true,
 			'downgrade_window_days'      => 365,
-			'myaccount_loyalty_label'    => __( 'Loyalty', 'growthpilot' ),
-			'myaccount_referrals_label'  => __( 'Referrals', 'growthpilot' ),
+			'myaccount_loyalty_label'    => __( 'Loyalty', 'gp_ppros' ),
+			'myaccount_referrals_label'  => __( 'Referrals', 'gp_ppros' ),
 			'social_once'                => true,
 			'referral_param'             => 'gp_ref',
 			'ai_enabled'                 => true,

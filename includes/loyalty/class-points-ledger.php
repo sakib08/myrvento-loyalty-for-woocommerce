@@ -25,7 +25,7 @@ class GrowthPilot_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'growthpilot' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp_ppros' ) );
 		}
 
 		return self::write(
@@ -50,7 +50,7 @@ class GrowthPilot_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'growthpilot' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp_ppros' ) );
 		}
 
 		$type = isset( $args['type'] ) ? $args['type'] : 'redeem';
@@ -73,7 +73,7 @@ class GrowthPilot_Points_Ledger {
 
 		$customer_id = (int) $customer_id;
 		if ( $customer_id <= 0 ) {
-			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'growthpilot' ) );
+			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'gp_ppros' ) );
 		}
 
 		$ledger   = GrowthPilot::table( 'points_ledger' );
@@ -113,7 +113,7 @@ class GrowthPilot_Points_Ledger {
 
 		if ( $amount < 0 && $available < abs( $amount ) && empty( $args['allow_negative'] ) ) {
 			$wpdb->query( 'ROLLBACK' );
-			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'growthpilot' ) );
+			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'gp_ppros' ) );
 		}
 
 		if ( $amount < 0 && empty( $args['skip_consume'] ) ) {
@@ -280,7 +280,7 @@ class GrowthPilot_Points_Ledger {
 				array(
 					'type'         => 'expire',
 					'source_id'    => (int) $row->id,
-					'description'  => __( 'Points expired', 'growthpilot' ),
+					'description'  => __( 'Points expired', 'gp_ppros' ),
 					'no_expire'    => true,
 					'skip_consume' => true,
 				)

@@ -109,7 +109,7 @@ class GrowthPilot_Points_Rules {
 		);
 
 		if ( '' === $row['name'] ) {
-			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'gp_ppros' ) );
 		}
 
 		if ( $id ) {

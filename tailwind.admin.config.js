@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./admin/src/**/*.{js,jsx}"],
-  prefix: "gp-",
+  prefix: "gp-ppros-",
   corePlugins: {
     preflight: false,
   },

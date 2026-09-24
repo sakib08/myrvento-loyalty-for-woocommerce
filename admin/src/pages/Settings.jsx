@@ -33,14 +33,14 @@ export default function Settings() {
   }
 
   if (!settings) {
-    return <p className="gp-text-slate-500">Loading settings…</p>;
+    return <p className="gp-ppros-text-slate-500">Loading settings…</p>;
   }
 
   return (
-    <div className="gp-grid gp-gap-5">
+    <div className="gp-ppros-grid gp-ppros-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="Loyalty settings" description="These control when points are earned and how they appear on My Account.">
-        <div className="gp-grid gp-gap-4 md:gp-grid-cols-2">
+        <div className="gp-ppros-grid gp-ppros-gap-4 md:gp-ppros-grid-cols-2">
           <Field label="Points name">
             <input className={inputClass} value={settings.points_name} onChange={(e) => setSettings({ ...settings, points_name: e.target.value })} />
           </Field>
@@ -66,7 +66,7 @@ export default function Settings() {
             <input className={inputClass} type="number" value={settings.downgrade_window_days} onChange={(e) => setSettings({ ...settings, downgrade_window_days: Number(e.target.value) })} />
           </Field>
         </div>
-        <div className="gp-mt-4 gp-grid gp-gap-3">
+        <div className="gp-ppros-mt-4 gp-ppros-grid gp-ppros-gap-3">
           <Toggle
             label="Allow VIP downgrades"
             description="If off, customers keep a higher tier even when they fall below the qualifier."
@@ -80,13 +80,13 @@ export default function Settings() {
             onChange={(social_once) => setSettings({ ...settings, social_once })}
           />
         </div>
-        <div className="gp-mt-5">
+        <div className="gp-ppros-mt-5">
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save settings"}</Button>
         </div>
       </Card>
 
       <Card title="AI Commerce Brain" description="Local models always run from WooCommerce orders. An OpenAI-compatible key is optional and only rewrites the Brain action cards.">
-        <div className="gp-grid gp-gap-3">
+        <div className="gp-ppros-grid gp-ppros-gap-3">
           <Toggle
             label="Run on-store AI models"
             description="Churn, next purchase, pricing, and demand forecasts. Daily cron refreshes the snapshot."
@@ -100,7 +100,7 @@ export default function Settings() {
             onChange={(ai_llm_enabled) => setSettings({ ...settings, ai_llm_enabled })}
           />
         </div>
-        <div className="gp-mt-4 gp-grid gp-gap-4 md:gp-grid-cols-2">
+        <div className="gp-ppros-mt-4 gp-ppros-grid gp-ppros-gap-4 md:gp-ppros-grid-cols-2">
           <Field
             label="API key"
             description={settings.ai_api_key_set ? "A key is saved. Leave blank to keep it, or remove it below." : "Optional. Never shown in full after save."}
@@ -122,13 +122,13 @@ export default function Settings() {
           </Field>
         </div>
         {settings.ai_api_key_set && (
-          <div className="gp-mt-3">
+          <div className="gp-ppros-mt-3">
             <Button variant="secondary" onClick={() => setSettings({ ...settings, ai_clear_key: true, ai_api_key: "" })}>
               Remove API key
             </Button>
           </div>
         )}
-        <div className="gp-mt-5">
+        <div className="gp-ppros-mt-5">
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save AI settings"}</Button>
         </div>
       </Card>

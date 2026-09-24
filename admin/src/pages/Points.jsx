@@ -114,7 +114,7 @@ export default function Points() {
   }
 
   if (loading) {
-    return <p className="gp-text-slate-500">Loading points rules…</p>;
+    return <p className="gp-ppros-text-slate-500">Loading points rules…</p>;
   }
 
   const globals = GLOBAL_SOURCES.map((meta) => ({
@@ -125,13 +125,13 @@ export default function Points() {
   const campaigns = rules.filter((row) => row.source === "campaign");
 
   return (
-    <div className="gp-grid gp-gap-5">
+    <div className="gp-ppros-grid gp-ppros-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card title="Earn rules" description="Every source writes to the same points ledger — including referrals.">
-        <div className="gp-grid gp-gap-4">
+        <div className="gp-ppros-grid gp-ppros-gap-4">
           {globals.map(({ source, hint, rule }) => (
-            <div key={source} className="gp-grid gp-gap-3 gp-rounded-xl gp-border gp-border-slate-100 gp-p-4 md:gp-grid-cols-4 md:gp-items-end">
+            <div key={source} className="gp-ppros-grid gp-ppros-gap-3 gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4 md:gp-ppros-grid-cols-4 md:gp-ppros-items-end">
               <Toggle
                 label={rule?.name || source.replace("_", " ")}
                 description={hint}
@@ -173,7 +173,7 @@ export default function Points() {
       <Card title="Points expiration" description="0 means points never expire. FIFO consumes the oldest lots first.">
         <Field label="Expire unused points after (days)">
           <input
-            className={`${inputClass} gp-max-w-xs`}
+            className={`${inputClass} gp-ppros-max-w-xs`}
             type="number"
             min="0"
             value={settings?.expiration_days ?? 0}
@@ -184,7 +184,7 @@ export default function Points() {
       </Card>
 
       <Card title="Product & category points" description="Bonus points stacked on top of the global purchase rate.">
-        <div className="gp-mb-4 gp-grid gp-gap-3 md:gp-grid-cols-5 md:gp-items-end">
+        <div className="gp-ppros-mb-4 gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
           <Field label="Name">
             <input className={inputClass} value={newObject.name} onChange={(e) => setNewObject({ ...newObject, name: e.target.value })} />
           </Field>
@@ -201,12 +201,12 @@ export default function Points() {
           <Field label="Search">
             <input className={inputClass} value={productSearch} onChange={(e) => searchCatalog(e.target.value)} placeholder="Type to search" />
             {(products.length > 0 || categories.length > 0) && (
-              <div className="gp-mt-1 gp-max-h-40 gp-overflow-auto gp-rounded-lg gp-border gp-border-slate-200 gp-bg-white">
+              <div className="gp-ppros-mt-1 gp-ppros-max-h-40 gp-ppros-overflow-auto gp-ppros-rounded-lg gp-ppros-border gp-ppros-border-slate-200 gp-ppros-bg-white">
                 {(newObject.object_type === "product" ? products : categories).map((item) => (
                   <button
                     key={item.id}
                     type="button"
-                    className="gp-block gp-w-full gp-border-0 gp-bg-transparent gp-px-3 gp-py-2 gp-text-left gp-text-sm hover:gp-bg-slate-50"
+                    className="gp-ppros-block gp-ppros-w-full gp-ppros-border-0 gp-ppros-bg-transparent gp-ppros-px-3 gp-ppros-py-2 gp-ppros-text-left gp-ppros-text-sm hover:gp-ppros-bg-slate-50"
                     onClick={() => {
                       setNewObject({ ...newObject, object_id: item.id, name: newObject.name || `${item.name} bonus` });
                       setProductSearch(item.name);
@@ -252,7 +252,7 @@ export default function Points() {
               </tr>
             ))}
             {objectRules.length === 0 && (
-              <tr><td colSpan="5" className="gp-text-slate-500">No product or category bonuses yet.</td></tr>
+              <tr><td colSpan="5" className="gp-ppros-text-slate-500">No product or category bonuses yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -272,9 +272,9 @@ export default function Points() {
           })}>Add campaign bonus</Button>
         }
       >
-        <div className="gp-grid gp-gap-3">
+        <div className="gp-ppros-grid gp-ppros-gap-3">
           {campaigns.map((rule) => (
-            <div key={rule.id} className="gp-grid gp-gap-3 gp-rounded-xl gp-border gp-border-slate-100 gp-p-4 md:gp-grid-cols-5 md:gp-items-end">
+            <div key={rule.id} className="gp-ppros-grid gp-ppros-gap-3 gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
               <Field label="Name">
                 <input className={inputClass} value={rule.name} onChange={(e) => setRules((c) => c.map((r) => r.id === rule.id ? { ...r, name: e.target.value } : r))} onBlur={() => saveRule(rule)} />
               </Field>
@@ -299,7 +299,7 @@ export default function Points() {
               }}>Delete</Button>
             </div>
           ))}
-          {campaigns.length === 0 && <p className="gp-m-0 gp-text-sm gp-text-slate-500">No campaign bonuses.</p>}
+          {campaigns.length === 0 && <p className="gp-ppros-m-0 gp-ppros-text-sm gp-ppros-text-slate-500">No campaign bonuses.</p>}
         </div>
       </Card>
     </div>

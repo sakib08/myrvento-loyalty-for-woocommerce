@@ -120,7 +120,7 @@ class GrowthPilot_REST_Customers {
 		$user = get_userdata( $id );
 
 		if ( ! $user ) {
-			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'growthpilot' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'gp_ppros' ) ), 404 );
 		}
 
 		$balance  = GrowthPilot_Points_Ledger::get_balance( $id );

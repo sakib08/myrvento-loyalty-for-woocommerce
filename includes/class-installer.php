@@ -443,7 +443,7 @@ class GrowthPilot_Installer {
 			$wpdb->insert(
 				$campaigns,
 				array(
-					'name'                  => __( 'Refer a friend', 'growthpilot' ),
+					'name'                  => __( 'Refer a friend', 'gp_ppros' ),
 					'enabled'               => 1,
 					'first_order_points'    => 200,
 					'referee_signup_points' => 50,

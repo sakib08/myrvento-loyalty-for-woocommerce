@@ -28,6 +28,9 @@ require_once GROWTHPILOT_PATH . 'includes/analytics/class-revenue.php';
 require_once GROWTHPILOT_PATH . 'includes/analytics/class-customers.php';
 require_once GROWTHPILOT_PATH . 'includes/analytics/class-products.php';
 require_once GROWTHPILOT_PATH . 'includes/analytics/class-marketing.php';
+require_once GROWTHPILOT_PATH . 'includes/sales/class-sales.php';
+require_once GROWTHPILOT_PATH . 'includes/operations/class-operations.php';
+require_once GROWTHPILOT_PATH . 'includes/class-dashboard.php';
 require_once GROWTHPILOT_PATH . 'includes/ai/class-engine.php';
 require_once GROWTHPILOT_PATH . 'includes/ai/class-predict.php';
 require_once GROWTHPILOT_PATH . 'includes/ai/class-pricing.php';
@@ -45,6 +48,7 @@ require_once GROWTHPILOT_PATH . 'includes/rest/class-rest-account.php';
 require_once GROWTHPILOT_PATH . 'includes/rest/class-rest-catalog.php';
 require_once GROWTHPILOT_PATH . 'includes/rest/class-rest-analytics.php';
 require_once GROWTHPILOT_PATH . 'includes/rest/class-rest-ai.php';
+require_once GROWTHPILOT_PATH . 'includes/rest/class-rest-growth.php';
 
 /**
  * Core plugin class.
@@ -125,7 +129,7 @@ final class GrowthPilot {
 	 * @return void
 	 */
 	public function load_textdomain() {
-		load_plugin_textdomain( 'growthpilot', false, dirname( plugin_basename( GROWTHPILOT_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'gp_ppros', false, dirname( plugin_basename( GROWTHPILOT_FILE ) ) . '/languages' );
 	}
 
 	/**
@@ -135,7 +139,7 @@ final class GrowthPilot {
 	 */
 	public function missing_woocommerce_notice() {
 		echo '<div class="notice notice-error"><p>';
-		echo esc_html__( 'GrowthPilot requires WooCommerce to be installed and active.', 'growthpilot' );
+		echo esc_html__( 'GrowthPilot by Ppros requires WooCommerce to be installed and active.', 'gp_ppros' );
 		echo '</p></div>';
 	}
 

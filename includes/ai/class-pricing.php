@@ -63,7 +63,7 @@ class GrowthPilot_AI_Pricing {
 			$action      = 'hold';
 			$suggested   = $current;
 			$discount_to = null;
-			$reason      = __( 'Velocity and stock look balanced — keep the current price.', 'growthpilot' );
+			$reason      = __( 'Velocity and stock look balanced — keep the current price.', 'gp_ppros' );
 
 			if ( null !== $cover && $cover < 21 && $daily > 0 && $current > 0 ) {
 				$lift        = $cover < 10 ? 0.12 : 0.06;
@@ -71,7 +71,7 @@ class GrowthPilot_AI_Pricing {
 				$action      = 'raise';
 				$reason      = sprintf(
 					/* translators: days of cover */
-					__( 'Demand is outrunning stock (~%s days of cover). A modest increase can slow sell-through.', 'growthpilot' ),
+					__( 'Demand is outrunning stock (~%s days of cover). A modest increase can slow sell-through.', 'gp_ppros' ),
 					number_format_i18n( $cover, 0 )
 				);
 			} elseif ( ( null !== $cover && $cover > 120 ) || ( $units < 3 && $current > 0 ) ) {
@@ -79,20 +79,20 @@ class GrowthPilot_AI_Pricing {
 				$suggested   = round( $current * ( 1 - $cut ), 2 );
 				$action      = 'discount';
 				$discount_to = $suggested;
-				$reason      = __( 'Slow mover or excess cover — a targeted discount should clear inventory.', 'growthpilot' );
+				$reason      = __( 'Slow mover or excess cover — a targeted discount should clear inventory.', 'gp_ppros' );
 			} elseif ( $disc_rate > 18 && $current > 0 ) {
 				$suggested   = round( $current * 1.04, 2 );
 				$action      = 'tighten_discount';
 				$reason      = sprintf(
 					/* translators: discount rate */
-					__( 'Coupons already take %s%% of revenue. Tighten promotions before they train customers to wait.', 'growthpilot' ),
+					__( 'Coupons already take %s%% of revenue. Tighten promotions before they train customers to wait.', 'gp_ppros' ),
 					number_format_i18n( $disc_rate, 1 )
 				);
 			}
 
 			if ( null !== $cost && $suggested < $cost ) {
 				$suggested = round( $cost * 1.15, 2 );
-				$reason   .= ' ' . __( 'Floor raised to protect cost of goods.', 'growthpilot' );
+				$reason   .= ' ' . __( 'Floor raised to protect cost of goods.', 'gp_ppros' );
 			}
 
 			$max_off = null;
@@ -197,12 +197,12 @@ class GrowthPilot_AI_Pricing {
 	public static function apply( $product_id, $price, $mode = 'sale' ) {
 		$product = wc_get_product( (int) $product_id );
 		if ( ! $product ) {
-			return new WP_Error( 'not_found', __( 'Product not found.', 'growthpilot' ) );
+			return new WP_Error( 'not_found', __( 'Product not found.', 'gp_ppros' ) );
 		}
 
 		$price = round( (float) $price, 2 );
 		if ( $price < 0 ) {
-			return new WP_Error( 'invalid', __( 'Price must be zero or greater.', 'growthpilot' ) );
+			return new WP_Error( 'invalid', __( 'Price must be zero or greater.', 'gp_ppros' ) );
 		}
 
 		if ( 'regular' === $mode ) {

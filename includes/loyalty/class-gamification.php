@@ -129,7 +129,7 @@ class GrowthPilot_Gamification {
 						'source_id'   => (int) $badge->id,
 						'description' => sprintf(
 							/* translators: %s badge name */
-							__( 'Badge bonus: %s', 'growthpilot' ),
+							__( 'Badge bonus: %s', 'gp_ppros' ),
 							$badge->name
 						),
 						'no_expire'   => true,
@@ -224,7 +224,7 @@ class GrowthPilot_Gamification {
 						'source_id'   => (int) $challenge->id,
 						'description' => sprintf(
 							/* translators: %s challenge name */
-							__( 'Challenge completed: %s', 'growthpilot' ),
+							__( 'Challenge completed: %s', 'gp_ppros' ),
 							$challenge->name
 						),
 					)
@@ -300,7 +300,7 @@ class GrowthPilot_Gamification {
 		$table = GrowthPilot::table( 'badges' );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'gp_ppros' ) );
 		}
 
 		$row = array(
@@ -360,7 +360,7 @@ class GrowthPilot_Gamification {
 		$table = GrowthPilot::table( 'challenges' );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'gp_ppros' ) );
 		}
 
 		$row = array(

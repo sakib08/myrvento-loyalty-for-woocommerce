@@ -116,8 +116,8 @@ class GrowthPilot_Frontend {
 					'apiUrl' => rest_url( 'growthpilot/v1/' ),
 					'nonce'  => wp_create_nonce( 'wp_rest' ),
 					'i18n'   => array(
-						'copied' => __( 'Copied!', 'growthpilot' ),
-						'copy'   => __( 'Copy link', 'growthpilot' ),
+						'copied' => __( 'Copied!', 'gp_ppros' ),
+						'copy'   => __( 'Copy link', 'gp_ppros' ),
 					),
 				)
 			);
@@ -167,7 +167,7 @@ class GrowthPilot_Frontend {
 	 */
 	public function shortcode_loyalty() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'growthpilot' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'gp_ppros' ) . '</p>';
 		}
 
 		ob_start();
@@ -182,7 +182,7 @@ class GrowthPilot_Frontend {
 	 */
 	public function shortcode_referral() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'growthpilot' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'gp_ppros' ) . '</p>';
 		}
 
 		ob_start();

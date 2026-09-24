@@ -214,7 +214,7 @@ class GrowthPilot_Analytics_Customers {
 						'email'       => $user['email'],
 						'last_order'  => $row->last_order,
 						'days_since'  => $days,
-						'reason'      => __( 'No purchase in 60+ days', 'growthpilot' ),
+						'reason'      => __( 'No purchase in 60+ days', 'gp_ppros' ),
 					);
 				}
 			} else {
@@ -255,11 +255,13 @@ class GrowthPilot_Analytics_Customers {
 			 GROUP BY customer_id" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 
-		$coupon_users = $wpdb->get_col(
-			'SELECT DISTINCT s.customer_id FROM ' . GrowthPilot_Analytics_Query::coupons_table() . ' c
-			 INNER JOIN ' . GrowthPilot_Analytics_Query::stats_table() . ' s ON s.order_id = c.order_id
-			 WHERE s.customer_id > 0' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		);
+		$coupons_table = GrowthPilot_Analytics_Query::coupons_table();
+		$stats_join    = GrowthPilot_Analytics_Query::stats_table();
+		$coupon_users  = $wpdb->get_col(
+			"SELECT DISTINCT s.customer_id FROM {$coupons_table} c
+			 INNER JOIN {$stats_join} s ON s.order_id = c.order_id
+			 WHERE s.customer_id > 0"
+		); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		$coupon_set   = array_flip( array_map( 'intval', $coupon_users ? $coupon_users : array() ) );
 
 		$referred = $wpdb->get_col( 'SELECT DISTINCT referee_id FROM ' . GrowthPilot::table( 'referrals' ) . ' WHERE referee_id IS NOT NULL' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

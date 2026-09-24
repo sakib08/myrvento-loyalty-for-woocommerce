@@ -40,11 +40,11 @@ class GrowthPilot_Analytics_Marketing {
 
 		$table = GrowthPilot::table( 'analytics_events' );
 		$steps = array(
-			'visit'        => __( 'Visitors', 'growthpilot' ),
-			'product_view' => __( 'Product views', 'growthpilot' ),
-			'add_to_cart'  => __( 'Add to cart', 'growthpilot' ),
-			'checkout'     => __( 'Checkout', 'growthpilot' ),
-			'purchase'     => __( 'Purchase', 'growthpilot' ),
+			'visit'        => __( 'Visitors', 'gp_ppros' ),
+			'product_view' => __( 'Product views', 'gp_ppros' ),
+			'add_to_cart'  => __( 'Add to cart', 'gp_ppros' ),
+			'checkout'     => __( 'Checkout', 'gp_ppros' ),
+			'purchase'     => __( 'Purchase', 'gp_ppros' ),
 		);
 
 		$out      = array();
@@ -213,8 +213,8 @@ class GrowthPilot_Analytics_Marketing {
 			if ( $order_ids ) {
 				$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
 				$params       = array_merge( $order_ids, array( $range['from_sql'], $range['to_sql'] ) );
-				$points       = (int) $wpdb->get_var(
-					$wpdb->prepare(
+				$points = (int) $wpdb->get_var(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- %d count follows the order id list.
 						"SELECT COALESCE(SUM(amount), 0) FROM {$ledger} WHERE source = 'referral' AND type = 'earn' AND order_id IN ({$placeholders}) AND created_at BETWEEN %s AND %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$params
 					)

@@ -1,0 +1,53 @@
+---
+description: GrowthPilot WooCommerce plugin conventions for PHP, REST, React admin, and AI
+alwaysApply: true
+---
+
+# GrowthPilot
+
+WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `gp_ppros`, capability `manage_woocommerce`. Display name: GrowthPilot by Ppros.
+
+## Names
+
+- Classes `GrowthPilot_*`, files `includes/**/class-*.php`
+- Functions, hooks, options, cron, asset handles: `growthpilot_*`
+- Tables `wp_gp_*` via `GrowthPilot::table()` — never hardcode `$wpdb->prefix`
+- REST namespace `growthpilot/v1`; WP error codes `gp_*`
+- CSS/JS prefix `gp-ppros-` (Tailwind `prefix: "gp-ppros-"`, preflight off). Brand teal (`brand-500` `#14b8a6`)
+- Admin mount `#growthpilot-admin-root` with `data-page`; body class `growthpilot-admin-page`
+
+```php
+// ❌ BAD
+$wpdb->query( "SELECT * FROM {$wpdb->prefix}gp_points_ledger WHERE customer_id = $id" );
+
+// ✅ GOOD
+$wpdb->get_results(
+	$wpdb->prepare(
+		'SELECT * FROM ' . GrowthPilot::table( 'points_ledger' ) . ' WHERE customer_id = %d',
+		$id
+	)
+);
+```
+
+## PHP
+
+- `defined( 'ABSPATH' ) || exit;` and `@package GrowthPilot` on every file
+- WordPress style: tabs, Yoda, `array()`, sanitise/escape, i18n every string
+- All `$wpdb` reads/writes with variables must use `$wpdb->prepare()`. Identifiers (table via `GrowthPilot::table()`, columns) stay outside placeholders; values use `%d`, `%f`, `%s`. Never interpolate user or request data into SQL. Static SQL with no variables may skip `prepare()`
+- Paid orders: `wc_get_is_paid_statuses()` with `wc-` prefix. Prefer WC lookup tables (`wc_order_stats`, `wc_order_product_lookup`, `wc_customer_lookup`). `wc_order_coupon_lookup` has no `customer_id` — join stats
+- Schema changes bump `GROWTHPILOT_DB_VERSION` and `GrowthPilot_Installer::create_tables()`
+- Settings never persist a raw API key unless newly submitted; empty/`********` keeps the existing key; `for_admin()` returns a mask + `ai_api_key_set`
+
+## Admin (React 18)
+
+- One WP submenu per feature; inner tabs stay in React
+- Pages in `admin/src/pages/`, API in `admin/src/api.js` (`window.growthPilotAdmin`)
+- After JSX/CSS changes run the webpack admin build; empty store must show empty states, not errors
+- Browser-verify admin UI; WP login submit is `#loginform` (`<input>`), not a button
+
+## Domain
+
+- Unified points ledger is the only writer of customer balances. Referrals credit that ledger — no separate wallet, no affiliate payouts
+- AI models run on-store (no API key required). Optional LLM only rewrites Brain cards. Prices are never auto-applied
+- Do not insert stray tokens (` mar`) into PHP/JSX
+- Do not edit plan files unless asked

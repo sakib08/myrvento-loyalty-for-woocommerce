@@ -134,12 +134,12 @@ class GrowthPilot_REST_Points {
 		$description = sanitize_text_field( (string) $request->get_param( 'description' ) );
 
 		if ( $customer_id <= 0 || 0 === $amount ) {
-			return GrowthPilot_REST::error( new WP_Error( 'gp_adjust', __( 'Customer and non-zero amount are required.', 'growthpilot' ) ) );
+			return GrowthPilot_REST::error( new WP_Error( 'gp_adjust', __( 'Customer and non-zero amount are required.', 'gp_ppros' ) ) );
 		}
 
 		$args = array(
 			'type'        => 'adjust',
-			'description' => $description ? $description : __( 'Manual adjustment', 'growthpilot' ),
+			'description' => $description ? $description : __( 'Manual adjustment', 'gp_ppros' ),
 			'created_by'  => get_current_user_id(),
 		);
 

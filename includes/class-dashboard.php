@@ -1,0 +1,89 @@
+<?php
+/**
+ * Home dashboard: revenue, sales, orders, and forecast.
+ *
+ * @package GrowthPilot
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Dashboard summary.
+ */
+class GrowthPilot_Dashboard {
+
+	/**
+	 * Dashboard payload for the last 30 days.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function report() {
+		$range    = GrowthPilot_Analytics_Query::range( gmdate( 'Y-m-d', time() - ( 29 * DAY_IN_SECONDS ) ), gmdate( 'Y-m-d' ) );
+		$overview = GrowthPilot_Analytics_Revenue::overview( $range );
+		$churn    = GrowthPilot_Analytics_Customers::churn();
+		$forecast = GrowthPilot_AI_Engine::enabled() ? GrowthPilot_AI_Forecast::report() : array();
+		$store    = isset( $forecast['store'] ) ? $forecast['store'] : array();
+
+		return array(
+			'range'    => $overview['range'],
+			'kpis'     => $overview['kpis'],
+			'trend'    => $overview['trend'],
+			'sales'    => array(
+				'abandoned' => GrowthPilot_Sales::abandoned()['count'],
+				'recovery'  => GrowthPilot_Sales::recovery()['count'],
+			),
+			'orders'   => GrowthPilot_Operations::orders(),
+			'churn'    => array(
+				'active'     => $churn['active'],
+				'at_risk'    => $churn['at_risk'],
+				'churned'    => $churn['churned'],
+				'churn_rate' => $churn['churn_rate'],
+			),
+			'forecast' => array(
+				'units_30'   => isset( $store['forecast_30_units'] ) ? $store['forecast_30_units'] : 0,
+				'revenue_30' => isset( $store['forecast_30_revenue'] ) ? $store['forecast_30_revenue'] : 0,
+			),
+			'top'      => self::top_products( $range ),
+		);
+	}
+
+	/**
+	 * Five products by net revenue in the range.
+	 *
+	 * @param array $range Range.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function top_products( $range ) {
+		global $wpdb;
+
+		$table = GrowthPilot_Analytics_Query::products_table();
+		$stats = GrowthPilot_Analytics_Query::stats_table();
+		$paid  = GrowthPilot_Analytics_Query::paid_in();
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.product_id, SUM( p.product_qty ) AS units, SUM( p.product_net_revenue ) AS revenue
+				 FROM {$table} p
+				 INNER JOIN {$stats} s ON s.order_id = p.order_id
+				 WHERE p.date_created BETWEEN %s AND %s AND s.status IN ({$paid})
+				 GROUP BY p.product_id
+				 ORDER BY revenue DESC
+				 LIMIT 5", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$range['from_sql'],
+				$range['to_sql']
+			)
+		);
+
+		$out = array();
+		foreach ( $rows ? $rows : array() as $row ) {
+			$product = wc_get_product( (int) $row->product_id );
+			$out[]   = array(
+				'name'    => $product ? $product->get_name() : ( '#' . $row->product_id ),
+				'units'   => (float) $row->units,
+				'revenue' => round( (float) $row->revenue, 2 ),
+			);
+		}
+
+		return $out;
+	}
+}

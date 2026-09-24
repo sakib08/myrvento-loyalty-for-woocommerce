@@ -31,20 +31,25 @@ class GrowthPilot_Admin {
 	 */
 	public function register_menus() {
 		$pages = array(
-			''              => __( 'Points', 'growthpilot' ),
-			'-customers'    => __( 'Customers', 'growthpilot' ),
-			'-tiers'        => __( 'VIP Tiers', 'growthpilot' ),
-			'-rewards'      => __( 'Rewards', 'growthpilot' ),
-			'-gamification' => __( 'Gamification', 'growthpilot' ),
-			'-referrals'    => __( 'Referrals', 'growthpilot' ),
-			'-analytics'    => __( 'Analytics', 'growthpilot' ),
-			'-ai'           => __( 'AI', 'growthpilot' ),
-			'-settings'     => __( 'Settings', 'growthpilot' ),
+			''              => __( 'Dashboard', 'gp_ppros' ),
+			'-points'       => __( 'Points', 'gp_ppros' ),
+			'-customers'    => __( 'Customers', 'gp_ppros' ),
+			'-tiers'        => __( 'VIP Tiers', 'gp_ppros' ),
+			'-rewards'      => __( 'Rewards', 'gp_ppros' ),
+			'-gamification' => __( 'Gamification', 'gp_ppros' ),
+			'-referrals'    => __( 'Referrals', 'gp_ppros' ),
+			'-sales'        => __( 'Sales', 'gp_ppros' ),
+			'-operations'   => __( 'Operations', 'gp_ppros' ),
+			'-analytics'    => __( 'Analytics', 'gp_ppros' ),
+			'-revenue'      => __( 'Revenue', 'gp_ppros' ),
+			'-ai'           => __( 'AI', 'gp_ppros' ),
+			'-settings'     => __( 'Settings', 'gp_ppros' ),
+			'-help'         => __( 'Help', 'gp_ppros' ),
 		);
 
 		add_menu_page(
-			__( 'GrowthPilot', 'growthpilot' ),
-			__( 'GrowthPilot', 'growthpilot' ),
+			__( 'GrowthPilot by Ppros', 'gp_ppros' ),
+			__( 'GrowthPilot by Ppros', 'gp_ppros' ),
 			'manage_woocommerce',
 			self::MENU_SLUG,
 			array( $this, 'render_admin_page' ),
@@ -125,17 +130,22 @@ class GrowthPilot_Admin {
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : self::MENU_SLUG;
 
 		$map = array(
+			self::MENU_SLUG . '-points'       => 'points',
 			self::MENU_SLUG . '-customers'    => 'customers',
 			self::MENU_SLUG . '-tiers'        => 'tiers',
 			self::MENU_SLUG . '-rewards'      => 'rewards',
 			self::MENU_SLUG . '-gamification' => 'gamification',
 			self::MENU_SLUG . '-referrals'    => 'referrals',
+			self::MENU_SLUG . '-sales'        => 'sales',
+			self::MENU_SLUG . '-operations'   => 'operations',
 			self::MENU_SLUG . '-analytics'    => 'analytics',
+			self::MENU_SLUG . '-revenue'      => 'revenue',
 			self::MENU_SLUG . '-ai'           => 'ai',
 			self::MENU_SLUG . '-settings'     => 'settings',
+			self::MENU_SLUG . '-help'         => 'help',
 		);
 
-		return $map[ $page ] ?? 'points';
+		return $map[ $page ] ?? 'dashboard';
 	}
 
 	/**
@@ -198,8 +208,8 @@ body.growthpilot-admin-page #screen-meta-links { display: none !important; }'
 		);
 
 		$urls = array();
-		foreach ( array( '', '-customers', '-tiers', '-rewards', '-gamification', '-referrals', '-analytics', '-ai', '-settings' ) as $suffix ) {
-			$key          = '' === $suffix ? 'points' : ltrim( $suffix, '-' );
+		foreach ( array( '', '-points', '-customers', '-tiers', '-rewards', '-gamification', '-referrals', '-sales', '-operations', '-analytics', '-revenue', '-ai', '-settings', '-help' ) as $suffix ) {
+			$key          = '' === $suffix ? 'dashboard' : ltrim( $suffix, '-' );
 			$urls[ $key ] = admin_url( 'admin.php?page=' . self::MENU_SLUG . $suffix );
 		}
 
@@ -209,23 +219,29 @@ body.growthpilot-admin-page #screen-meta-links { display: none !important; }'
 			array(
 				'apiUrl'    => rest_url( 'growthpilot/v1/' ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
+				'version'   => GROWTHPILOT_VERSION,
 				'page'      => $this->get_current_page(),
 				'urls'      => $urls,
 				'currency'  => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
 				'i18n'      => array(
-					'pluginName'   => __( 'GrowthPilot', 'growthpilot' ),
-					'tagline'      => __( 'Loyalty, Analytics & AI', 'growthpilot' ),
-					'points'       => __( 'Points', 'growthpilot' ),
-					'customers'    => __( 'Customers', 'growthpilot' ),
-					'tiers'        => __( 'VIP Tiers', 'growthpilot' ),
-					'rewards'      => __( 'Rewards', 'growthpilot' ),
-					'gamification' => __( 'Gamification', 'growthpilot' ),
-					'referrals'    => __( 'Referrals', 'growthpilot' ),
-					'analytics'    => __( 'Analytics', 'growthpilot' ),
-					'ai'           => __( 'AI', 'growthpilot' ),
-					'settings'     => __( 'Settings', 'growthpilot' ),
-					'saved'        => __( 'Saved successfully.', 'growthpilot' ),
-					'saveError'    => __( 'Could not save. Please try again.', 'growthpilot' ),
+					'pluginName'   => __( 'GrowthPilot by Ppros', 'gp_ppros' ),
+					'tagline'      => __( 'Loyalty, sales, and revenue', 'gp_ppros' ),
+					'dashboard'    => __( 'Dashboard', 'gp_ppros' ),
+					'points'       => __( 'Points', 'gp_ppros' ),
+					'customers'    => __( 'Customers', 'gp_ppros' ),
+					'tiers'        => __( 'VIP Tiers', 'gp_ppros' ),
+					'rewards'      => __( 'Rewards', 'gp_ppros' ),
+					'gamification' => __( 'Gamification', 'gp_ppros' ),
+					'referrals'    => __( 'Referrals', 'gp_ppros' ),
+					'sales'        => __( 'Sales', 'gp_ppros' ),
+					'operations'   => __( 'Operations', 'gp_ppros' ),
+					'analytics'    => __( 'Analytics', 'gp_ppros' ),
+					'revenue'      => __( 'Revenue', 'gp_ppros' ),
+					'ai'           => __( 'AI', 'gp_ppros' ),
+					'settings'     => __( 'Settings', 'gp_ppros' ),
+					'help'         => __( 'Help', 'gp_ppros' ),
+					'saved'        => __( 'Saved successfully.', 'gp_ppros' ),
+					'saveError'    => __( 'Could not save. Please try again.', 'gp_ppros' ),
 				),
 			)
 		);

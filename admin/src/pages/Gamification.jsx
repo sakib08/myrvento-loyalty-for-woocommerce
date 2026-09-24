@@ -76,7 +76,7 @@ export default function Gamification() {
   }
 
   return (
-    <div className="gp-grid gp-gap-5">
+    <div className="gp-ppros-grid gp-ppros-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card title="Loyalty leaderboard" description="Ranked by lifetime points earned.">
@@ -94,13 +94,13 @@ export default function Gamification() {
             {board.map((row) => (
               <tr key={row.customer_id}>
                 <td>{row.rank}</td>
-                <td>{row.name}<div className="gp-text-xs gp-text-slate-500">{row.email}</div></td>
+                <td>{row.name}<div className="gp-ppros-text-xs gp-ppros-text-slate-500">{row.email}</div></td>
                 <td>{row.lifetime_earned}</td>
                 <td>{row.available}</td>
                 <td style={{ color: row.tier_color }}>{row.tier_name || "—"}</td>
               </tr>
             ))}
-            {board.length === 0 && <tr><td colSpan="5" className="gp-text-slate-500">No earners yet.</td></tr>}
+            {board.length === 0 && <tr><td colSpan="5" className="gp-ppros-text-slate-500">No earners yet.</td></tr>}
           </tbody>
         </table>
       </Card>
@@ -132,7 +132,7 @@ export default function Gamification() {
                 </td>
                 <td><input className={inputClass} type="number" value={badge.milestone_value} onChange={(e) => setBadges((c) => c.map((b) => b.id === badge.id ? { ...b, milestone_value: Number(e.target.value) } : b))} /></td>
                 <td><input className={inputClass} type="number" value={badge.points_bonus} onChange={(e) => setBadges((c) => c.map((b) => b.id === badge.id ? { ...b, points_bonus: Number(e.target.value) } : b))} /></td>
-                <td className="gp-flex gp-gap-2">
+                <td className="gp-ppros-flex gp-ppros-gap-2">
                   <Button onClick={() => saveBadge(badge)}>Save</Button>
                   <Button variant="danger" onClick={async () => { await api.deleteBadge(badge.id); load(); }}>Delete</Button>
                 </td>
@@ -140,7 +140,7 @@ export default function Gamification() {
             ))}
           </tbody>
         </table>
-        <div className="gp-mt-4 gp-grid gp-gap-3 md:gp-grid-cols-5 md:gp-items-end">
+        <div className="gp-ppros-mt-4 gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
           <Field label="Badge name"><input className={inputClass} value={badgeDraft.name} onChange={(e) => setBadgeDraft({ ...badgeDraft, name: e.target.value })} /></Field>
           <Field label="Type">
             <select className={inputClass} value={badgeDraft.milestone_type} onChange={(e) => setBadgeDraft({ ...badgeDraft, milestone_type: e.target.value })}>
@@ -160,7 +160,7 @@ export default function Gamification() {
 
       <Card title="Challenges" description="Limited-time goals with a progress bar on My Account.">
         {challenges.map((challenge) => (
-          <div key={challenge.id} className="gp-mb-3 gp-grid gp-gap-3 gp-rounded-xl gp-border gp-border-slate-100 gp-p-4 md:gp-grid-cols-6 md:gp-items-end">
+          <div key={challenge.id} className="gp-ppros-mb-3 gp-ppros-grid gp-ppros-gap-3 gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4 md:gp-ppros-grid-cols-6 md:gp-ppros-items-end">
             <Field label="Name"><input className={inputClass} value={challenge.name} onChange={(e) => setChallenges((c) => c.map((row) => row.id === challenge.id ? { ...row, name: e.target.value } : row))} /></Field>
             <Field label="Type">
               <select className={inputClass} value={challenge.type} onChange={(e) => setChallenges((c) => c.map((row) => row.id === challenge.id ? { ...row, type: e.target.value } : row))}>
@@ -174,13 +174,13 @@ export default function Gamification() {
             <Field label="Target"><input className={inputClass} type="number" value={challenge.target_value} onChange={(e) => setChallenges((c) => c.map((row) => row.id === challenge.id ? { ...row, target_value: Number(e.target.value) } : row))} /></Field>
             <Field label="Reward points"><input className={inputClass} type="number" value={challenge.points_reward} onChange={(e) => setChallenges((c) => c.map((row) => row.id === challenge.id ? { ...row, points_reward: Number(e.target.value) } : row))} /></Field>
             <Toggle label="Enabled" checked={challenge.enabled} onChange={(enabled) => saveChallenge({ ...challenge, enabled })} />
-            <div className="gp-flex gp-gap-2">
+            <div className="gp-ppros-flex gp-ppros-gap-2">
               <Button onClick={() => saveChallenge(challenge)}>Save</Button>
               <Button variant="danger" onClick={async () => { await api.deleteChallenge(challenge.id); load(); }}>Delete</Button>
             </div>
           </div>
         ))}
-        <div className="gp-grid gp-gap-3 md:gp-grid-cols-5 md:gp-items-end">
+        <div className="gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
           <Field label="Challenge"><input className={inputClass} value={challengeDraft.name} onChange={(e) => setChallengeDraft({ ...challengeDraft, name: e.target.value })} /></Field>
           <Field label="Type">
             <select className={inputClass} value={challengeDraft.type} onChange={(e) => setChallengeDraft({ ...challengeDraft, type: e.target.value })}>

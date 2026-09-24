@@ -151,7 +151,7 @@ class GrowthPilot_Referral_Program {
 		$table = GrowthPilot::table( 'referral_campaigns' );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'growthpilot' ) );
+			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'gp_ppros' ) );
 		}
 
 		$row = array(

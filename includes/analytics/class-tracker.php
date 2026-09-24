@@ -102,7 +102,7 @@ class GrowthPilot_Analytics_Tracker {
 			return array();
 		}
 
-		$raw = json_decode( wp_unslash( $_COOKIE['gp_utm'] ), true );
+		$raw = json_decode( sanitize_text_field( wp_unslash( $_COOKIE['gp_utm'] ) ), true );
 		return is_array( $raw ) ? $raw : array();
 	}
 

@@ -35,7 +35,7 @@ class GrowthPilot_Referral_Rewards {
 			'referral',
 			array(
 				'source_id'   => $referrer_id,
-				'description' => __( 'Referral welcome bonus', 'growthpilot' ),
+				'description' => __( 'Referral welcome bonus', 'gp_ppros' ),
 			)
 		);
 
@@ -111,7 +111,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral first-order bonus (order %s)', 'growthpilot' ),
+						__( 'Referral first-order bonus (order %s)', 'gp_ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -151,7 +151,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral recurring bonus (order %s)', 'growthpilot' ),
+						__( 'Referral recurring bonus (order %s)', 'gp_ppros' ),
 						$order->get_order_number()
 					),
 				)
