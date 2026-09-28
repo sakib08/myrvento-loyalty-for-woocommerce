@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Revenue intelligence.
@@ -71,9 +72,10 @@ class GrowthPilot_Analytics_Revenue {
 	public static function totals( $from, $to ) {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT
@@ -88,11 +90,12 @@ class GrowthPilot_Analytics_Revenue {
 					COALESCE(SUM(CASE WHEN returning_customer = 1 AND parent_id = 0 THEN 1 ELSE 0 END), 0) AS returning
 				FROM {$stats}
 				WHERE date_created BETWEEN %s AND %s
-					AND ( status IN ({$paid}) OR parent_id > 0 )", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					AND ( status IN ({$paid}) OR parent_id > 0 )",
 				$from,
 				$to
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$orders = $row ? (int) $row->orders : 0;
 		$net    = $row ? (float) $row->net : 0.0;
@@ -100,21 +103,24 @@ class GrowthPilot_Analytics_Revenue {
 
 		$discounts = (float) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COALESCE(SUM(discount_amount), 0) FROM ' . GrowthPilot_Analytics_Query::coupons_table() . ' WHERE date_created BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COALESCE(SUM(discount_amount), 0) FROM ' . esc_sql( GrowthPilot_Analytics_Query::coupons_table() ) . ' WHERE date_created BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$from,
 				$to
 			)
 		);
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$ltv = (float) $wpdb->get_var(
 			"SELECT COALESCE(AVG(lifetime), 0) FROM (
 				SELECT customer_id, SUM(net_total) AS lifetime
 				FROM {$stats}
 				WHERE customer_id > 0 AND status IN ({$paid})
 				GROUP BY customer_id
-			) t" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			) t"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$repeat = $wpdb->get_row(
 			"SELECT
 				COUNT(*) AS customers,
@@ -124,8 +130,9 @@ class GrowthPilot_Analytics_Revenue {
 				FROM {$stats}
 				WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
 				GROUP BY customer_id
-			 ) t" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 ) t"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$customers = $repeat ? (int) $repeat->customers : 0;
 		$repeats   = $repeat ? (int) $repeat->repeats : 0;
@@ -159,10 +166,17 @@ class GrowthPilot_Analytics_Revenue {
 	public static function trend( $from, $to, $interval ) {
 		global $wpdb;
 
-		$stats  = GrowthPilot_Analytics_Query::stats_table();
-		$paid   = GrowthPilot_Analytics_Query::paid_in();
-		$bucket = GrowthPilot_Analytics_Query::bucket_sql( $interval, 'date_created' );
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		if ( 'week' === $interval ) {
+			$bucket = 'DATE( DATE_SUB( date_created, INTERVAL WEEKDAY(date_created) DAY ) )';
+		} elseif ( 'month' === $interval ) {
+			$bucket = "DATE_FORMAT( date_created, '%Y-%m-01' )";
+		} else {
+			$bucket = 'DATE( date_created )';
+		}
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Bucket expression, lookup table, and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$bucket} AS bucket,
@@ -173,11 +187,12 @@ class GrowthPilot_Analytics_Revenue {
 				WHERE date_created BETWEEN %s AND %s
 					AND ( status IN ({$paid}) OR parent_id > 0 )
 				GROUP BY bucket
-				ORDER BY bucket ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				ORDER BY bucket ASC",
 				$from,
 				$to
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {

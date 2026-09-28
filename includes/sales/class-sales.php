@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Sales and conversion.
@@ -36,9 +37,10 @@ class GrowthPilot_Sales {
 	public static function abandoned() {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'analytics_events' );
+		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
 		$since = gmdate( 'Y-m-d H:i:s', time() - ( 30 * DAY_IN_SECONDS ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT session_id,
@@ -53,10 +55,11 @@ class GrowthPilot_Sales {
 				 GROUP BY session_id
 				 HAVING ( adds + checkouts ) > 0 AND purchases = 0
 				 ORDER BY last_at DESC
-				 LIMIT 40", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 40",
 				$since
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$items = array();
 		$value = 0.0;
@@ -71,13 +74,14 @@ class GrowthPilot_Sales {
 				'session_id' => $row->session_id,
 				'stage'      => (int) $row->checkouts > 0 ? 'checkout' : 'cart',
 				'last_at'    => $row->last_at,
-				'customer'   => $user ? $user->display_name : __( 'Guest', 'gp_ppros' ),
+				'customer'   => $user ? $user->display_name : __( 'Guest', 'gp-ppros' ),
 				'email'      => $user ? $user->user_email : '',
-				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'gp_ppros' ),
+				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'gp-ppros' ),
 				'value'      => round( $price, 2 ),
 			);
 		}
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM (
@@ -87,10 +91,11 @@ class GrowthPilot_Sales {
 					GROUP BY session_id
 					HAVING SUM( event_type = 'add_to_cart' ) + SUM( event_type = 'checkout' ) > 0
 						AND SUM( event_type = 'purchase' ) = 0
-				) abandoned", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				) abandoned",
 				$since
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return array(
 			'count' => $total,
@@ -107,11 +112,12 @@ class GrowthPilot_Sales {
 	private static function pairs() {
 		global $wpdb;
 
-		$products = GrowthPilot_Analytics_Query::products_table();
-		$stats    = GrowthPilot_Analytics_Query::stats_table();
-		$paid     = GrowthPilot_Analytics_Query::paid_in();
+		$products = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats    = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid     = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$from     = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT a.product_id AS product_id, b.product_id AS related_id, COUNT( DISTINCT a.order_id ) AS orders
@@ -121,10 +127,11 @@ class GrowthPilot_Sales {
 				 WHERE s.status IN ({$paid}) AND s.parent_id = 0 AND a.date_created >= %s
 				 GROUP BY a.product_id, b.product_id
 				 ORDER BY orders DESC
-				 LIMIT 60", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 60",
 				$from
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$upsell     = array();
 		$cross_sell = array();
@@ -220,10 +227,11 @@ class GrowthPilot_Sales {
 	public static function recovery() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$now   = current_time( 'mysql' );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id,
@@ -236,13 +244,15 @@ class GrowthPilot_Sales {
 				 GROUP BY customer_id
 				 HAVING days_since >= 60
 				 ORDER BY revenue DESC
-				 LIMIT 25", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 25",
 				$now
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$labels = GrowthPilot_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
 		$items  = array();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$total  = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM (
@@ -251,10 +261,11 @@ class GrowthPilot_Sales {
 					WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
 					GROUP BY customer_id
 					HAVING TIMESTAMPDIFF( DAY, MAX( date_created ), %s ) >= 60
-				) quiet", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				) quiet",
 				$now
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		foreach ( $rows ? $rows : array() as $row ) {
 			$id      = (int) $row->customer_id;
@@ -267,7 +278,7 @@ class GrowthPilot_Sales {
 				'orders'      => (int) $row->orders,
 				'last_order'  => $row->last_order,
 				'days_since'  => (int) $row->days_since,
-				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'gp_ppros' ) : __( 'Loyalty reminder', 'gp_ppros' ),
+				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'gp-ppros' ) : __( 'Loyalty reminder', 'gp-ppros' ),
 			);
 		}
 

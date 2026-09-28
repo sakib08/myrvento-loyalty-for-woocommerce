@@ -7,6 +7,7 @@
     "build": "webpack --config webpack.config.cjs",
     "build:admin": "webpack --config webpack.config.cjs --config-name admin",
     "build:frontend": "webpack --config webpack.config.cjs --config-name frontend",
+    "build:plugin": "npm run build && node bin/build-plugin.js",
     "watch": "webpack --config webpack.config.cjs --watch",
     "watch:admin": "webpack --config webpack.config.cjs --config-name admin --watch"
   },

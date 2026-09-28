@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Points ledger.
@@ -25,7 +26,7 @@ class GrowthPilot_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp-ppros' ) );
 		}
 
 		return self::write(
@@ -50,7 +51,7 @@ class GrowthPilot_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'gp-ppros' ) );
 		}
 
 		$type = isset( $args['type'] ) ? $args['type'] : 'redeem';
@@ -73,11 +74,11 @@ class GrowthPilot_Points_Ledger {
 
 		$customer_id = (int) $customer_id;
 		if ( $customer_id <= 0 ) {
-			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'gp-ppros' ) );
 		}
 
-		$ledger   = GrowthPilot::table( 'points_ledger' );
-		$balances = GrowthPilot::table( 'points_balances' );
+		$ledger   = esc_sql( GrowthPilot::table( 'points_ledger' ) );
+		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
 
 		$wpdb->query( 'START TRANSACTION' );
 
@@ -113,7 +114,7 @@ class GrowthPilot_Points_Ledger {
 
 		if ( $amount < 0 && $available < abs( $amount ) && empty( $args['allow_negative'] ) ) {
 			$wpdb->query( 'ROLLBACK' );
-			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'gp-ppros' ) );
 		}
 
 		if ( $amount < 0 && empty( $args['skip_consume'] ) ) {
@@ -217,7 +218,7 @@ class GrowthPilot_Points_Ledger {
 	private static function consume_lots( $customer_id, $amount ) {
 		global $wpdb;
 
-		$ledger = GrowthPilot::table( 'points_ledger' );
+		$ledger = esc_sql( GrowthPilot::table( 'points_ledger' ) );
 		$left   = $amount;
 
 		$rows = $wpdb->get_results(
@@ -252,7 +253,7 @@ class GrowthPilot_Points_Ledger {
 	public static function expire_due_points() {
 		global $wpdb;
 
-		$ledger = GrowthPilot::table( 'points_ledger' );
+		$ledger = esc_sql( GrowthPilot::table( 'points_ledger' ) );
 		$now    = current_time( 'mysql' );
 
 		$rows = $wpdb->get_results(
@@ -280,7 +281,7 @@ class GrowthPilot_Points_Ledger {
 				array(
 					'type'         => 'expire',
 					'source_id'    => (int) $row->id,
-					'description'  => __( 'Points expired', 'gp_ppros' ),
+					'description'  => __( 'Points expired', 'gp-ppros' ),
 					'no_expire'    => true,
 					'skip_consume' => true,
 				)
@@ -303,7 +304,7 @@ class GrowthPilot_Points_Ledger {
 	public static function get_balance( $customer_id ) {
 		global $wpdb;
 
-		$balances = GrowthPilot::table( 'points_balances' );
+		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
@@ -348,7 +349,7 @@ class GrowthPilot_Points_Ledger {
 	public static function get_history( $customer_id, $args = array() ) {
 		global $wpdb;
 
-		$ledger   = GrowthPilot::table( 'points_ledger' );
+		$ledger   = esc_sql( GrowthPilot::table( 'points_ledger' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -386,7 +387,7 @@ class GrowthPilot_Points_Ledger {
 	public static function already_awarded( $customer_id, $source, $source_id ) {
 		global $wpdb;
 
-		$ledger = GrowthPilot::table( 'points_ledger' );
+		$ledger = esc_sql( GrowthPilot::table( 'points_ledger' ) );
 
 		$found = $wpdb->get_var(
 			$wpdb->prepare(

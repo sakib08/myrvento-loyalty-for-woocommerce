@@ -74,17 +74,17 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'warn',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s customer is at high churn risk', '%s customers are at high churn risk', $high, 'gp_ppros' ),
+					_n( '%s customer is at high churn risk', '%s customers are at high churn risk', $high, 'gp-ppros' ),
 					number_format_i18n( $high )
 				),
 				'body'     => $top
 					? sprintf(
 						/* translators: customer name */
-						__( '%s is the highest risk. Send a win-back offer or loyalty bonus before the repurchase window closes.', 'gp_ppros' ),
+						__( '%s is the highest risk. Send a win-back offer or loyalty bonus before the repurchase window closes.', 'gp-ppros' ),
 						$top
 					)
-					: __( 'Reach at-risk buyers with a points bonus or a personal coupon.', 'gp_ppros' ),
-				'action'   => __( 'Open win-back list', 'gp_ppros' ),
+					: __( 'Reach at-risk buyers with a points bonus or a personal coupon.', 'gp-ppros' ),
+				'action'   => __( 'Open win-back list', 'gp-ppros' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -96,11 +96,11 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'info',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s predicted high-value customer', '%s predicted high-value customers', $hv, 'gp_ppros' ),
+					_n( '%s predicted high-value customer', '%s predicted high-value customers', $hv, 'gp-ppros' ),
 					number_format_i18n( $hv )
 				),
-				'body'     => __( 'Protect these buyers with VIP perks and avoid training them on deep discounts.', 'gp_ppros' ),
-				'action'   => __( 'Review high-value list', 'gp_ppros' ),
+				'body'     => __( 'Protect these buyers with VIP perks and avoid training them on deep discounts.', 'gp-ppros' ),
+				'action'   => __( 'Review high-value list', 'gp-ppros' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -117,11 +117,11 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'info',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s customer is likely to buy in the next 14 days', '%s customers are likely to buy in the next 14 days', count( $soon ), 'gp_ppros' ),
+					_n( '%s customer is likely to buy in the next 14 days', '%s customers are likely to buy in the next 14 days', count( $soon ), 'gp-ppros' ),
 					number_format_i18n( count( $soon ) )
 				),
-				'body'     => __( 'Time replenishment reminders and points multipliers to land just before the predicted date.', 'gp_ppros' ),
-				'action'   => __( 'See next-purchase dates', 'gp_ppros' ),
+				'body'     => __( 'Time replenishment reminders and points multipliers to land just before the predicted date.', 'gp-ppros' ),
+				'action'   => __( 'See next-purchase dates', 'gp-ppros' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -133,11 +133,11 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'action',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s product can support a price increase', '%s products can support a price increase', $raise, 'gp_ppros' ),
+					_n( '%s product can support a price increase', '%s products can support a price increase', $raise, 'gp-ppros' ),
 					number_format_i18n( $raise )
 				),
-				'body'     => __( 'Demand is outrunning stock. Raising price slightly stretches cover without a full restock delay.', 'gp_ppros' ),
-				'action'   => __( 'Review price raises', 'gp_ppros' ),
+				'body'     => __( 'Demand is outrunning stock. Raising price slightly stretches cover without a full restock delay.', 'gp-ppros' ),
+				'action'   => __( 'Review price raises', 'gp-ppros' ),
 				'tab'      => 'pricing',
 			);
 		}
@@ -149,11 +149,11 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'action',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s SKU needs a clearance-style discount', '%s SKUs need clearance-style discounts', $disc, 'gp_ppros' ),
+					_n( '%s SKU needs a clearance-style discount', '%s SKUs need clearance-style discounts', $disc, 'gp-ppros' ),
 					number_format_i18n( $disc )
 				),
-				'body'     => __( 'Slow movers and excess cover. Discount is capped when cost-of-goods meta is present.', 'gp_ppros' ),
-				'action'   => __( 'Optimize discounts', 'gp_ppros' ),
+				'body'     => __( 'Slow movers and excess cover. Discount is capped when cost-of-goods meta is present.', 'gp-ppros' ),
+				'action'   => __( 'Optimize discounts', 'gp-ppros' ),
 				'tab'      => 'pricing',
 			);
 		}
@@ -165,11 +165,11 @@ class GrowthPilot_AI_Brain {
 				'severity' => 'warn',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s product is forecasted to stock out in 30 days', '%s products are forecasted to stock out in 30 days', $stockout, 'gp_ppros' ),
+					_n( '%s product is forecasted to stock out in 30 days', '%s products are forecasted to stock out in 30 days', $stockout, 'gp-ppros' ),
 					number_format_i18n( $stockout )
 				),
-				'body'     => __( 'Reorder quantities use the next-90-day forecast times the seasonal index for next month.', 'gp_ppros' ),
-				'action'   => __( 'Open inventory forecast', 'gp_ppros' ),
+				'body'     => __( 'Reorder quantities use the next-90-day forecast times the seasonal index for next month.', 'gp-ppros' ),
+				'action'   => __( 'Open inventory forecast', 'gp-ppros' ),
 				'tab'      => 'forecast',
 			);
 		}
@@ -178,8 +178,8 @@ class GrowthPilot_AI_Brain {
 			$insights[] = array(
 				'id'       => 'empty',
 				'severity' => 'info',
-				'title'    => __( 'Commerce Brain is ready', 'gp_ppros' ),
-				'body'     => __( 'Predictions need paid WooCommerce orders. As soon as sales land, churn, next purchase, pricing, and inventory forecasts fill in automatically — no API key required.', 'gp_ppros' ),
+				'title'    => __( 'Commerce Brain is ready', 'gp-ppros' ),
+				'body'     => __( 'Predictions need paid WooCommerce orders. As soon as sales land, churn, next purchase, pricing, and inventory forecasts fill in automatically — no API key required.', 'gp-ppros' ),
 				'action'   => '',
 				'tab'      => 'predictions',
 			);
@@ -216,11 +216,11 @@ class GrowthPilot_AI_Brain {
 	 */
 	public static function narrate( $local ) {
 		$key  = (string) GrowthPilot_Settings::get_value( 'ai_api_key', '' );
-		$base = untrailingslashit( (string) GrowthPilot_Settings::get_value( 'ai_api_base', 'https://api.openai.com/v1' ) );
+		$base = untrailingslashit( (string) GrowthPilot_Settings::get_value( 'ai_api_base', 'https://api.openai.com/v1' ) ); // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Optional admin endpoint. Requires WordPress 6.0, before wp_ai_client_prompt().
 		$model = (string) GrowthPilot_Settings::get_value( 'ai_model', 'gpt-4o-mini' );
 
 		if ( '' === $key ) {
-			return array( 'error' => __( 'No API key saved.', 'gp_ppros' ) );
+			return array( 'error' => __( 'No API key saved.', 'gp-ppros' ) );
 		}
 
 		$compact = wp_json_encode( $local );
@@ -269,7 +269,7 @@ class GrowthPilot_AI_Brain {
 		$parsed  = json_decode( $content, true );
 
 		if ( ! is_array( $parsed ) ) {
-			return array( 'error' => __( 'The model did not return JSON insights.', 'gp_ppros' ) );
+			return array( 'error' => __( 'The model did not return JSON insights.', 'gp-ppros' ) );
 		}
 
 		$clean = array();

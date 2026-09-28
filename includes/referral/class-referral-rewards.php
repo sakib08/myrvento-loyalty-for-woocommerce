@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Referral → points.
@@ -35,7 +36,7 @@ class GrowthPilot_Referral_Rewards {
 			'referral',
 			array(
 				'source_id'   => $referrer_id,
-				'description' => __( 'Referral welcome bonus', 'gp_ppros' ),
+				'description' => __( 'Referral welcome bonus', 'gp-ppros' ),
 			)
 		);
 
@@ -73,7 +74,7 @@ class GrowthPilot_Referral_Rewards {
 				$id  = GrowthPilot_Referral_Program::upsert( $referrer_id, $code, $referee_id, 'signed_up' );
 				$row = null;
 				global $wpdb;
-				$table = GrowthPilot::table( 'referrals' );
+				$table = esc_sql( GrowthPilot::table( 'referrals' ) );
 				$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		}
@@ -111,7 +112,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral first-order bonus (order %s)', 'gp_ppros' ),
+						__( 'Referral first-order bonus (order %s)', 'gp-ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -120,7 +121,7 @@ class GrowthPilot_Referral_Rewards {
 			if ( ! is_wp_error( $result ) ) {
 				global $wpdb;
 				$wpdb->update(
-					GrowthPilot::table( 'referrals' ),
+					esc_sql( GrowthPilot::table( 'referrals' ) ),
 					array(
 						'status'               => 'rewarded',
 						'attributed_order_id'  => $order->get_id(),
@@ -151,7 +152,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral recurring bonus (order %s)', 'gp_ppros' ),
+						__( 'Referral recurring bonus (order %s)', 'gp-ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -161,7 +162,7 @@ class GrowthPilot_Referral_Rewards {
 				global $wpdb;
 				$wpdb->query(
 					$wpdb->prepare(
-						'UPDATE ' . GrowthPilot::table( 'referrals' ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+						'UPDATE ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 						'rewarded',
 						(int) $row->id
 					)

@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Analytics tracker.
@@ -130,7 +131,7 @@ class GrowthPilot_Analytics_Tracker {
 		$use     = ( 'first' === $touch ) ? $first : $last;
 
 		$wpdb->insert(
-			GrowthPilot::table( 'analytics_events' ),
+			esc_sql( GrowthPilot::table( 'analytics_events' ) ),
 			array(
 				'session_id'   => $session,
 				'customer_id'  => isset( $args['customer_id'] ) ? (int) $args['customer_id'] : ( is_user_logged_in() ? get_current_user_id() : null ),
@@ -352,12 +353,13 @@ class GrowthPilot_Analytics_Tracker {
 	public static function bump_email_stat( $key, $title, $col, $revenue = 0 ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'email_stats' );
+		$table = esc_sql( GrowthPilot::table( 'email_stats' ) );
 		$day   = current_time( 'Y-m-d' );
-		$cols  = array( 'sent', 'opened', 'clicked', 'converted' );
+		$cols = array( 'sent', 'opened', 'clicked', 'converted' );
 		if ( ! in_array( $col, $cols, true ) ) {
 			return;
 		}
+		$col = esc_sql( $col );
 
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(

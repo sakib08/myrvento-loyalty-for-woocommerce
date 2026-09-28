@@ -22,19 +22,19 @@ class GrowthPilot_Settings {
 	public static function defaults() {
 		return array(
 			'earn_order_status'          => 'completed',
-			'points_name'                => __( 'Points', 'gp_ppros' ),
+			'points_name'                => __( 'Points', 'gp-ppros' ),
 			'cookie_days'                => 30,
 			'expiration_days'            => 0,
 			'downgrade_enabled'          => true,
 			'downgrade_window_days'      => 365,
-			'myaccount_loyalty_label'    => __( 'Loyalty', 'gp_ppros' ),
-			'myaccount_referrals_label'  => __( 'Referrals', 'gp_ppros' ),
+			'myaccount_loyalty_label'    => __( 'Loyalty', 'gp-ppros' ),
+			'myaccount_referrals_label'  => __( 'Referrals', 'gp-ppros' ),
 			'social_once'                => true,
 			'referral_param'             => 'gp_ref',
 			'ai_enabled'                 => true,
 			'ai_llm_enabled'             => false,
 			'ai_api_key'                 => '',
-			'ai_api_base'                => 'https://api.openai.com/v1',
+			'ai_api_base'                => 'https://api.openai.com/v1', // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Optional admin endpoint. Requires WordPress 6.0, before wp_ai_client_prompt().
 			'ai_model'                   => 'gpt-4o-mini',
 		);
 	}

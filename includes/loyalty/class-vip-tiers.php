@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * VIP tier engine.
@@ -20,7 +21,7 @@ class GrowthPilot_VIP_Tiers {
 	public static function all() {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'vip_tiers' );
+		$table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY sort_order ASC, id ASC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $rows ? $rows : array();
@@ -35,7 +36,7 @@ class GrowthPilot_VIP_Tiers {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'vip_tiers' );
+		$table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -55,11 +56,11 @@ class GrowthPilot_VIP_Tiers {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'vip_tiers' );
+		$table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$slug  = sanitize_title( $data['slug'] ?? $data['name'] ?? '' );
 
 		if ( '' === $slug ) {
-			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'gp-ppros' ) );
 		}
 
 		$benefits = $data['benefits'] ?? array();
@@ -100,7 +101,7 @@ class GrowthPilot_VIP_Tiers {
 	public static function delete( $id ) {
 		global $wpdb;
 
-		return (bool) $wpdb->delete( GrowthPilot::table( 'vip_tiers' ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'vip_tiers' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -111,7 +112,7 @@ class GrowthPilot_VIP_Tiers {
 	public static function get_default() {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'vip_tiers' );
+		$table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$row   = $wpdb->get_row( "SELECT * FROM {$table} WHERE is_default = 1 ORDER BY sort_order ASC LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( $row ) {
@@ -211,7 +212,7 @@ class GrowthPilot_VIP_Tiers {
 		self::touch_balance_tier( $customer_id, $tier_id );
 
 		$wpdb->insert(
-			GrowthPilot::table( 'customer_tiers' ),
+			esc_sql( GrowthPilot::table( 'customer_tiers' ) ),
 			array(
 				'customer_id'      => (int) $customer_id,
 				'tier_id'          => (int) $tier_id,
@@ -230,7 +231,7 @@ class GrowthPilot_VIP_Tiers {
 	public static function evaluate_all() {
 		global $wpdb;
 
-		$balances = GrowthPilot::table( 'points_balances' );
+		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
 		$ids      = $wpdb->get_col( "SELECT customer_id FROM {$balances}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count    = 0;
 
@@ -285,7 +286,7 @@ class GrowthPilot_VIP_Tiers {
 	private static function touch_balance_tier( $customer_id, $tier_id ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'points_balances' );
+		$table = esc_sql( GrowthPilot::table( 'points_balances' ) );
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT customer_id FROM {$table} WHERE customer_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

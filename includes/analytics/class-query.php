@@ -85,13 +85,7 @@ class GrowthPilot_Analytics_Query {
 	 * @return string
 	 */
 	public static function paid_in() {
-		global $wpdb;
-		$statuses = self::paid_statuses();
-		$quoted   = array();
-		foreach ( $statuses as $status ) {
-			$quoted[] = $wpdb->prepare( '%s', $status );
-		}
-		return implode( ',', $quoted );
+		return "'" . implode( "','", array_map( 'esc_sql', self::paid_statuses() ) ) . "'";
 	}
 
 	/**

@@ -24,7 +24,7 @@ class GrowthPilot_Share {
 		$text = rawurlencode(
 			sprintf(
 				/* translators: %s site name */
-				__( 'Join me at %s and get a welcome bonus.', 'gp_ppros' ),
+				__( 'Join me at %s and get a welcome bonus.', 'gp-ppros' ),
 				wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 			)
 		);

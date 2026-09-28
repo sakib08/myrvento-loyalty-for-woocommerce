@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Installer.
@@ -350,7 +351,7 @@ class GrowthPilot_Installer {
 	public static function seed() {
 		global $wpdb;
 
-		$rules_table = GrowthPilot::table( 'point_rules' );
+		$rules_table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 		$count       = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $count ) {
@@ -379,7 +380,7 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$tiers_table = GrowthPilot::table( 'vip_tiers' );
+		$tiers_table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$tier_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$tiers_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $tier_count ) {
@@ -407,7 +408,7 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$badges_table = GrowthPilot::table( 'badges' );
+		$badges_table = esc_sql( GrowthPilot::table( 'badges' ) );
 		$badge_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$badges_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $badge_count ) {
@@ -436,14 +437,14 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$campaigns = GrowthPilot::table( 'referral_campaigns' );
+		$campaigns = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
 		$camp_n    = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$campaigns}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $camp_n ) {
 			$wpdb->insert(
 				$campaigns,
 				array(
-					'name'                  => __( 'Refer a friend', 'gp_ppros' ),
+					'name'                  => __( 'Refer a friend', 'gp-ppros' ),
 					'enabled'               => 1,
 					'first_order_points'    => 200,
 					'referee_signup_points' => 50,
@@ -453,7 +454,7 @@ class GrowthPilot_Installer {
 			);
 		}
 
-		$rewards = GrowthPilot::table( 'rewards' );
+		$rewards = esc_sql( GrowthPilot::table( 'rewards' ) );
 		$rew_n   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rewards}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $rew_n ) {

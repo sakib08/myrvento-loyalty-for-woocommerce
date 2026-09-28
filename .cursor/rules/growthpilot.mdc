@@ -5,7 +5,7 @@ alwaysApply: true
 
 # GrowthPilot
 
-WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `gp_ppros`, capability `manage_woocommerce`. Display name: GrowthPilot by Ppros.
+WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `gp-ppros`, capability `manage_woocommerce`. Display name: GrowthPilot by Ppros.
 
 ## Names
 

@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Point rules repository.
@@ -21,7 +22,7 @@ class GrowthPilot_Points_Rules {
 	public static function all( $args = array() ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'point_rules' );
+		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 		$sql   = "SELECT * FROM {$table} WHERE 1=1";
 		$params = array();
 
@@ -55,7 +56,7 @@ class GrowthPilot_Points_Rules {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'point_rules' );
+		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -74,7 +75,7 @@ class GrowthPilot_Points_Rules {
 	public static function get_global( $source ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'point_rules' );
+		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -94,7 +95,7 @@ class GrowthPilot_Points_Rules {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'point_rules' );
+		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 
 		$row = array(
 			'name'        => sanitize_text_field( $data['name'] ?? '' ),
@@ -109,7 +110,7 @@ class GrowthPilot_Points_Rules {
 		);
 
 		if ( '' === $row['name'] ) {
-			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'gp-ppros' ) );
 		}
 
 		if ( $id ) {
@@ -130,7 +131,7 @@ class GrowthPilot_Points_Rules {
 	public static function delete( $id ) {
 		global $wpdb;
 
-		return (bool) $wpdb->delete( GrowthPilot::table( 'point_rules' ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'point_rules' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -232,7 +233,7 @@ class GrowthPilot_Points_Rules {
 	private static function object_rules( $object_type, $object_id ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'point_rules' );
+		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(

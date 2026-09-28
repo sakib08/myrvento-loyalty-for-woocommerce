@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Dashboard summary.
@@ -56,10 +57,11 @@ class GrowthPilot_Dashboard {
 	private static function top_products( $range ) {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::products_table();
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id, SUM( p.product_qty ) AS units, SUM( p.product_net_revenue ) AS revenue
@@ -68,11 +70,12 @@ class GrowthPilot_Dashboard {
 				 WHERE p.date_created BETWEEN %s AND %s AND s.status IN ({$paid})
 				 GROUP BY p.product_id
 				 ORDER BY revenue DESC
-				 LIMIT 5", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 5",
 				$range['from_sql'],
 				$range['to_sql']
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {

@@ -19,7 +19,7 @@ $tier      = $balance->tier_id ? GrowthPilot_VIP_Tiers::get( (int) $balance->tie
 $rewards   = GrowthPilot_Rewards::all( true );
 $badges    = GrowthPilot_Gamification::customer_badges( $user_id );
 $challenges = GrowthPilot_Gamification::customer_challenges( $user_id );
-$points_name = GrowthPilot_Settings::get_value( 'points_name', __( 'Points', 'gp_ppros' ) );
+$points_name = GrowthPilot_Settings::get_value( 'points_name', __( 'Points', 'gp-ppros' ) );
 $birthday    = get_user_meta( $user_id, 'gp_birthday', true );
 $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_id, 'per_page' => 10 ) );
 ?>
@@ -32,7 +32,7 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 				<?php
 				printf(
 					/* translators: 1: lifetime earned, 2: points name */
-					esc_html__( '%1$s lifetime %2$s', 'gp_ppros' ),
+					esc_html__( '%1$s lifetime %2$s', 'gp-ppros' ),
 					esc_html( number_format_i18n( (int) $balance->lifetime_earned ) ),
 					esc_html( strtolower( $points_name ) )
 				);
@@ -58,13 +58,13 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 
 	<form class="gp-ppros-account__birthday" data-gp-ppros-birthday>
 		<label>
-			<?php esc_html_e( 'Birthday', 'gp_ppros' ); ?>
+			<?php esc_html_e( 'Birthday', 'gp-ppros' ); ?>
 			<input type="date" name="birthday" value="<?php echo $birthday ? esc_attr( wp_date( 'Y' ) . '-' . $birthday ) : ''; ?>">
 		</label>
-		<button type="submit"><?php esc_html_e( 'Save', 'gp_ppros' ); ?></button>
+		<button type="submit"><?php esc_html_e( 'Save', 'gp-ppros' ); ?></button>
 	</form>
 
-	<h3><?php esc_html_e( 'Rewards', 'gp_ppros' ); ?></h3>
+	<h3><?php esc_html_e( 'Rewards', 'gp-ppros' ); ?></h3>
 	<div class="gp-ppros-account__grid">
 		<?php foreach ( $rewards as $reward ) : ?>
 			<div class="gp-ppros-account__card">
@@ -76,14 +76,14 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 					data-gp-ppros-redeem="<?php echo esc_attr( (string) $reward->id ); ?>"
 					<?php disabled( (int) $balance->available < (int) $reward->points_cost ); ?>
 				>
-					<?php esc_html_e( 'Redeem', 'gp_ppros' ); ?>
+					<?php esc_html_e( 'Redeem', 'gp-ppros' ); ?>
 				</button>
 			</div>
 		<?php endforeach; ?>
 	</div>
 
 	<?php if ( $challenges ) : ?>
-		<h3><?php esc_html_e( 'Challenges', 'gp_ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Challenges', 'gp-ppros' ); ?></h3>
 		<?php foreach ( $challenges as $challenge ) : ?>
 			<?php
 			$pct = $challenge['target_value'] > 0
@@ -101,7 +101,7 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 	<?php endif; ?>
 
 	<?php if ( $badges ) : ?>
-		<h3><?php esc_html_e( 'Badges', 'gp_ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Badges', 'gp-ppros' ); ?></h3>
 		<ul class="gp-ppros-account__badges">
 			<?php foreach ( $badges as $badge ) : ?>
 				<li><?php echo esc_html( $badge->name ); ?></li>
@@ -109,12 +109,12 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 		</ul>
 	<?php endif; ?>
 
-	<h3><?php esc_html_e( 'History', 'gp_ppros' ); ?></h3>
+	<h3><?php esc_html_e( 'History', 'gp-ppros' ); ?></h3>
 	<table class="shop_table">
 		<thead>
 			<tr>
-				<th><?php esc_html_e( 'Date', 'gp_ppros' ); ?></th>
-				<th><?php esc_html_e( 'Description', 'gp_ppros' ); ?></th>
+				<th><?php esc_html_e( 'Date', 'gp-ppros' ); ?></th>
+				<th><?php esc_html_e( 'Description', 'gp-ppros' ); ?></th>
 				<th><?php echo esc_html( $points_name ); ?></th>
 			</tr>
 		</thead>
@@ -127,19 +127,19 @@ $redemptions = GrowthPilot_Rewards::redemptions( array( 'customer_id' => $user_i
 				</tr>
 			<?php endforeach; ?>
 			<?php if ( empty( $history['items'] ) ) : ?>
-				<tr><td colspan="3"><?php esc_html_e( 'No points activity yet.', 'gp_ppros' ); ?></td></tr>
+				<tr><td colspan="3"><?php esc_html_e( 'No points activity yet.', 'gp-ppros' ); ?></td></tr>
 			<?php endif; ?>
 		</tbody>
 	</table>
 
 	<?php if ( ! empty( $redemptions['items'] ) ) : ?>
-		<h3><?php esc_html_e( 'Redeemed rewards', 'gp_ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Redeemed rewards', 'gp-ppros' ); ?></h3>
 		<table class="shop_table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Date', 'gp_ppros' ); ?></th>
-					<th><?php esc_html_e( 'Coupon', 'gp_ppros' ); ?></th>
-					<th><?php esc_html_e( 'Points', 'gp_ppros' ); ?></th>
+					<th><?php esc_html_e( 'Date', 'gp-ppros' ); ?></th>
+					<th><?php esc_html_e( 'Coupon', 'gp-ppros' ); ?></th>
+					<th><?php esc_html_e( 'Points', 'gp-ppros' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>

@@ -153,7 +153,7 @@ function growthpilot_demo_sweep( $ts ) {
 		foreach ( $cols as $col ) {
 			$wpdb->query(
 				$wpdb->prepare(
-					'UPDATE ' . GrowthPilot::table( $table ) . " SET {$col} = %s WHERE {$col} >= %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					'UPDATE ' . esc_sql( GrowthPilot::table( $table ) ) . " SET {$col} = %s WHERE {$col} >= %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$when,
 					$since
 				)
@@ -487,7 +487,7 @@ function growthpilot_demo_seed() {
 		}
 	}
 	growthpilot_demo_bulk_insert(
-		GrowthPilot::table( 'referral_clicks' ),
+		esc_sql( GrowthPilot::table( 'referral_clicks' ) ),
 		array(
 			'code'         => '%s',
 			'campaign_id'  => '%d',
@@ -835,7 +835,7 @@ function growthpilot_demo_seed() {
 	}
 
 	growthpilot_demo_bulk_insert(
-		GrowthPilot::table( 'analytics_events' ),
+		esc_sql( GrowthPilot::table( 'analytics_events' ) ),
 		array(
 			'session_id'   => '%s',
 			'customer_id'  => '%d',
@@ -853,19 +853,19 @@ function growthpilot_demo_seed() {
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . GrowthPilot::table( 'analytics_events' ) . ' SET customer_id = NULL WHERE customer_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET customer_id = NULL WHERE customer_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . GrowthPilot::table( 'analytics_events' ) . ' SET product_id = NULL WHERE product_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET product_id = NULL WHERE product_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . GrowthPilot::table( 'analytics_events' ) . ' SET order_id = NULL WHERE order_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET order_id = NULL WHERE order_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
@@ -1017,7 +1017,7 @@ function growthpilot_demo_seed() {
 			);
 		}
 	}
-	$email_table = GrowthPilot::table( 'email_stats' );
+	$email_table = esc_sql( GrowthPilot::table( 'email_stats' ) );
 	$before      = (int) $wpdb->get_var( "SELECT COALESCE(MAX(id), 0) FROM {$email_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	growthpilot_demo_bulk_insert(
 		$email_table,
@@ -1113,7 +1113,7 @@ function growthpilot_demo_reset() {
 		$placeholders = implode( ',', array_fill( 0, count( $users ), '%d' ) );
 		$coupon_ids   = $wpdb->get_col(
 			$wpdb->prepare(
-				'SELECT coupon_id FROM ' . GrowthPilot::table( 'redemptions' ) . " WHERE coupon_id IS NOT NULL AND customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT coupon_id FROM ' . esc_sql( GrowthPilot::table( 'redemptions' ) ) . " WHERE coupon_id IS NOT NULL AND customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$users
 			)
 		);
@@ -1140,17 +1140,17 @@ function growthpilot_demo_reset() {
 	}
 
 	foreach ( array( 'points_ledger', 'points_balances', 'customer_tiers', 'customer_badges', 'challenge_progress', 'redemptions' ) as $table ) {
-		growthpilot_demo_delete_in( GrowthPilot::table( $table ), 'customer_id', $users );
+		growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( $table ) ), 'customer_id', $users );
 	}
-	growthpilot_demo_delete_in( GrowthPilot::table( 'referrals' ), 'referrer_id', $users );
-	growthpilot_demo_delete_in( GrowthPilot::table( 'referrals' ), 'referee_id', $users );
-	growthpilot_demo_delete_in( GrowthPilot::table( 'challenge_progress' ), 'challenge_id', $seed['challenges'] );
-	growthpilot_demo_delete_in( GrowthPilot::table( 'challenges' ), 'id', $seed['challenges'] );
-	growthpilot_demo_delete_in( GrowthPilot::table( 'email_stats' ), 'id', $seed['email_stats'] );
+	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'referrals' ) ), 'referrer_id', $users );
+	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'referrals' ) ), 'referee_id', $users );
+	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'challenge_progress' ) ), 'challenge_id', $seed['challenges'] );
+	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'challenges' ) ), 'id', $seed['challenges'] );
+	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'email_stats' ) ), 'id', $seed['email_stats'] );
 
 	$like = $wpdb->esc_like( 'demo-' ) . '%';
-	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . GrowthPilot::table( 'analytics_events' ) . ' WHERE session_id LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . GrowthPilot::table( 'referral_clicks' ) . ' WHERE visitor_hash LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' WHERE session_id LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'referral_clicks' ) ) . ' WHERE visitor_hash LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 	foreach ( array_merge( $seed['coupons'], array_map( 'intval', $coupon_ids ) ) as $coupon_id ) {
 		wp_delete_post( (int) $coupon_id, true );
@@ -1189,7 +1189,7 @@ function growthpilot_demo_reset() {
 		}
 	}
 
-	$wpdb->query( 'DELETE FROM ' . GrowthPilot::table( 'ai_predictions' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'ai_predictions' ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	delete_option( growthpilot_demo_option() );
 	GrowthPilot_AI_Engine::flush();
 	\Automattic\WooCommerce\Admin\API\Reports\Cache::invalidate();

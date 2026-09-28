@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Gamification routes.
@@ -233,7 +234,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	private static function get_badge( $id ) {
 		global $wpdb;
-		$table = GrowthPilot::table( 'badges' );
+		$table = esc_sql( GrowthPilot::table( 'badges' ) );
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
@@ -245,7 +246,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	private static function get_challenge( $id ) {
 		global $wpdb;
-		$table = GrowthPilot::table( 'challenges' );
+		$table = esc_sql( GrowthPilot::table( 'challenges' ) );
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 

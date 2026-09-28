@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Rewards.
@@ -21,7 +22,7 @@ class GrowthPilot_Rewards {
 	public static function all( $enabled_only = false ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'rewards' );
+		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
 		$sql   = "SELECT * FROM {$table}";
 		if ( $enabled_only ) {
 			$sql .= ' WHERE enabled = 1';
@@ -41,7 +42,7 @@ class GrowthPilot_Rewards {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'rewards' );
+		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -60,11 +61,11 @@ class GrowthPilot_Rewards {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'rewards' );
+		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'gp-ppros' ) );
 		}
 
 		$row = array(
@@ -95,7 +96,7 @@ class GrowthPilot_Rewards {
 	 */
 	public static function delete( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( GrowthPilot::table( 'rewards' ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'rewards' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -110,11 +111,11 @@ class GrowthPilot_Rewards {
 
 		$reward = self::get( $reward_id );
 		if ( ! $reward || ! $reward->enabled ) {
-			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'gp-ppros' ) );
 		}
 
 		if ( null !== $reward->stock && (int) $reward->redeemed_count >= (int) $reward->stock ) {
-			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'gp_ppros' ) );
+			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'gp-ppros' ) );
 		}
 
 		$balance = GrowthPilot_Points_Ledger::get_balance( $customer_id );
@@ -122,7 +123,7 @@ class GrowthPilot_Rewards {
 			$required = GrowthPilot_VIP_Tiers::get( (int) $reward->tier_id );
 			$current  = $balance->tier_id ? GrowthPilot_VIP_Tiers::get( (int) $balance->tier_id ) : null;
 			if ( $required && ( ! $current || (int) $current->sort_order < (int) $required->sort_order ) ) {
-				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'gp_ppros' ) );
+				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'gp-ppros' ) );
 			}
 		}
 
@@ -137,7 +138,7 @@ class GrowthPilot_Rewards {
 					'source_id'   => (int) $reward->id,
 					'description' => sprintf(
 						/* translators: %s reward name */
-						__( 'Redeemed: %s', 'gp_ppros' ),
+						__( 'Redeemed: %s', 'gp-ppros' ),
 						$reward->name
 					),
 				)
@@ -155,7 +156,7 @@ class GrowthPilot_Rewards {
 		$coupon = self::create_coupon( $reward, $config, $user );
 
 		$wpdb->insert(
-			GrowthPilot::table( 'redemptions' ),
+			esc_sql( GrowthPilot::table( 'redemptions' ) ),
 			array(
 				'customer_id'  => $customer_id,
 				'reward_id'    => (int) $reward->id,
@@ -172,7 +173,7 @@ class GrowthPilot_Rewards {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE " . GrowthPilot::table( 'rewards' ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"UPDATE " . esc_sql( GrowthPilot::table( 'rewards' ) ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				(int) $reward->id
 			)
 		);
@@ -291,7 +292,7 @@ class GrowthPilot_Rewards {
 	public static function redemptions( $args = array() ) {
 		global $wpdb;
 
-		$table    = GrowthPilot::table( 'redemptions' );
+		$table    = esc_sql( GrowthPilot::table( 'redemptions' ) );
 		$where    = '1=1';
 		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );

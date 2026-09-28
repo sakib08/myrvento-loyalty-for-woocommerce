@@ -149,8 +149,8 @@ class GrowthPilot_AI_Forecast {
 				'curve'   => $peak,
 				'history' => $monthly,
 				'note'    => count( $monthly ) < 6
-					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'gp_ppros' )
-					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'gp_ppros' ),
+					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'gp-ppros' )
+					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'gp-ppros' ),
 			),
 			'summary'      => array(
 				'stockout_risk' => $stockout,

@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Marketing intelligence.
@@ -38,13 +39,13 @@ class GrowthPilot_Analytics_Marketing {
 	public static function funnel( $range ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'analytics_events' );
+		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
 		$steps = array(
-			'visit'        => __( 'Visitors', 'gp_ppros' ),
-			'product_view' => __( 'Product views', 'gp_ppros' ),
-			'add_to_cart'  => __( 'Add to cart', 'gp_ppros' ),
-			'checkout'     => __( 'Checkout', 'gp_ppros' ),
-			'purchase'     => __( 'Purchase', 'gp_ppros' ),
+			'visit'        => __( 'Visitors', 'gp-ppros' ),
+			'product_view' => __( 'Product views', 'gp-ppros' ),
+			'add_to_cart'  => __( 'Add to cart', 'gp-ppros' ),
+			'checkout'     => __( 'Checkout', 'gp-ppros' ),
+			'purchase'     => __( 'Purchase', 'gp-ppros' ),
 		);
 
 		$out      = array();
@@ -104,9 +105,10 @@ class GrowthPilot_Analytics_Marketing {
 	public static function attribution( $range ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'analytics_events' );
+		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
 
 		$build = static function ( $touch ) use ( $wpdb, $table, $range ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -115,12 +117,13 @@ class GrowthPilot_Analytics_Marketing {
 					 WHERE event_type = 'purchase' AND touch = %s AND created_at BETWEEN %s AND %s AND order_id IS NOT NULL
 					 GROUP BY source
 					 ORDER BY orders DESC
-					 LIMIT 12", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					 LIMIT 12",
 					$touch,
 					$range['from_sql'],
 					$range['to_sql']
 				)
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			$out = array();
 			foreach ( $rows ? $rows : array() as $row ) {
@@ -132,6 +135,7 @@ class GrowthPilot_Analytics_Marketing {
 			return $out;
 		};
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 		$multi = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -140,11 +144,12 @@ class GrowthPilot_Analytics_Marketing {
 				 WHERE created_at BETWEEN %s AND %s AND event_type IN ('visit','product_view','add_to_cart','checkout','purchase')
 				 GROUP BY source
 				 ORDER BY touches DESC
-				 LIMIT 12", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 12",
 				$range['from_sql'],
 				$range['to_sql']
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$multi_out = array();
 		foreach ( $multi ? $multi : array() as $row ) {
@@ -156,7 +161,7 @@ class GrowthPilot_Analytics_Marketing {
 
 		$referral_orders = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . GrowthPilot::table( 'referrals' ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$range['from_sql'],
 				$range['to_sql']
 			)
@@ -180,15 +185,15 @@ class GrowthPilot_Analytics_Marketing {
 		global $wpdb;
 
 		$campaigns = GrowthPilot_Referral_Program::campaigns();
-		$ledger    = GrowthPilot::table( 'points_ledger' );
-		$stats     = GrowthPilot_Analytics_Query::stats_table();
-		$paid      = GrowthPilot_Analytics_Query::paid_in();
+		$ledger    = esc_sql( GrowthPilot::table( 'points_ledger' ) );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid      = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$out       = array();
 
 		foreach ( $campaigns as $campaign ) {
 			$referrals = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT attributed_order_id FROM ' . GrowthPilot::table( 'referrals' ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT attributed_order_id FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id
 				)
 			);
@@ -223,7 +228,7 @@ class GrowthPilot_Analytics_Marketing {
 
 			$signups = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . GrowthPilot::table( 'referrals' ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -233,7 +238,7 @@ class GrowthPilot_Analytics_Marketing {
 
 			$clicks = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . GrowthPilot::table( 'referral_clicks' ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referral_clicks' ) ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -264,7 +269,8 @@ class GrowthPilot_Analytics_Marketing {
 	public static function coupons( $range ) {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::coupons_table();
+		$table = esc_sql( GrowthPilot_Analytics_Query::coupons_table() );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Coupon lookup table name is trusted.
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT coupon_id, COUNT(DISTINCT order_id) AS orders, SUM(discount_amount) AS discount
@@ -272,11 +278,12 @@ class GrowthPilot_Analytics_Marketing {
 				 WHERE date_created BETWEEN %s AND %s
 				 GROUP BY coupon_id
 				 ORDER BY discount DESC
-				 LIMIT 15", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 15",
 				$range['from_sql'],
 				$range['to_sql']
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -301,7 +308,8 @@ class GrowthPilot_Analytics_Marketing {
 	public static function email( $range ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'email_stats' );
+		$table = esc_sql( GrowthPilot::table( 'email_stats' ) );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT email_key, email_title,
@@ -313,11 +321,12 @@ class GrowthPilot_Analytics_Marketing {
 				 FROM {$table}
 				 WHERE stat_date BETWEEN %s AND %s
 				 GROUP BY email_key, email_title
-				 ORDER BY sent DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 ORDER BY sent DESC",
 				$range['from'],
 				$range['to']
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out     = array();
 		$sent    = 0;

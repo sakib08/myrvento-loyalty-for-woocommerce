@@ -83,7 +83,6 @@ final class GrowthPilot {
 		register_deactivation_hook( GROWTHPILOT_FILE, array( 'GrowthPilot_Installer', 'deactivate' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}
 
 	/**
@@ -124,22 +123,13 @@ final class GrowthPilot {
 	}
 
 	/**
-	 * Load translations.
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'gp_ppros', false, dirname( plugin_basename( GROWTHPILOT_FILE ) ) . '/languages' );
-	}
-
-	/**
 	 * Admin notice when WooCommerce is missing.
 	 *
 	 * @return void
 	 */
 	public function missing_woocommerce_notice() {
 		echo '<div class="notice notice-error"><p>';
-		echo esc_html__( 'GrowthPilot by Ppros requires WooCommerce to be installed and active.', 'gp_ppros' );
+		echo esc_html__( 'GrowthPilot by Ppros requires WooCommerce to be installed and active.', 'gp-ppros' );
 		echo '</p></div>';
 	}
 

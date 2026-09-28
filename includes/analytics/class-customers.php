@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Customer intelligence.
@@ -36,15 +37,17 @@ class GrowthPilot_Analytics_Customers {
 	public static function cohorts() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$first = $wpdb->get_results(
 			"SELECT customer_id, MIN(date_created) AS first_order, DATE_FORMAT(MIN(date_created), '%Y-%m') AS cohort
 			 FROM {$stats}
 			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 GROUP BY customer_id"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $first ) {
 			return array();
@@ -55,11 +58,13 @@ class GrowthPilot_Analytics_Customers {
 			$by_customer[ (int) $row->customer_id ] = $row;
 		}
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$orders = $wpdb->get_results(
 			"SELECT customer_id, date_created, net_total
 			 FROM {$stats}
-			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$cohorts = array();
 		foreach ( $orders ? $orders : array() as $order ) {
@@ -129,16 +134,18 @@ class GrowthPilot_Analytics_Customers {
 	public static function retention() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			"SELECT customer_id, COUNT(*) AS orders, MIN(date_created) AS first_order, MAX(date_created) AS last_order,
 				TIMESTAMPDIFF(DAY, MIN(date_created), MAX(date_created)) AS span_days
 			 FROM {$stats}
 			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 GROUP BY customer_id"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$total = count( $rows ? $rows : array() );
 		$second = 0;
@@ -181,19 +188,21 @@ class GrowthPilot_Analytics_Customers {
 	public static function churn() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$now   = current_time( 'mysql' );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id, MAX(date_created) AS last_order, TIMESTAMPDIFF(DAY, MAX(date_created), %s) AS days_since
 				 FROM {$stats}
 				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-				 GROUP BY customer_id", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 GROUP BY customer_id",
 				$now
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$active  = 0;
 		$risk    = 0;
@@ -214,7 +223,7 @@ class GrowthPilot_Analytics_Customers {
 						'email'       => $user['email'],
 						'last_order'  => $row->last_order,
 						'days_since'  => $days,
-						'reason'      => __( 'No purchase in 60+ days', 'gp_ppros' ),
+						'reason'      => __( 'No purchase in 60+ days', 'gp-ppros' ),
 					);
 				}
 			} else {
@@ -241,9 +250,10 @@ class GrowthPilot_Analytics_Customers {
 	public static function segments() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$customers = $wpdb->get_results(
 			"SELECT customer_id,
 				COUNT(*) AS orders,
@@ -252,22 +262,25 @@ class GrowthPilot_Analytics_Customers {
 				TIMESTAMPDIFF(DAY, MAX(date_created), UTC_TIMESTAMP()) AS days_since
 			 FROM {$stats}
 			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 GROUP BY customer_id"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$coupons_table = GrowthPilot_Analytics_Query::coupons_table();
-		$stats_join    = GrowthPilot_Analytics_Query::stats_table();
+		$coupons_table = esc_sql( GrowthPilot_Analytics_Query::coupons_table() );
+		$stats_join    = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- Lookup table names are trusted.
 		$coupon_users  = $wpdb->get_col(
 			"SELECT DISTINCT s.customer_id FROM {$coupons_table} c
 			 INNER JOIN {$stats_join} s ON s.order_id = c.order_id
 			 WHERE s.customer_id > 0"
-		); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		$coupon_set   = array_flip( array_map( 'intval', $coupon_users ? $coupon_users : array() ) );
 
-		$referred = $wpdb->get_col( 'SELECT DISTINCT referee_id FROM ' . GrowthPilot::table( 'referrals' ) . ' WHERE referee_id IS NOT NULL' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$referred = $wpdb->get_col( 'SELECT DISTINCT referee_id FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE referee_id IS NOT NULL' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$ref_set  = array_flip( array_map( 'intval', $referred ? $referred : array() ) );
 
-		$vip_ids = $wpdb->get_col( 'SELECT customer_id FROM ' . GrowthPilot::table( 'points_balances' ) . ' WHERE tier_id IS NOT NULL' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$vip_ids = $wpdb->get_col( 'SELECT customer_id FROM ' . esc_sql( GrowthPilot::table( 'points_balances' ) ) . ' WHERE tier_id IS NOT NULL' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$vip_set = array_flip( array_map( 'intval', $vip_ids ? $vip_ids : array() ) );
 
 		$revenues = array();
@@ -346,7 +359,7 @@ class GrowthPilot_Analytics_Customers {
 	private static function customer_label( $customer_id ) {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::customers_table();
+		$table = esc_sql( GrowthPilot_Analytics_Query::customers_table() );
 		$row   = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT first_name, last_name, email, user_id FROM {$table} WHERE customer_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

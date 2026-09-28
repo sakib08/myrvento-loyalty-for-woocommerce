@@ -78,10 +78,10 @@ class GrowthPilot_AI_Predict {
 			$label      = isset( $labels[ $cid ] ) ? $labels[ $cid ] : array( 'name' => '#' . $cid, 'email' => '' );
 
 			$reason_churn = $days <= 60
-				? __( 'Still inside a typical repurchase window.', 'gp_ppros' )
+				? __( 'Still inside a typical repurchase window.', 'gp-ppros' )
 				: sprintf(
 					/* translators: 1: days since order, 2: expected gap */
-					__( 'No order in %1$d days; typical gap is %2$d days.', 'gp_ppros' ),
+					__( 'No order in %1$d days; typical gap is %2$d days.', 'gp-ppros' ),
 					$days,
 					(int) round( $expected )
 				);
@@ -116,8 +116,8 @@ class GrowthPilot_AI_Predict {
 					'product_id'       => $sku['product_id'],
 					'reason'           => sprintf(
 						/* translators: 1: product name, 2: expected days */
-						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'gp_ppros' ),
-						$sku['name'] ? $sku['name'] : __( 'their usual items', 'gp_ppros' ),
+						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'gp-ppros' ),
+						$sku['name'] ? $sku['name'] : __( 'their usual items', 'gp-ppros' ),
 						(int) round( $expected )
 					),
 				)
@@ -132,7 +132,7 @@ class GrowthPilot_AI_Predict {
 					'is_high_value'   => $revenue >= $cutoff && $cutoff > 0,
 					'reason'          => sprintf(
 						/* translators: score */
-						__( 'RFM value score %s (recency, frequency, spend).', 'gp_ppros' ),
+						__( 'RFM value score %s (recency, frequency, spend).', 'gp-ppros' ),
 						number_format_i18n( $value, 1 )
 					),
 				)

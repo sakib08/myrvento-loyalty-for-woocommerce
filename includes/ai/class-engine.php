@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * AI engine helpers.
@@ -73,7 +74,7 @@ class GrowthPilot_AI_Engine {
 	public static function persist( $kind, $rows ) {
 		global $wpdb;
 
-		$table = GrowthPilot::table( 'ai_predictions' );
+		$table = esc_sql( GrowthPilot::table( 'ai_predictions' ) );
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		if ( $found !== $table ) {
 			return;
@@ -106,10 +107,11 @@ class GrowthPilot_AI_Engine {
 	public static function customer_features() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$now   = current_time( 'mysql' );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id,
@@ -124,10 +126,11 @@ class GrowthPilot_AI_Engine {
 				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
 				 GROUP BY customer_id
 				 ORDER BY revenue DESC
-				 LIMIT 250", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 250",
 				$now
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$rows = $rows ? $rows : array();
 		$gaps = array();
@@ -170,9 +173,9 @@ class GrowthPilot_AI_Engine {
 			return array();
 		}
 
-		$table        = GrowthPilot_Analytics_Query::products_table();
-		$stats        = GrowthPilot_Analytics_Query::stats_table();
-		$paid         = GrowthPilot_Analytics_Query::paid_in();
+		$table        = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats        = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid         = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$placeholders = implode( ',', array_fill( 0, count( $customer_ids ), '%d' ) );
 
 		$sql = "SELECT p.customer_id, p.product_id, p.date_created
@@ -207,12 +210,13 @@ class GrowthPilot_AI_Engine {
 	public static function product_sales() {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::products_table();
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$from  = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
-		return $wpdb->get_results(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
+		$sales = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id,
 					SUM(p.product_qty) AS units,
@@ -225,10 +229,13 @@ class GrowthPilot_AI_Engine {
 				 WHERE p.date_created >= %s AND s.status IN ({$paid})
 				 GROUP BY p.product_id
 				 ORDER BY units DESC
-				 LIMIT 120", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT 120",
 				$from
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $sales;
 	}
 
 	/**
@@ -239,21 +246,23 @@ class GrowthPilot_AI_Engine {
 	public static function product_monthly() {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::products_table();
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$from  = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id, DATE_FORMAT(p.date_created, '%%Y-%%m') AS ym, SUM(p.product_qty) AS units
 				 FROM {$table} p
 				 INNER JOIN {$stats} s ON s.order_id = p.order_id
 				 WHERE p.date_created >= %s AND s.status IN ({$paid})
-				 GROUP BY p.product_id, ym", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 GROUP BY p.product_id, ym",
 				$from
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -275,10 +284,11 @@ class GrowthPilot_AI_Engine {
 	public static function store_monthly() {
 		global $wpdb;
 
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 		$from  = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DATE_FORMAT(date_created, '%%Y-%%m') AS ym,
@@ -288,10 +298,11 @@ class GrowthPilot_AI_Engine {
 				 FROM {$stats}
 				 WHERE date_created >= %s AND ( status IN ({$paid}) OR parent_id > 0 )
 				 GROUP BY ym
-				 ORDER BY ym ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 ORDER BY ym ASC",
 				$from
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -320,11 +331,11 @@ class GrowthPilot_AI_Engine {
 			return array();
 		}
 
-		$table        = GrowthPilot_Analytics_Query::customers_table();
+		$table        = esc_sql( GrowthPilot_Analytics_Query::customers_table() );
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 		$rows         = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT customer_id, first_name, last_name, email, user_id FROM {$table} WHERE customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT customer_id, first_name, last_name, email, user_id FROM {$table} WHERE customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$ids
 			)
 		);

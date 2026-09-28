@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Product intelligence.
@@ -50,10 +51,11 @@ class GrowthPilot_Analytics_Products {
 	public static function sold( $from, $to ) {
 		global $wpdb;
 
-		$table = GrowthPilot_Analytics_Query::products_table();
-		$stats = GrowthPilot_Analytics_Query::stats_table();
-		$paid  = GrowthPilot_Analytics_Query::paid_in();
+		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id,
@@ -68,11 +70,12 @@ class GrowthPilot_Analytics_Products {
 					AND s.status IN ({$paid})
 				GROUP BY p.product_id
 				ORDER BY revenue DESC
-				LIMIT 100", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				LIMIT 100",
 				$from,
 				$to
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -81,14 +84,16 @@ class GrowthPilot_Analytics_Products {
 				continue;
 			}
 
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table name is trusted.
 			$repeat = (int) $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM (
 						SELECT customer_id FROM {$table} WHERE product_id = %d AND customer_id > 0 GROUP BY customer_id HAVING COUNT(DISTINCT order_id) > 1
-					) t", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					) t",
 					(int) $row->product_id
 				)
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			$cost    = self::unit_cost( $product );
 			$units   = (int) $row->units;

@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Referral tracking.
@@ -82,7 +83,7 @@ class GrowthPilot_Referral_Tracking {
 		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
 		$wpdb->insert(
-			GrowthPilot::table( 'referral_clicks' ),
+			esc_sql( GrowthPilot::table( 'referral_clicks' ) ),
 			array(
 				'code'        => $code,
 				'campaign_id' => $campaign_id ? $campaign_id : null,

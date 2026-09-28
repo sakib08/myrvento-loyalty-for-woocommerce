@@ -6,6 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables have no core API.
 
 /**
  * Customers routes.
@@ -54,8 +55,8 @@ class GrowthPilot_REST_Customers {
 		$per_page = min( 100, max( 1, (int) $request->get_param( 'per_page' ) ?: 20 ) );
 		$search   = sanitize_text_field( (string) $request->get_param( 'search' ) );
 		$offset   = ( $page - 1 ) * $per_page;
-		$balances = GrowthPilot::table( 'points_balances' );
-		$tiers    = GrowthPilot::table( 'vip_tiers' );
+		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
+		$tiers    = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$users    = $wpdb->users;
 
 		$where  = '1=1';
@@ -120,7 +121,7 @@ class GrowthPilot_REST_Customers {
 		$user = get_userdata( $id );
 
 		if ( ! $user ) {
-			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'gp_ppros' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'gp-ppros' ) ), 404 );
 		}
 
 		$balance  = GrowthPilot_Points_Ledger::get_balance( $id );
