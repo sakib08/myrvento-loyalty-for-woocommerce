@@ -107,11 +107,12 @@ class GrowthPilot_AI_Engine {
 	public static function customer_features() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$now   = current_time( 'mysql' );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$now       = current_time( 'mysql' );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id,
@@ -123,14 +124,14 @@ class GrowthPilot_AI_Engine {
 					TIMESTAMPDIFF(DAY, MIN(date_created), MAX(date_created)) AS span_days,
 					TIMESTAMPDIFF(DAY, MAX(date_created), %s) AS days_since
 				 FROM {$stats}
-				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
 				 GROUP BY customer_id
 				 ORDER BY revenue DESC
 				 LIMIT 250",
-				$now
+				array_merge( array( $now ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$rows = $rows ? $rows : array();
 		$gaps = array();
@@ -175,16 +176,19 @@ class GrowthPilot_AI_Engine {
 
 		$table        = esc_sql( GrowthPilot_Analytics_Query::products_table() );
 		$stats        = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid         = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$statuses     = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in    = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$placeholders = implode( ',', array_fill( 0, count( $customer_ids ), '%d' ) );
 
 		$sql = "SELECT p.customer_id, p.product_id, p.date_created
 			FROM {$table} p
 			INNER JOIN {$stats} s ON s.order_id = p.order_id
-			WHERE p.customer_id IN ({$placeholders}) AND s.status IN ({$paid})
+			WHERE p.customer_id IN ({$placeholders}) AND s.status IN ({$status_in})
 			ORDER BY p.date_created DESC";
 
-		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $customer_ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. IN lists are generated placeholders.
+		$rows = $wpdb->get_results( $wpdb->prepare( $sql, array_merge( $customer_ids, $statuses ) ) );
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 		$out  = array();
 
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -210,12 +214,13 @@ class GrowthPilot_AI_Engine {
 	public static function product_sales() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$from  = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
+		$table     = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$from      = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.
 		$sales = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id,
@@ -226,14 +231,14 @@ class GrowthPilot_AI_Engine {
 					COUNT(DISTINCT p.customer_id) AS buyers
 				 FROM {$table} p
 				 INNER JOIN {$stats} s ON s.order_id = p.order_id
-				 WHERE p.date_created >= %s AND s.status IN ({$paid})
+				 WHERE p.date_created >= %s AND s.status IN ({$status_in})
 				 GROUP BY p.product_id
 				 ORDER BY units DESC
 				 LIMIT 120",
-				$from
+				array_merge( array( $from ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		return $sales;
 	}
@@ -246,23 +251,24 @@ class GrowthPilot_AI_Engine {
 	public static function product_monthly() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$from  = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
+		$table     = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$from      = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id, DATE_FORMAT(p.date_created, '%%Y-%%m') AS ym, SUM(p.product_qty) AS units
 				 FROM {$table} p
 				 INNER JOIN {$stats} s ON s.order_id = p.order_id
-				 WHERE p.date_created >= %s AND s.status IN ({$paid})
+				 WHERE p.date_created >= %s AND s.status IN ({$status_in})
 				 GROUP BY p.product_id, ym",
-				$from
+				array_merge( array( $from ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
@@ -284,11 +290,12 @@ class GrowthPilot_AI_Engine {
 	public static function store_monthly() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$from  = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$from      = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DATE_FORMAT(date_created, '%%Y-%%m') AS ym,
@@ -296,13 +303,13 @@ class GrowthPilot_AI_Engine {
 					COALESCE(SUM(CASE WHEN parent_id = 0 THEN num_items_sold ELSE 0 END), 0) AS units,
 					COALESCE(SUM(CASE WHEN parent_id = 0 THEN 1 ELSE 0 END), 0) AS orders
 				 FROM {$stats}
-				 WHERE date_created >= %s AND ( status IN ({$paid}) OR parent_id > 0 )
+				 WHERE date_created >= %s AND ( status IN ({$status_in}) OR parent_id > 0 )
 				 GROUP BY ym
 				 ORDER BY ym ASC",
-				$from
+				array_merge( array( $from ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {

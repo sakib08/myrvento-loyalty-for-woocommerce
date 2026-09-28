@@ -262,33 +262,34 @@ class GrowthPilot_Referral_Program {
 		global $wpdb;
 
 		$table    = esc_sql( GrowthPilot::table( 'referrals' ) );
-		$where    = array( '1=1' );
-		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
+		$status   = ! empty( $args['status'] ) ? sanitize_key( $args['status'] ) : '';
+		$referrer = ! empty( $args['referrer_id'] ) ? (int) $args['referrer_id'] : 0;
 
-		if ( ! empty( $args['status'] ) ) {
-			$where[]  = 'status = %s';
-			$params[] = sanitize_key( $args['status'] );
-		}
-
-		if ( ! empty( $args['referrer_id'] ) ) {
-			$where[]  = 'referrer_id = %d';
-			$params[] = (int) $args['referrer_id'];
-		}
-
-		$where_sql = implode( ' AND ', $where );
-		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
-		$list_sql  = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d";
-
-		if ( $params ) {
-			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$items = $wpdb->get_results( $wpdb->prepare( $list_sql, array_merge( $params, array( $per_page, $offset ) ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		} else {
-			$total = (int) $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$items = $wpdb->get_results( $wpdb->prepare( $list_sql, $per_page, $offset ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		}
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is escaped.
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE ( %s = '' OR status = %s ) AND ( %d = 0 OR referrer_id = %d )",
+				$status,
+				$status,
+				$referrer,
+				$referrer
+			)
+		);
+		$items = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE ( %s = '' OR status = %s ) AND ( %d = 0 OR referrer_id = %d ) ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d",
+				$status,
+				$status,
+				$referrer,
+				$referrer,
+				$per_page,
+				$offset
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return array(
 			'items' => $items ? $items : array(),
@@ -310,10 +311,10 @@ class GrowthPilot_Referral_Program {
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . $table ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$items = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM ' . $table . ' ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$per_page,
 				$offset
 			)
@@ -346,14 +347,14 @@ class GrowthPilot_Referral_Program {
 
 		$signed = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE referrer_id = %d AND referee_id IS NOT NULL", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT COUNT(*) FROM ' . $table . ' WHERE referrer_id = %d AND referee_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$user_id
 			)
 		);
 
 		$converted = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE referrer_id = %d AND status IN ('converted','rewarded')", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT COUNT(*) FROM ' . $table . " WHERE referrer_id = %d AND status IN ('converted','rewarded')", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$user_id
 			)
 		);

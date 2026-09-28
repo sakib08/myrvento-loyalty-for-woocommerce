@@ -37,17 +37,21 @@ class GrowthPilot_Analytics_Customers {
 	public static function cohorts() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$first = $wpdb->get_results(
-			"SELECT customer_id, MIN(date_created) AS first_order, DATE_FORMAT(MIN(date_created), '%Y-%m') AS cohort
-			 FROM {$stats}
-			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id"
+			$wpdb->prepare(
+				"SELECT customer_id, MIN(date_created) AS first_order, DATE_FORMAT(MIN(date_created), '%%Y-%%m') AS cohort
+				 FROM {$stats}
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
+				 GROUP BY customer_id",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		if ( ! $first ) {
 			return array();
@@ -58,13 +62,16 @@ class GrowthPilot_Analytics_Customers {
 			$by_customer[ (int) $row->customer_id ] = $row;
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$orders = $wpdb->get_results(
-			"SELECT customer_id, date_created, net_total
-			 FROM {$stats}
-			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})"
+			$wpdb->prepare(
+				"SELECT customer_id, date_created, net_total
+				 FROM {$stats}
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$cohorts = array();
 		foreach ( $orders ? $orders : array() as $order ) {
@@ -134,18 +141,22 @@ class GrowthPilot_Analytics_Customers {
 	public static function retention() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
-			"SELECT customer_id, COUNT(*) AS orders, MIN(date_created) AS first_order, MAX(date_created) AS last_order,
-				TIMESTAMPDIFF(DAY, MIN(date_created), MAX(date_created)) AS span_days
-			 FROM {$stats}
-			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id"
+			$wpdb->prepare(
+				"SELECT customer_id, COUNT(*) AS orders, MIN(date_created) AS first_order, MAX(date_created) AS last_order,
+					TIMESTAMPDIFF(DAY, MIN(date_created), MAX(date_created)) AS span_days
+				 FROM {$stats}
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
+				 GROUP BY customer_id",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$total = count( $rows ? $rows : array() );
 		$second = 0;
@@ -188,21 +199,22 @@ class GrowthPilot_Analytics_Customers {
 	public static function churn() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$now   = current_time( 'mysql' );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$now       = current_time( 'mysql' );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id, MAX(date_created) AS last_order, TIMESTAMPDIFF(DAY, MAX(date_created), %s) AS days_since
 				 FROM {$stats}
-				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
 				 GROUP BY customer_id",
-				$now
+				array_merge( array( $now ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$active  = 0;
 		$risk    = 0;
@@ -250,21 +262,25 @@ class GrowthPilot_Analytics_Customers {
 	public static function segments() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$customers = $wpdb->get_results(
-			"SELECT customer_id,
-				COUNT(*) AS orders,
-				SUM(net_total) AS revenue,
-				MAX(date_created) AS last_order,
-				TIMESTAMPDIFF(DAY, MAX(date_created), UTC_TIMESTAMP()) AS days_since
-			 FROM {$stats}
-			 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-			 GROUP BY customer_id"
+			$wpdb->prepare(
+				"SELECT customer_id,
+					COUNT(*) AS orders,
+					SUM(net_total) AS revenue,
+					MAX(date_created) AS last_order,
+					TIMESTAMPDIFF(DAY, MAX(date_created), UTC_TIMESTAMP()) AS days_since
+				 FROM {$stats}
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
+				 GROUP BY customer_id",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$coupons_table = esc_sql( GrowthPilot_Analytics_Query::coupons_table() );
 		$stats_join    = esc_sql( GrowthPilot_Analytics_Query::stats_table() );

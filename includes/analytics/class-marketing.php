@@ -105,9 +105,8 @@ class GrowthPilot_Analytics_Marketing {
 	public static function attribution( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
-
-		$build = static function ( $touch ) use ( $wpdb, $table, $range ) {
+		$build = static function ( $touch ) use ( $wpdb, $range ) {
+			$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
@@ -134,6 +133,8 @@ class GrowthPilot_Analytics_Marketing {
 			}
 			return $out;
 		};
+
+		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
 		$multi = $wpdb->get_results(
@@ -187,7 +188,8 @@ class GrowthPilot_Analytics_Marketing {
 		$campaigns = GrowthPilot_Referral_Program::campaigns();
 		$ledger    = esc_sql( GrowthPilot::table( 'points_ledger' ) );
 		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid      = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$out       = array();
 
 		foreach ( $campaigns as $campaign ) {
@@ -207,9 +209,11 @@ class GrowthPilot_Analytics_Marketing {
 			$orders  = 0;
 			if ( $order_ids ) {
 				$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
-				$params       = array_merge( $order_ids, array( $range['from_sql'], $range['to_sql'] ) );
-				$sql          = "SELECT COALESCE(SUM(net_total), 0) AS revenue, COUNT(*) AS orders FROM {$stats} WHERE order_id IN ({$placeholders}) AND status IN ({$paid}) AND date_created BETWEEN %s AND %s";
-				$row          = $wpdb->get_row( $wpdb->prepare( $sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$params       = array_merge( $order_ids, $statuses, array( $range['from_sql'], $range['to_sql'] ) );
+				// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. IN lists are generated placeholders.
+				$sql = "SELECT COALESCE(SUM(net_total), 0) AS revenue, COUNT(*) AS orders FROM {$stats} WHERE order_id IN ({$placeholders}) AND status IN ({$status_in}) AND date_created BETWEEN %s AND %s";
+				$row = $wpdb->get_row( $wpdb->prepare( $sql, $params ) );
+				// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 				$revenue      = $row ? (float) $row->revenue : 0.0;
 				$orders       = $row ? (int) $row->orders : 0;
 			}

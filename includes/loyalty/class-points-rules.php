@@ -22,27 +22,21 @@ class GrowthPilot_Points_Rules {
 	public static function all( $args = array() ) {
 		global $wpdb;
 
-		$table  = esc_sql( GrowthPilot::table( 'point_rules' ) );
-		$where  = array( '1=1' );
-		$params = array();
+		$table   = esc_sql( GrowthPilot::table( 'point_rules' ) );
+		$source  = ! empty( $args['source'] ) ? (string) $args['source'] : '';
+		$enabled = isset( $args['enabled'] ) ? (int) $args['enabled'] : -1;
 
-		if ( ! empty( $args['source'] ) ) {
-			$where[]  = 'source = %s';
-			$params[] = $args['source'];
-		}
-
-		if ( isset( $args['enabled'] ) ) {
-			$where[]  = 'enabled = %d';
-			$params[] = (int) $args['enabled'];
-		}
-
-		$sql = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY sort_order ASC, id ASC';
-
-		if ( $params ) {
-			$sql = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		}
-
-		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is escaped.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE ( %s = '' OR source = %s ) AND ( %d = -1 OR enabled = %d ) ORDER BY sort_order ASC, id ASC",
+				$source,
+				$source,
+				$enabled,
+				$enabled
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $rows ? $rows : array();
 	}
@@ -60,7 +54,7 @@ class GrowthPilot_Points_Rules {
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM ' . $table . ' WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				(int) $id
 			)
 		);
@@ -79,7 +73,7 @@ class GrowthPilot_Points_Rules {
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE source = %s AND enabled = 1 AND (object_id IS NULL OR object_id = 0) ORDER BY sort_order ASC, id ASC LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM ' . $table . ' WHERE source = %s AND enabled = 1 AND (object_id IS NULL OR object_id = 0) ORDER BY sort_order ASC, id ASC LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$source
 			)
 		);
@@ -237,7 +231,7 @@ class GrowthPilot_Points_Rules {
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE enabled = 1 AND object_type = %s AND object_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM ' . $table . ' WHERE enabled = 1 AND object_type = %s AND object_id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$object_type,
 				(int) $object_id
 			)

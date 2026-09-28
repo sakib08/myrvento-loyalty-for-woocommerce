@@ -59,34 +59,36 @@ class GrowthPilot_REST_Customers {
 		$tiers    = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$users    = $wpdb->users;
 
-		$where  = array( '1=1' );
-		$params = array();
+		$like = $search ? '%' . $wpdb->esc_like( $search ) . '%' : '';
 
-		if ( $search ) {
-			$like     = '%' . $wpdb->esc_like( $search ) . '%';
-			$where[]  = '(u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s)';
-			$params[] = $like;
-			$params[] = $like;
-			$params[] = $like;
-		}
-
-		$where_sql = implode( ' AND ', $where );
-		$count_sql = "SELECT COUNT(*) FROM {$balances} b INNER JOIN {$users} u ON u.ID = b.customer_id WHERE {$where_sql}";
-		$list_sql  = "SELECT b.*, u.display_name, u.user_email, t.name AS tier_name, t.color AS tier_color
-			FROM {$balances} b
-			INNER JOIN {$users} u ON u.ID = b.customer_id
-			LEFT JOIN {$tiers} t ON t.id = b.tier_id
-			WHERE {$where_sql}
-			ORDER BY b.available DESC, b.lifetime_earned DESC
-			LIMIT %d OFFSET %d";
-
-		if ( $params ) {
-			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$items = $wpdb->get_results( $wpdb->prepare( $list_sql, array_merge( $params, array( $per_page, $offset ) ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		} else {
-			$total = (int) $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$items = $wpdb->get_results( $wpdb->prepare( $list_sql, $per_page, $offset ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		}
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names are escaped.
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$balances} b INNER JOIN {$users} u ON u.ID = b.customer_id WHERE ( %s = '' OR u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s )",
+				$like,
+				$like,
+				$like,
+				$like
+			)
+		);
+		$items = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT b.*, u.display_name, u.user_email, t.name AS tier_name, t.color AS tier_color
+				FROM {$balances} b
+				INNER JOIN {$users} u ON u.ID = b.customer_id
+				LEFT JOIN {$tiers} t ON t.id = b.tier_id
+				WHERE ( %s = '' OR u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s )
+				ORDER BY b.available DESC, b.lifetime_earned DESC
+				LIMIT %d OFFSET %d",
+				$like,
+				$like,
+				$like,
+				$like,
+				$per_page,
+				$offset
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$out = array();
 		foreach ( $items ? $items : array() as $row ) {

@@ -35,7 +35,7 @@ class GrowthPilot_Operations {
 	public static function orders() {
 		global $wpdb;
 
-		$table  = $wpdb->prefix . 'wc_orders';
+		$table  = esc_sql( $wpdb->prefix . 'wc_orders' );
 		$counts = $wpdb->get_results(
 			"SELECT status, COUNT(*) AS total FROM {$table} WHERE type = 'shop_order' GROUP BY status ORDER BY total DESC" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);

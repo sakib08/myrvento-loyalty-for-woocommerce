@@ -57,25 +57,25 @@ class GrowthPilot_Dashboard {
 	private static function top_products( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$table     = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.product_id, SUM( p.product_qty ) AS units, SUM( p.product_net_revenue ) AS revenue
 				 FROM {$table} p
 				 INNER JOIN {$stats} s ON s.order_id = p.order_id
-				 WHERE p.date_created BETWEEN %s AND %s AND s.status IN ({$paid})
+				 WHERE p.date_created BETWEEN %s AND %s AND s.status IN ({$status_in})
 				 GROUP BY p.product_id
 				 ORDER BY revenue DESC
 				 LIMIT 5",
-				$range['from_sql'],
-				$range['to_sql']
+				array_merge( array( $range['from_sql'], $range['to_sql'] ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {

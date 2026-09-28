@@ -112,26 +112,27 @@ class GrowthPilot_Sales {
 	private static function pairs() {
 		global $wpdb;
 
-		$products = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats    = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid     = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$from     = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
+		$products  = esc_sql( GrowthPilot_Analytics_Query::products_table() );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$from      = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup tables and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT a.product_id AS product_id, b.product_id AS related_id, COUNT( DISTINCT a.order_id ) AS orders
 				 FROM {$products} a
 				 INNER JOIN {$products} b ON b.order_id = a.order_id AND b.product_id <> a.product_id
 				 INNER JOIN {$stats} s ON s.order_id = a.order_id
-				 WHERE s.status IN ({$paid}) AND s.parent_id = 0 AND a.date_created >= %s
+				 WHERE s.status IN ({$status_in}) AND s.parent_id = 0 AND a.date_created >= %s
 				 GROUP BY a.product_id, b.product_id
 				 ORDER BY orders DESC
 				 LIMIT 60",
-				$from
+				array_merge( $statuses, array( $from ) )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$upsell     = array();
 		$cross_sell = array();
@@ -227,11 +228,12 @@ class GrowthPilot_Sales {
 	public static function recovery() {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
-		$now   = current_time( 'mysql' );
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$now       = current_time( 'mysql' );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT customer_id,
@@ -240,32 +242,32 @@ class GrowthPilot_Sales {
 					MAX( date_created ) AS last_order,
 					TIMESTAMPDIFF( DAY, MAX( date_created ), %s ) AS days_since
 				 FROM {$stats}
-				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
+				 WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
 				 GROUP BY customer_id
 				 HAVING days_since >= 60
 				 ORDER BY revenue DESC
 				 LIMIT 25",
-				$now
+				array_merge( array( $now ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$labels = GrowthPilot_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
 		$items  = array();
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$total  = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM (
 					SELECT customer_id
 					FROM {$stats}
-					WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
+					WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
 					GROUP BY customer_id
 					HAVING TIMESTAMPDIFF( DAY, MAX( date_created ), %s ) >= 60
 				) quiet",
-				$now
+				array_merge( $statuses, array( $now ) )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		foreach ( $rows ? $rows : array() as $row ) {
 			$id      = (int) $row->customer_id;

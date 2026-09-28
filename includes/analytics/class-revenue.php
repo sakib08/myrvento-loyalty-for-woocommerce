@@ -72,10 +72,11 @@ class GrowthPilot_Analytics_Revenue {
 	public static function totals( $from, $to ) {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT
@@ -90,12 +91,11 @@ class GrowthPilot_Analytics_Revenue {
 					COALESCE(SUM(CASE WHEN returning_customer = 1 AND parent_id = 0 THEN 1 ELSE 0 END), 0) AS returning
 				FROM {$stats}
 				WHERE date_created BETWEEN %s AND %s
-					AND ( status IN ({$paid}) OR parent_id > 0 )",
-				$from,
-				$to
+					AND ( status IN ({$status_in}) OR parent_id > 0 )",
+				array_merge( array( $from, $to ), $statuses )
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$orders = $row ? (int) $row->orders : 0;
 		$net    = $row ? (float) $row->net : 0.0;
@@ -109,30 +109,36 @@ class GrowthPilot_Analytics_Revenue {
 			)
 		);
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$ltv = (float) $wpdb->get_var(
-			"SELECT COALESCE(AVG(lifetime), 0) FROM (
-				SELECT customer_id, SUM(net_total) AS lifetime
-				FROM {$stats}
-				WHERE customer_id > 0 AND status IN ({$paid})
-				GROUP BY customer_id
-			) t"
+			$wpdb->prepare(
+				"SELECT COALESCE(AVG(lifetime), 0) FROM (
+					SELECT customer_id, SUM(net_total) AS lifetime
+					FROM {$stats}
+					WHERE customer_id > 0 AND status IN ({$status_in})
+					GROUP BY customer_id
+				) t",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Lookup table and paid-status list are trusted.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$repeat = $wpdb->get_row(
-			"SELECT
-				COUNT(*) AS customers,
-				SUM(CASE WHEN cnt >= 2 THEN 1 ELSE 0 END) AS repeats
-			 FROM (
-				SELECT customer_id, COUNT(*) AS cnt
-				FROM {$stats}
-				WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$paid})
-				GROUP BY customer_id
-			 ) t"
+			$wpdb->prepare(
+				"SELECT
+					COUNT(*) AS customers,
+					SUM(CASE WHEN cnt >= 2 THEN 1 ELSE 0 END) AS repeats
+				 FROM (
+					SELECT customer_id, COUNT(*) AS cnt
+					FROM {$stats}
+					WHERE customer_id > 0 AND parent_id = 0 AND status IN ({$status_in})
+					GROUP BY customer_id
+				 ) t",
+				$statuses
+			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$customers = $repeat ? (int) $repeat->customers : 0;
 		$repeats   = $repeat ? (int) $repeat->repeats : 0;
@@ -166,17 +172,24 @@ class GrowthPilot_Analytics_Revenue {
 	public static function trend( $from, $to, $interval ) {
 		global $wpdb;
 
-		$stats = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$paid  = "'" . implode( "','", array_map( 'esc_sql', GrowthPilot_Analytics_Query::paid_statuses() ) ) . "'";
+		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
+		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		if ( 'week' === $interval ) {
-			$bucket = 'DATE( DATE_SUB( date_created, INTERVAL WEEKDAY(date_created) DAY ) )';
+			$bucket = esc_sql( 'DATE( DATE_SUB( date_created, INTERVAL WEEKDAY(date_created) DAY ) )' );
 		} elseif ( 'month' === $interval ) {
-			$bucket = "DATE_FORMAT( date_created, '%Y-%m-01' )";
+			$bucket = esc_sql( 'DATE_FORMAT( date_created, %s )' );
 		} else {
-			$bucket = 'DATE( date_created )';
+			$bucket = esc_sql( 'DATE( date_created )' );
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Bucket expression, lookup table, and paid-status list are trusted.
+		$args = array( $from, $to );
+		if ( 'month' === $interval ) {
+			array_unshift( $args, '%Y-%m-01' );
+		}
+		$args = array_merge( $args, $statuses );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Bucket expression and lookup table are escaped. Paid statuses are %s placeholders.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$bucket} AS bucket,
@@ -185,14 +198,13 @@ class GrowthPilot_Analytics_Revenue {
 					COALESCE(SUM(CASE WHEN parent_id = 0 THEN 1 ELSE 0 END), 0) AS orders
 				FROM {$stats}
 				WHERE date_created BETWEEN %s AND %s
-					AND ( status IN ({$paid}) OR parent_id > 0 )
+					AND ( status IN ({$status_in}) OR parent_id > 0 )
 				GROUP BY bucket
 				ORDER BY bucket ASC",
-				$from,
-				$to
+				$args
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {
