@@ -360,12 +360,14 @@ class GrowthPilot_Analytics_Customers {
 		global $wpdb;
 
 		$table = esc_sql( GrowthPilot_Analytics_Query::customers_table() );
-		$row   = $wpdb->get_row(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Customer lookup table name.
+		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT first_name, last_name, email, user_id FROM {$table} WHERE customer_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT first_name, last_name, email, user_id FROM {$table} WHERE customer_id = %d",
 				$customer_id
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $row ) {
 			return array( 'name' => '#' . $customer_id, 'email' => '' );

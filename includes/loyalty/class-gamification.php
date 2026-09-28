@@ -278,11 +278,9 @@ class GrowthPilot_Gamification {
 		global $wpdb;
 
 		$table = esc_sql( GrowthPilot::table( 'badges' ) );
-		$sql   = "SELECT * FROM {$table}";
-		if ( $enabled_only ) {
-			$sql .= ' WHERE enabled = 1';
-		}
-		$sql .= ' ORDER BY milestone_value ASC, id ASC';
+		$sql   = $enabled_only
+			? "SELECT * FROM {$table} WHERE enabled = 1 ORDER BY milestone_value ASC, id ASC"
+			: "SELECT * FROM {$table} ORDER BY milestone_value ASC, id ASC";
 
 		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $rows ? $rows : array();

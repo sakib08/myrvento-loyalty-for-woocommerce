@@ -333,12 +333,14 @@ class GrowthPilot_AI_Engine {
 
 		$table        = esc_sql( GrowthPilot_Analytics_Query::customers_table() );
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-		$rows         = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Lookup table and generated %d list.
+		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT customer_id, first_name, last_name, email, user_id FROM {$table} WHERE customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+				"SELECT customer_id, first_name, last_name, email, user_id FROM {$table} WHERE customer_id IN ({$placeholders})",
 				$ids
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
 		$out = array();
 		foreach ( $rows ? $rows : array() as $row ) {

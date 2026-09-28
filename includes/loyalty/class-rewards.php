@@ -23,11 +23,9 @@ class GrowthPilot_Rewards {
 		global $wpdb;
 
 		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
-		$sql   = "SELECT * FROM {$table}";
-		if ( $enabled_only ) {
-			$sql .= ' WHERE enabled = 1';
-		}
-		$sql .= ' ORDER BY points_cost ASC, id ASC';
+		$sql   = $enabled_only
+			? "SELECT * FROM {$table} WHERE enabled = 1 ORDER BY points_cost ASC, id ASC"
+			: "SELECT * FROM {$table} ORDER BY points_cost ASC, id ASC";
 
 		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $rows ? $rows : array();
@@ -293,19 +291,20 @@ class GrowthPilot_Rewards {
 		global $wpdb;
 
 		$table    = esc_sql( GrowthPilot::table( 'redemptions' ) );
-		$where    = '1=1';
+		$where    = array( '1=1' );
 		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
 
 		if ( ! empty( $args['customer_id'] ) ) {
-			$where   .= ' AND customer_id = %d';
+			$where[]  = 'customer_id = %d';
 			$params[] = (int) $args['customer_id'];
 		}
 
-		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
-		$list_sql  = "SELECT * FROM {$table} WHERE {$where} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d";
+		$where_sql = implode( ' AND ', $where );
+		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
+		$list_sql  = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d";
 
 		if ( $params ) {
 			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

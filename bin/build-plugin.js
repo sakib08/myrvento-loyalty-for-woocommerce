@@ -26,6 +26,7 @@ const include = [
   "includes",
   "templates",
   "assets",
+  "languages",
 ];
 
 function copyRuntime(src, dest) {

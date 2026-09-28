@@ -262,24 +262,25 @@ class GrowthPilot_Referral_Program {
 		global $wpdb;
 
 		$table    = esc_sql( GrowthPilot::table( 'referrals' ) );
-		$where    = '1=1';
+		$where    = array( '1=1' );
 		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
 
 		if ( ! empty( $args['status'] ) ) {
-			$where   .= ' AND status = %s';
+			$where[]  = 'status = %s';
 			$params[] = sanitize_key( $args['status'] );
 		}
 
 		if ( ! empty( $args['referrer_id'] ) ) {
-			$where   .= ' AND referrer_id = %d';
+			$where[]  = 'referrer_id = %d';
 			$params[] = (int) $args['referrer_id'];
 		}
 
-		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
-		$list_sql  = "SELECT * FROM {$table} WHERE {$where} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d";
+		$where_sql = implode( ' AND ', $where );
+		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
+		$list_sql  = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d";
 
 		if ( $params ) {
 			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

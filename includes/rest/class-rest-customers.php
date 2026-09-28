@@ -59,23 +59,24 @@ class GrowthPilot_REST_Customers {
 		$tiers    = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
 		$users    = $wpdb->users;
 
-		$where  = '1=1';
+		$where  = array( '1=1' );
 		$params = array();
 
 		if ( $search ) {
-			$like    = '%' . $wpdb->esc_like( $search ) . '%';
-			$where  .= " AND (u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s)";
+			$like     = '%' . $wpdb->esc_like( $search ) . '%';
+			$where[]  = '(u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s)';
 			$params[] = $like;
 			$params[] = $like;
 			$params[] = $like;
 		}
 
-		$count_sql = "SELECT COUNT(*) FROM {$balances} b INNER JOIN {$users} u ON u.ID = b.customer_id WHERE {$where}";
+		$where_sql = implode( ' AND ', $where );
+		$count_sql = "SELECT COUNT(*) FROM {$balances} b INNER JOIN {$users} u ON u.ID = b.customer_id WHERE {$where_sql}";
 		$list_sql  = "SELECT b.*, u.display_name, u.user_email, t.name AS tier_name, t.color AS tier_color
 			FROM {$balances} b
 			INNER JOIN {$users} u ON u.ID = b.customer_id
 			LEFT JOIN {$tiers} t ON t.id = b.tier_id
-			WHERE {$where}
+			WHERE {$where_sql}
 			ORDER BY b.available DESC, b.lifetime_earned DESC
 			LIMIT %d OFFSET %d";
 

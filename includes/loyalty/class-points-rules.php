@@ -22,21 +22,21 @@ class GrowthPilot_Points_Rules {
 	public static function all( $args = array() ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'point_rules' ) );
-		$sql   = "SELECT * FROM {$table} WHERE 1=1";
+		$table  = esc_sql( GrowthPilot::table( 'point_rules' ) );
+		$where  = array( '1=1' );
 		$params = array();
 
 		if ( ! empty( $args['source'] ) ) {
-			$sql     .= ' AND source = %s';
+			$where[]  = 'source = %s';
 			$params[] = $args['source'];
 		}
 
 		if ( isset( $args['enabled'] ) ) {
-			$sql     .= ' AND enabled = %d';
+			$where[]  = 'enabled = %d';
 			$params[] = (int) $args['enabled'];
 		}
 
-		$sql .= ' ORDER BY sort_order ASC, id ASC';
+		$sql = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY sort_order ASC, id ASC';
 
 		if ( $params ) {
 			$sql = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

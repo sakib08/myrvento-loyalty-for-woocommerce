@@ -218,12 +218,14 @@ class GrowthPilot_Analytics_Marketing {
 			if ( $order_ids ) {
 				$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
 				$params       = array_merge( $order_ids, array( $range['from_sql'], $range['to_sql'] ) );
+				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Ledger table and generated %d list.
 				$points = (int) $wpdb->get_var(
-					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- %d count follows the order id list.
-						"SELECT COALESCE(SUM(amount), 0) FROM {$ledger} WHERE source = 'referral' AND type = 'earn' AND order_id IN ({$placeholders}) AND created_at BETWEEN %s AND %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->prepare(
+						"SELECT COALESCE(SUM(amount), 0) FROM {$ledger} WHERE source = 'referral' AND type = 'earn' AND order_id IN ({$placeholders}) AND created_at BETWEEN %s AND %s",
 						$params
 					)
 				);
+				// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 			}
 
 			$signups = (int) $wpdb->get_var(
