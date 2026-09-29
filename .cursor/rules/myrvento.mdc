@@ -1,11 +1,11 @@
 ---
-description: Commerce Insights for WooCommerce by Ppros WooCommerce plugin conventions for PHP, REST, React admin, and AI
+description: Myrvento Loyalty for WooCommerce conventions for PHP, REST, React admin, and AI
 alwaysApply: true
 ---
 
-# Commerce Insights for WooCommerce by Ppros
+# Myrvento Loyalty for WooCommerce
 
-WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `commerce-insights-woocommerce-by-ppros`, capability `manage_woocommerce`. Display name: Commerce Insights for WooCommerce by Ppros.
+WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `myrvento-loyalty-for-woocommerce`, capability `manage_woocommerce`. Display name: Myrvento Loyalty for WooCommerce. Slug: `myrvento-loyalty-for-woocommerce`.
 
 ## Names
 
@@ -36,7 +36,7 @@ $wpdb->get_results(
 - All `$wpdb` reads/writes with variables must use `$wpdb->prepare()`. Identifiers (table via `Ciwp::table()`, columns) stay outside placeholders; values use `%d`, `%f`, `%s`. Never interpolate user or request data into SQL. Static SQL with no variables may skip `prepare()`
 - Paid orders: `wc_get_is_paid_statuses()` with `wc-` prefix. Prefer WC lookup tables (`wc_order_stats`, `wc_order_product_lookup`, `wc_customer_lookup`). `wc_order_coupon_lookup` has no `customer_id` — join stats
 - Schema changes bump `CIWP_DB_VERSION` and `Ciwp_Installer::create_tables()`
-- Settings never persist a raw API key unless newly submitted; empty/`********` keeps the existing key; `for_admin()` returns a mask + `ai_api_key_set`
+- Optional narration uses the WordPress AI Client. Do not store a provider API key or call a provider URL. Referral codes and visitor fingerprints use `Ciwp::hash_secret()`, never WordPress authentication salts
 
 ## Admin (React 18)
 
@@ -48,6 +48,6 @@ $wpdb->get_results(
 ## Domain
 
 - Unified points ledger is the only writer of customer balances. Referrals credit that ledger — no separate wallet, no affiliate payouts
-- AI models run on-store (no API key required). Optional LLM only rewrites Brain cards. Prices are never auto-applied
+- AI models run on-store. Optional narration only rewrites Myrvento Brain cards through the WordPress AI Client. Prices are never auto-applied
 - Do not insert stray tokens (` mar`) into PHP/JSX
 - Do not edit plan files unless asked

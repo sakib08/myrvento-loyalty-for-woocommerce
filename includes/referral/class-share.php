@@ -24,7 +24,7 @@ class Ciwp_Share {
 		$text = rawurlencode(
 			sprintf(
 				/* translators: %s site name */
-				__( 'Join me at %s and get a welcome bonus.', 'commerce-insights-woocommerce-by-ppros' ),
+				__( 'Join me at %s and get a welcome bonus.', 'myrvento-loyalty-for-woocommerce' ),
 				wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 			)
 		);

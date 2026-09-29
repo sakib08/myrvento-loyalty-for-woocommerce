@@ -60,7 +60,7 @@ class Ciwp_VIP_Tiers {
 		$slug  = sanitize_title( $data['slug'] ?? $data['name'] ?? '' );
 
 		if ( '' === $slug ) {
-			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$benefits = $data['benefits'] ?? array();

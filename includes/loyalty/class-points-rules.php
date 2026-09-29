@@ -104,7 +104,7 @@ class Ciwp_Points_Rules {
 		);
 
 		if ( '' === $row['name'] ) {
-			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( $id ) {

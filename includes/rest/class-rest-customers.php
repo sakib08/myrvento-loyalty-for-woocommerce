@@ -124,7 +124,7 @@ class Ciwp_REST_Customers {
 		$user = get_userdata( $id );
 
 		if ( ! $user ) {
-			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'commerce-insights-woocommerce-by-ppros' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'myrvento-loyalty-for-woocommerce' ) ), 404 );
 		}
 
 		$balance  = Ciwp_Points_Ledger::get_balance( $id );

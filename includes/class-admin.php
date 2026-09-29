@@ -31,25 +31,25 @@ class Ciwp_Admin {
 	 */
 	public function register_menus() {
 		$pages = array(
-			''              => __( 'Dashboard', 'commerce-insights-woocommerce-by-ppros' ),
-			'-points'       => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
-			'-customers'    => __( 'Customers', 'commerce-insights-woocommerce-by-ppros' ),
-			'-tiers'        => __( 'VIP Tiers', 'commerce-insights-woocommerce-by-ppros' ),
-			'-rewards'      => __( 'Rewards', 'commerce-insights-woocommerce-by-ppros' ),
-			'-gamification' => __( 'Gamification', 'commerce-insights-woocommerce-by-ppros' ),
-			'-referrals'    => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
-			'-sales'        => __( 'Sales', 'commerce-insights-woocommerce-by-ppros' ),
-			'-operations'   => __( 'Operations', 'commerce-insights-woocommerce-by-ppros' ),
-			'-analytics'    => __( 'Analytics', 'commerce-insights-woocommerce-by-ppros' ),
-			'-revenue'      => __( 'Revenue', 'commerce-insights-woocommerce-by-ppros' ),
-			'-ai'           => __( 'AI', 'commerce-insights-woocommerce-by-ppros' ),
-			'-settings'     => __( 'Settings', 'commerce-insights-woocommerce-by-ppros' ),
-			'-help'         => __( 'Help', 'commerce-insights-woocommerce-by-ppros' ),
+			''              => __( 'Dashboard', 'myrvento-loyalty-for-woocommerce' ),
+			'-points'       => __( 'Points', 'myrvento-loyalty-for-woocommerce' ),
+			'-customers'    => __( 'Customers', 'myrvento-loyalty-for-woocommerce' ),
+			'-tiers'        => __( 'VIP Tiers', 'myrvento-loyalty-for-woocommerce' ),
+			'-rewards'      => __( 'Rewards', 'myrvento-loyalty-for-woocommerce' ),
+			'-gamification' => __( 'Gamification', 'myrvento-loyalty-for-woocommerce' ),
+			'-referrals'    => __( 'Referrals', 'myrvento-loyalty-for-woocommerce' ),
+			'-sales'        => __( 'Sales', 'myrvento-loyalty-for-woocommerce' ),
+			'-operations'   => __( 'Operations', 'myrvento-loyalty-for-woocommerce' ),
+			'-analytics'    => __( 'Analytics', 'myrvento-loyalty-for-woocommerce' ),
+			'-revenue'      => __( 'Revenue', 'myrvento-loyalty-for-woocommerce' ),
+			'-ai'           => __( 'AI', 'myrvento-loyalty-for-woocommerce' ),
+			'-settings'     => __( 'Settings', 'myrvento-loyalty-for-woocommerce' ),
+			'-help'         => __( 'Help', 'myrvento-loyalty-for-woocommerce' ),
 		);
 
 		add_menu_page(
-			__( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
-			__( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
+			__( 'Myrvento Loyalty for WooCommerce', 'myrvento-loyalty-for-woocommerce' ),
+			__( 'Myrvento Loyalty for WooCommerce', 'myrvento-loyalty-for-woocommerce' ),
 			'manage_woocommerce',
 			self::MENU_SLUG,
 			array( $this, 'render_admin_page' ),
@@ -109,6 +109,10 @@ class Ciwp_Admin {
 	 * @return void
 	 */
 	public function render_admin_page() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
 		$page = $this->get_current_page();
 		?>
 		<div id="ciwp-admin-shell" class="ciwp-admin-shell">
@@ -224,24 +228,24 @@ body.ciwp-admin-page #screen-meta-links { display: none !important; }'
 				'urls'      => $urls,
 				'currency'  => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
 				'i18n'      => array(
-					'pluginName'   => __( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
-					'tagline'      => __( 'Loyalty, sales, and revenue', 'commerce-insights-woocommerce-by-ppros' ),
-					'dashboard'    => __( 'Dashboard', 'commerce-insights-woocommerce-by-ppros' ),
-					'points'       => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
-					'customers'    => __( 'Customers', 'commerce-insights-woocommerce-by-ppros' ),
-					'tiers'        => __( 'VIP Tiers', 'commerce-insights-woocommerce-by-ppros' ),
-					'rewards'      => __( 'Rewards', 'commerce-insights-woocommerce-by-ppros' ),
-					'gamification' => __( 'Gamification', 'commerce-insights-woocommerce-by-ppros' ),
-					'referrals'    => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
-					'sales'        => __( 'Sales', 'commerce-insights-woocommerce-by-ppros' ),
-					'operations'   => __( 'Operations', 'commerce-insights-woocommerce-by-ppros' ),
-					'analytics'    => __( 'Analytics', 'commerce-insights-woocommerce-by-ppros' ),
-					'revenue'      => __( 'Revenue', 'commerce-insights-woocommerce-by-ppros' ),
-					'ai'           => __( 'AI', 'commerce-insights-woocommerce-by-ppros' ),
-					'settings'     => __( 'Settings', 'commerce-insights-woocommerce-by-ppros' ),
-					'help'         => __( 'Help', 'commerce-insights-woocommerce-by-ppros' ),
-					'saved'        => __( 'Saved successfully.', 'commerce-insights-woocommerce-by-ppros' ),
-					'saveError'    => __( 'Could not save. Please try again.', 'commerce-insights-woocommerce-by-ppros' ),
+					'pluginName'   => __( 'Myrvento Loyalty for WooCommerce', 'myrvento-loyalty-for-woocommerce' ),
+					'tagline'      => __( 'Loyalty, sales, and revenue', 'myrvento-loyalty-for-woocommerce' ),
+					'dashboard'    => __( 'Dashboard', 'myrvento-loyalty-for-woocommerce' ),
+					'points'       => __( 'Points', 'myrvento-loyalty-for-woocommerce' ),
+					'customers'    => __( 'Customers', 'myrvento-loyalty-for-woocommerce' ),
+					'tiers'        => __( 'VIP Tiers', 'myrvento-loyalty-for-woocommerce' ),
+					'rewards'      => __( 'Rewards', 'myrvento-loyalty-for-woocommerce' ),
+					'gamification' => __( 'Gamification', 'myrvento-loyalty-for-woocommerce' ),
+					'referrals'    => __( 'Referrals', 'myrvento-loyalty-for-woocommerce' ),
+					'sales'        => __( 'Sales', 'myrvento-loyalty-for-woocommerce' ),
+					'operations'   => __( 'Operations', 'myrvento-loyalty-for-woocommerce' ),
+					'analytics'    => __( 'Analytics', 'myrvento-loyalty-for-woocommerce' ),
+					'revenue'      => __( 'Revenue', 'myrvento-loyalty-for-woocommerce' ),
+					'ai'           => __( 'AI', 'myrvento-loyalty-for-woocommerce' ),
+					'settings'     => __( 'Settings', 'myrvento-loyalty-for-woocommerce' ),
+					'help'         => __( 'Help', 'myrvento-loyalty-for-woocommerce' ),
+					'saved'        => __( 'Saved successfully.', 'myrvento-loyalty-for-woocommerce' ),
+					'saveError'    => __( 'Could not save. Please try again.', 'myrvento-loyalty-for-woocommerce' ),
 				),
 			)
 		);

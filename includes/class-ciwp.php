@@ -129,8 +129,28 @@ final class Ciwp {
 	 */
 	public function missing_woocommerce_notice() {
 		echo '<div class="notice notice-error"><p>';
-		echo esc_html__( 'Commerce Insights for WooCommerce by Ppros requires WooCommerce to be installed and active.', 'commerce-insights-woocommerce-by-ppros' );
+		echo esc_html__( 'Myrvento Loyalty for WooCommerce requires WooCommerce to be installed and active.', 'myrvento-loyalty-for-woocommerce' );
 		echo '</p></div>';
+	}
+
+	/**
+	 * Secret used only for referral codes and visitor fingerprints.
+	 *
+	 * Stored in this plugin's options. WordPress authentication salts are not used.
+	 *
+	 * @return string
+	 */
+	public static function hash_secret() {
+		$secret = get_option( 'ciwp_hash_secret', '' );
+
+		if ( is_string( $secret ) && strlen( $secret ) >= 32 ) {
+			return $secret;
+		}
+
+		$secret = wp_generate_password( 64, false, false );
+		update_option( 'ciwp_hash_secret', $secret, false );
+
+		return $secret;
 	}
 
 	/**

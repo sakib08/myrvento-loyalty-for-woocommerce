@@ -85,7 +85,7 @@ class Ciwp_Points_Earner {
 					'source_id'   => $order->get_id(),
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Purchase — order %s', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Purchase — order %s', 'myrvento-loyalty-for-woocommerce' ),
 						$order->get_order_number()
 					),
 					'meta'        => array( 'breakdown' => $calc['breakdown'] ),
@@ -141,7 +141,7 @@ class Ciwp_Points_Earner {
 			array(
 				'order_id'    => $order->get_id(),
 				'source_id'   => $order->get_id(),
-				'description' => __( 'First purchase bonus', 'commerce-insights-woocommerce-by-ppros' ),
+				'description' => __( 'First purchase bonus', 'myrvento-loyalty-for-woocommerce' ),
 			)
 		);
 
@@ -181,7 +181,7 @@ class Ciwp_Points_Earner {
 					'source_id'   => $order->get_id(),
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Revoked — order %s refunded/cancelled', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Revoked — order %s refunded/cancelled', 'myrvento-loyalty-for-woocommerce' ),
 						$order->get_order_number()
 					),
 				)
@@ -236,7 +236,7 @@ class Ciwp_Points_Earner {
 			'signup',
 			array(
 				'source_id'   => $user_id,
-				'description' => __( 'Welcome points', 'commerce-insights-woocommerce-by-ppros' ),
+				'description' => __( 'Welcome points', 'myrvento-loyalty-for-woocommerce' ),
 			)
 		);
 
@@ -305,7 +305,7 @@ class Ciwp_Points_Earner {
 			'review',
 			array(
 				'source_id'   => (int) $comment->comment_ID,
-				'description' => __( 'Product review reward', 'commerce-insights-woocommerce-by-ppros' ),
+				'description' => __( 'Product review reward', 'myrvento-loyalty-for-woocommerce' ),
 			)
 		);
 
@@ -349,7 +349,7 @@ class Ciwp_Points_Earner {
 				'birthday',
 				array(
 					'source_id'   => (int) $year,
-					'description' => __( 'Birthday reward', 'commerce-insights-woocommerce-by-ppros' ),
+					'description' => __( 'Birthday reward', 'myrvento-loyalty-for-woocommerce' ),
 				)
 			);
 
@@ -372,18 +372,18 @@ class Ciwp_Points_Earner {
 	public static function award_social( $user_id, $channel ) {
 		$rule = Ciwp_Points_Rules::get_global( 'social' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
-			return new WP_Error( 'gp_social_disabled', __( 'Social sharing rewards are disabled.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_social_disabled', __( 'Social sharing rewards are disabled.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$once = (bool) Ciwp_Settings::get_value( 'social_once', true );
 
 		if ( $once && get_user_meta( $user_id, '_gp_social_share', true ) ) {
-			return new WP_Error( 'gp_social_once', __( 'Social sharing points were already awarded.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_social_once', __( 'Social sharing points were already awarded.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$meta_key = '_gp_social_share_' . sanitize_key( $channel );
 		if ( ! $once && get_user_meta( $user_id, $meta_key, true ) ) {
-			return new WP_Error( 'gp_social_channel', __( 'This channel was already rewarded.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_social_channel', __( 'This channel was already rewarded.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$result = Ciwp_Points_Ledger::credit(
@@ -393,7 +393,7 @@ class Ciwp_Points_Earner {
 			array(
 				'description' => sprintf(
 					/* translators: %s share channel */
-					__( 'Social share (%s)', 'commerce-insights-woocommerce-by-ppros' ),
+					__( 'Social share (%s)', 'myrvento-loyalty-for-woocommerce' ),
 					sanitize_key( $channel )
 				),
 				'meta'        => array( 'channel' => $channel ),

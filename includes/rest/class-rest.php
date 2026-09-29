@@ -51,12 +51,14 @@ class Ciwp_REST {
 	}
 
 	/**
-	 * Logged-in customer.
+	 * Logged-in customer. Account routes only read or change that user's own records.
+	 *
+	 * Cookie-authenticated REST requests must also send the wp_rest nonce.
 	 *
 	 * @return bool
 	 */
 	public static function can_account() {
-		return is_user_logged_in();
+		return is_user_logged_in() && current_user_can( 'read' );
 	}
 
 	/**

@@ -1,8 +1,8 @@
 /**
  * Pack a WordPress-installable zip of the plugin runtime only.
  *
- * Included: main file, uninstall, readme, includes, templates, built assets.
- * Left out: sources, node_modules, build tooling, the demo seeder, and editor files.
+ * Included: main file, uninstall, readme, includes, templates, built assets, and UI source.
+ * Left out: node_modules, build tooling, the demo seeder, and editor files.
  */
 
 const { execFileSync } = require("child_process");
@@ -10,23 +10,25 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const header = fs.readFileSync(path.join(root, "commerce-insights-woocommerce-by-ppros.php"), "utf8");
+const header = fs.readFileSync(path.join(root, "myrvento-loyalty-for-woocommerce.php"), "utf8");
 const versionMatch = header.match(/^\s*\*\s*Version:\s*(.+)$/m);
 const version = versionMatch ? versionMatch[1].trim() : "0.0.0";
-const folder = "commerce-insights-woocommerce-by-ppros";
+const folder = "myrvento-loyalty-for-woocommerce";
 // Outside the plugin so Plugin Check does not scan the zip or a second copy of the code.
 const dist = path.resolve(root, "..", "..", "ciwp-dist");
 const stage = path.join(dist, folder);
 const zipName = `ciwp-${version}.zip`;
 
 const include = [
-  "commerce-insights-woocommerce-by-ppros.php",
+  "myrvento-loyalty-for-woocommerce.php",
   "uninstall.php",
   "readme.txt",
   "includes",
   "templates",
   "assets",
   "languages",
+  "admin/src",
+  "frontend/src",
 ];
 
 function copyRuntime(src, dest) {

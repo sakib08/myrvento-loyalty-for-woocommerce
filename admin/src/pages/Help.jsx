@@ -15,10 +15,10 @@ function topics(urls) {
     {
       id: "overview",
       tab: "start",
-      title: "What Commerce Insights for WooCommerce by Ppros does",
+      title: "What Myrvento Loyalty for WooCommerce does",
       paragraphs: [
-        "Commerce Insights for WooCommerce by Ppros is a WooCommerce loyalty and growth toolkit. Purchases, reviews, signups, birthdays, social shares, campaigns, and referrals all write to one points ledger. There is no separate referral wallet and no cash payout.",
-        "Sales, operations, analytics, and revenue screens read WooCommerce orders. The AI models run on the store. An optional language model only rewrites Commerce Brain wording. Suggested prices are never applied to products.",
+        "Myrvento Loyalty for WooCommerce is a WooCommerce loyalty and growth toolkit. Purchases, reviews, signups, birthdays, social shares, campaigns, and referrals all write to one points ledger. There is no separate referral wallet and no cash payout.",
+        "Sales, operations, analytics, and revenue screens read WooCommerce orders. The AI models run on the store. An optional language model only rewrites Myrvento Brain wording. Suggested prices are never applied to products.",
       ],
     },
     {
@@ -26,7 +26,7 @@ function topics(urls) {
       tab: "start",
       title: "Requirements",
       items: [
-        "WooCommerce must be active. Commerce Insights for WooCommerce by Ppros follows High-Performance Order Storage.",
+        "WooCommerce must be active. Myrvento Loyalty for WooCommerce follows High-Performance Order Storage.",
         "Shop managers need the manage WooCommerce capability.",
         "WordPress 6.0 or newer, and PHP 7.4 or newer.",
         "WooCommerce Subscriptions is optional. Operations shows an empty note when it is not active.",
@@ -131,7 +131,7 @@ function topics(urls) {
         "Recovery lists customers who have not ordered for 60 days or more. After 180 days the suggested action is a win-back offer. Before that it is a loyalty reminder.",
       ],
       paragraphs: [
-        "These screens are queues for the shop. Commerce Insights for WooCommerce by Ppros does not email the customer from them.",
+        "These screens are queues for the shop. Myrvento Loyalty for WooCommerce does not email the customer from them.",
       ],
       links: [{ href: urls.sales, label: "Sales" }],
     },
@@ -174,11 +174,11 @@ function topics(urls) {
     {
       id: "ai",
       tab: "measure",
-      title: "AI Commerce Brain",
+      title: "Myrvento Brain",
       paragraphs: [
         "Predictions score churn risk, likely next purchase, and high-value customers from orders already in WooCommerce. Pricing suggests a price or discount. Forecasting estimates seasonal demand and inventory. None of these write back to a product or an order.",
         "Turn AI off in Settings to stop new runs. Results are cached for about six hours.",
-        "The optional language model only rewrites Brain card text. Leave it off to keep the on-store wording. Saving Settings with an empty key, or the masked key, keeps the key already stored.",
+        "Optional narration only rewrites card text, and it uses the WordPress AI Client. The plugin does not store a provider key. Leave narration off to keep the on-store wording.",
       ],
       links: [
         { href: urls.ai, label: "AI" },
@@ -277,7 +277,7 @@ export default function Help() {
           <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Help</h2>
           <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">
             How loyalty, sales, analytics, and the customer account fit together
-            {version ? ` · Commerce Insights for WooCommerce by Ppros ${version}` : ""}.
+            {version ? ` · Myrvento Loyalty for WooCommerce ${version}` : ""}.
           </p>
         </div>
         <label className="ciwp-block ciwp-min-w-[16rem] ciwp-flex-1 md:ciwp-max-w-sm">

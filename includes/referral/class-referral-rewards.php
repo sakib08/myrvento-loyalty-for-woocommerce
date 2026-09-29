@@ -36,7 +36,7 @@ class Ciwp_Referral_Rewards {
 			'referral',
 			array(
 				'source_id'   => $referrer_id,
-				'description' => __( 'Referral welcome bonus', 'commerce-insights-woocommerce-by-ppros' ),
+				'description' => __( 'Referral welcome bonus', 'myrvento-loyalty-for-woocommerce' ),
 			)
 		);
 
@@ -112,7 +112,7 @@ class Ciwp_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral first-order bonus (order %s)', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Referral first-order bonus (order %s)', 'myrvento-loyalty-for-woocommerce' ),
 						$order->get_order_number()
 					),
 				)
@@ -152,7 +152,7 @@ class Ciwp_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral recurring bonus (order %s)', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Referral recurring bonus (order %s)', 'myrvento-loyalty-for-woocommerce' ),
 						$order->get_order_number()
 					),
 				)

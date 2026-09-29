@@ -26,7 +26,7 @@ class Ciwp_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		return self::write(
@@ -51,7 +51,7 @@ class Ciwp_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$type = isset( $args['type'] ) ? $args['type'] : 'redeem';
@@ -74,7 +74,7 @@ class Ciwp_Points_Ledger {
 
 		$customer_id = (int) $customer_id;
 		if ( $customer_id <= 0 ) {
-			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$ledger   = esc_sql( Ciwp::table( 'points_ledger' ) );
@@ -114,7 +114,7 @@ class Ciwp_Points_Ledger {
 
 		if ( $amount < 0 && $available < abs( $amount ) && empty( $args['allow_negative'] ) ) {
 			$wpdb->query( 'ROLLBACK' );
-			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( $amount < 0 && empty( $args['skip_consume'] ) ) {
@@ -281,7 +281,7 @@ class Ciwp_Points_Ledger {
 				array(
 					'type'         => 'expire',
 					'source_id'    => (int) $row->id,
-					'description'  => __( 'Points expired', 'commerce-insights-woocommerce-by-ppros' ),
+					'description'  => __( 'Points expired', 'myrvento-loyalty-for-woocommerce' ),
 					'no_expire'    => true,
 					'skip_consume' => true,
 				)

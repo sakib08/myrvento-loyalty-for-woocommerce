@@ -19,7 +19,7 @@ $tier      = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) 
 $rewards   = Ciwp_Rewards::all( true );
 $badges    = Ciwp_Gamification::customer_badges( $user_id );
 $challenges = Ciwp_Gamification::customer_challenges( $user_id );
-$points_name = Ciwp_Settings::get_value( 'points_name', __( 'Points', 'commerce-insights-woocommerce-by-ppros' ) );
+$points_name = Ciwp_Settings::get_value( 'points_name', __( 'Points', 'myrvento-loyalty-for-woocommerce' ) );
 $birthday    = get_user_meta( $user_id, 'gp_birthday', true );
 $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per_page' => 10 ) );
 ?>
@@ -32,7 +32,7 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 				<?php
 				printf(
 					/* translators: 1: lifetime earned, 2: points name */
-					esc_html__( '%1$s lifetime %2$s', 'commerce-insights-woocommerce-by-ppros' ),
+					esc_html__( '%1$s lifetime %2$s', 'myrvento-loyalty-for-woocommerce' ),
 					esc_html( number_format_i18n( (int) $balance->lifetime_earned ) ),
 					esc_html( strtolower( $points_name ) )
 				);
@@ -58,13 +58,13 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 
 	<form class="ciwp-account__birthday" data-ciwp-birthday>
 		<label>
-			<?php esc_html_e( 'Birthday', 'commerce-insights-woocommerce-by-ppros' ); ?>
+			<?php esc_html_e( 'Birthday', 'myrvento-loyalty-for-woocommerce' ); ?>
 			<input type="date" name="birthday" value="<?php echo $birthday ? esc_attr( wp_date( 'Y' ) . '-' . $birthday ) : ''; ?>">
 		</label>
-		<button type="submit"><?php esc_html_e( 'Save', 'commerce-insights-woocommerce-by-ppros' ); ?></button>
+		<button type="submit"><?php esc_html_e( 'Save', 'myrvento-loyalty-for-woocommerce' ); ?></button>
 	</form>
 
-	<h3><?php esc_html_e( 'Rewards', 'commerce-insights-woocommerce-by-ppros' ); ?></h3>
+	<h3><?php esc_html_e( 'Rewards', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
 	<div class="ciwp-account__grid">
 		<?php foreach ( $rewards as $reward ) : ?>
 			<div class="ciwp-account__card">
@@ -76,14 +76,14 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 					data-ciwp-redeem="<?php echo esc_attr( (string) $reward->id ); ?>"
 					<?php disabled( (int) $balance->available < (int) $reward->points_cost ); ?>
 				>
-					<?php esc_html_e( 'Redeem', 'commerce-insights-woocommerce-by-ppros' ); ?>
+					<?php esc_html_e( 'Redeem', 'myrvento-loyalty-for-woocommerce' ); ?>
 				</button>
 			</div>
 		<?php endforeach; ?>
 	</div>
 
 	<?php if ( $challenges ) : ?>
-		<h3><?php esc_html_e( 'Challenges', 'commerce-insights-woocommerce-by-ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Challenges', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
 		<?php foreach ( $challenges as $challenge ) : ?>
 			<?php
 			$pct = $challenge['target_value'] > 0
@@ -101,7 +101,7 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 	<?php endif; ?>
 
 	<?php if ( $badges ) : ?>
-		<h3><?php esc_html_e( 'Badges', 'commerce-insights-woocommerce-by-ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Badges', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
 		<ul class="ciwp-account__badges">
 			<?php foreach ( $badges as $badge ) : ?>
 				<li><?php echo esc_html( $badge->name ); ?></li>
@@ -109,12 +109,12 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 		</ul>
 	<?php endif; ?>
 
-	<h3><?php esc_html_e( 'History', 'commerce-insights-woocommerce-by-ppros' ); ?></h3>
+	<h3><?php esc_html_e( 'History', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
 	<table class="shop_table">
 		<thead>
 			<tr>
-				<th><?php esc_html_e( 'Date', 'commerce-insights-woocommerce-by-ppros' ); ?></th>
-				<th><?php esc_html_e( 'Description', 'commerce-insights-woocommerce-by-ppros' ); ?></th>
+				<th><?php esc_html_e( 'Date', 'myrvento-loyalty-for-woocommerce' ); ?></th>
+				<th><?php esc_html_e( 'Description', 'myrvento-loyalty-for-woocommerce' ); ?></th>
 				<th><?php echo esc_html( $points_name ); ?></th>
 			</tr>
 		</thead>
@@ -127,19 +127,19 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 				</tr>
 			<?php endforeach; ?>
 			<?php if ( empty( $history['items'] ) ) : ?>
-				<tr><td colspan="3"><?php esc_html_e( 'No points activity yet.', 'commerce-insights-woocommerce-by-ppros' ); ?></td></tr>
+				<tr><td colspan="3"><?php esc_html_e( 'No points activity yet.', 'myrvento-loyalty-for-woocommerce' ); ?></td></tr>
 			<?php endif; ?>
 		</tbody>
 	</table>
 
 	<?php if ( ! empty( $redemptions['items'] ) ) : ?>
-		<h3><?php esc_html_e( 'Redeemed rewards', 'commerce-insights-woocommerce-by-ppros' ); ?></h3>
+		<h3><?php esc_html_e( 'Redeemed rewards', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
 		<table class="shop_table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Date', 'commerce-insights-woocommerce-by-ppros' ); ?></th>
-					<th><?php esc_html_e( 'Coupon', 'commerce-insights-woocommerce-by-ppros' ); ?></th>
-					<th><?php esc_html_e( 'Points', 'commerce-insights-woocommerce-by-ppros' ); ?></th>
+					<th><?php esc_html_e( 'Date', 'myrvento-loyalty-for-woocommerce' ); ?></th>
+					<th><?php esc_html_e( 'Coupon', 'myrvento-loyalty-for-woocommerce' ); ?></th>
+					<th><?php esc_html_e( 'Points', 'myrvento-loyalty-for-woocommerce' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>

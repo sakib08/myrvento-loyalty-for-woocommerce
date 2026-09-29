@@ -1,6 +1,6 @@
 <?php
 /**
- * Commerce Brain — action cards from local models, optional LLM narration.
+ * Myrvento Brain — action cards from local models, optional LLM narration.
  *
  * @package Ciwp
  */
@@ -8,7 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * AI Commerce Brain.
+ * Myrvento Brain.
  */
 class Ciwp_AI_Brain {
 
@@ -44,8 +44,8 @@ class Ciwp_AI_Brain {
 			'generated_at' => current_time( 'mysql' ),
 			'llm'          => array(
 				'enabled'    => self::llm_enabled(),
-				'configured' => '' !== (string) Ciwp_Settings::get_value( 'ai_api_key', '' ),
-				'model'      => (string) Ciwp_Settings::get_value( 'ai_model', 'gpt-4o-mini' ),
+				'configured' => self::llm_available(),
+				'model'      => '',
 				'error'      => ( $llm && ! empty( $llm['error'] ) ) ? $llm['error'] : '',
 			),
 			'kpis'         => $local['kpis'],
@@ -74,17 +74,17 @@ class Ciwp_AI_Brain {
 				'severity' => 'warn',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s customer is at high churn risk', '%s customers are at high churn risk', $high, 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s customer is at high churn risk', '%s customers are at high churn risk', $high, 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( $high )
 				),
 				'body'     => $top
 					? sprintf(
 						/* translators: customer name */
-						__( '%s is the highest risk. Send a win-back offer or loyalty bonus before the repurchase window closes.', 'commerce-insights-woocommerce-by-ppros' ),
+						__( '%s is the highest risk. Send a win-back offer or loyalty bonus before the repurchase window closes.', 'myrvento-loyalty-for-woocommerce' ),
 						$top
 					)
-					: __( 'Reach at-risk buyers with a points bonus or a personal coupon.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'Open win-back list', 'commerce-insights-woocommerce-by-ppros' ),
+					: __( 'Reach at-risk buyers with a points bonus or a personal coupon.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'Open win-back list', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -96,11 +96,11 @@ class Ciwp_AI_Brain {
 				'severity' => 'info',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s predicted high-value customer', '%s predicted high-value customers', $hv, 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s predicted high-value customer', '%s predicted high-value customers', $hv, 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( $hv )
 				),
-				'body'     => __( 'Protect these buyers with VIP perks and avoid training them on deep discounts.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'Review high-value list', 'commerce-insights-woocommerce-by-ppros' ),
+				'body'     => __( 'Protect these buyers with VIP perks and avoid training them on deep discounts.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'Review high-value list', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -117,11 +117,11 @@ class Ciwp_AI_Brain {
 				'severity' => 'info',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s customer is likely to buy in the next 14 days', '%s customers are likely to buy in the next 14 days', count( $soon ), 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s customer is likely to buy in the next 14 days', '%s customers are likely to buy in the next 14 days', count( $soon ), 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( count( $soon ) )
 				),
-				'body'     => __( 'Time replenishment reminders and points multipliers to land just before the predicted date.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'See next-purchase dates', 'commerce-insights-woocommerce-by-ppros' ),
+				'body'     => __( 'Time replenishment reminders and points multipliers to land just before the predicted date.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'See next-purchase dates', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'predictions',
 			);
 		}
@@ -133,11 +133,11 @@ class Ciwp_AI_Brain {
 				'severity' => 'action',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s product can support a price increase', '%s products can support a price increase', $raise, 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s product can support a price increase', '%s products can support a price increase', $raise, 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( $raise )
 				),
-				'body'     => __( 'Demand is outrunning stock. Raising price slightly stretches cover without a full restock delay.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'Review price raises', 'commerce-insights-woocommerce-by-ppros' ),
+				'body'     => __( 'Demand is outrunning stock. Raising price slightly stretches cover without a full restock delay.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'Review price raises', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'pricing',
 			);
 		}
@@ -149,11 +149,11 @@ class Ciwp_AI_Brain {
 				'severity' => 'action',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s SKU needs a clearance-style discount', '%s SKUs need clearance-style discounts', $disc, 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s SKU needs a clearance-style discount', '%s SKUs need clearance-style discounts', $disc, 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( $disc )
 				),
-				'body'     => __( 'Slow movers and excess cover. Discount is capped when cost-of-goods meta is present.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'Optimize discounts', 'commerce-insights-woocommerce-by-ppros' ),
+				'body'     => __( 'Slow movers and excess cover. Discount is capped when cost-of-goods meta is present.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'Optimize discounts', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'pricing',
 			);
 		}
@@ -165,11 +165,11 @@ class Ciwp_AI_Brain {
 				'severity' => 'warn',
 				'title'    => sprintf(
 					/* translators: count */
-					_n( '%s product is forecasted to stock out in 30 days', '%s products are forecasted to stock out in 30 days', $stockout, 'commerce-insights-woocommerce-by-ppros' ),
+					_n( '%s product is forecasted to stock out in 30 days', '%s products are forecasted to stock out in 30 days', $stockout, 'myrvento-loyalty-for-woocommerce' ),
 					number_format_i18n( $stockout )
 				),
-				'body'     => __( 'Reorder quantities use the next-90-day forecast times the seasonal index for next month.', 'commerce-insights-woocommerce-by-ppros' ),
-				'action'   => __( 'Open inventory forecast', 'commerce-insights-woocommerce-by-ppros' ),
+				'body'     => __( 'Reorder quantities use the next-90-day forecast times the seasonal index for next month.', 'myrvento-loyalty-for-woocommerce' ),
+				'action'   => __( 'Open inventory forecast', 'myrvento-loyalty-for-woocommerce' ),
 				'tab'      => 'forecast',
 			);
 		}
@@ -178,8 +178,8 @@ class Ciwp_AI_Brain {
 			$insights[] = array(
 				'id'       => 'empty',
 				'severity' => 'info',
-				'title'    => __( 'Commerce Brain is ready', 'commerce-insights-woocommerce-by-ppros' ),
-				'body'     => __( 'Predictions need paid WooCommerce orders. As soon as sales land, churn, next purchase, pricing, and inventory forecasts fill in automatically — no API key required.', 'commerce-insights-woocommerce-by-ppros' ),
+				'title'    => __( 'Myrvento Brain is ready', 'myrvento-loyalty-for-woocommerce' ),
+				'body'     => __( 'Predictions need paid WooCommerce orders. As soon as sales land, churn, next purchase, pricing, and inventory forecasts fill in automatically — no API key required.', 'myrvento-loyalty-for-woocommerce' ),
 				'action'   => '',
 				'tab'      => 'predictions',
 			);
@@ -199,77 +199,51 @@ class Ciwp_AI_Brain {
 	}
 
 	/**
-	 * Whether LLM narration is turned on and keyed.
+	 * Whether the site can run narration through the WordPress AI Client.
+	 *
+	 * @return bool
+	 */
+	public static function llm_available() {
+		return function_exists( 'wp_ai_client_prompt' ) && function_exists( 'wp_supports_ai' ) && wp_supports_ai();
+	}
+
+	/**
+	 * Whether LLM narration is turned on and the WordPress AI Client is available.
 	 *
 	 * @return bool
 	 */
 	public static function llm_enabled() {
-		return (bool) Ciwp_Settings::get_value( 'ai_llm_enabled', false )
-			&& '' !== (string) Ciwp_Settings::get_value( 'ai_api_key', '' );
+		return (bool) Ciwp_Settings::get_value( 'ai_llm_enabled', false ) && self::llm_available();
 	}
 
 	/**
-	 * Ask an OpenAI-compatible model to rewrite insights.
+	 * Ask the site's WordPress AI provider to rewrite insights.
 	 *
 	 * @param array<string, mixed> $local Local payload.
 	 * @return array<string, mixed>
 	 */
 	public static function narrate( $local ) {
-		$key  = (string) Ciwp_Settings::get_value( 'ai_api_key', '' );
-		$base = untrailingslashit( (string) Ciwp_Settings::get_value( 'ai_api_base', 'https://api.openai.com/v1' ) ); // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Optional admin endpoint. Requires WordPress 6.0, before wp_ai_client_prompt().
-		$model = (string) Ciwp_Settings::get_value( 'ai_model', 'gpt-4o-mini' );
-
-		if ( '' === $key ) {
-			return array( 'error' => __( 'No API key saved.', 'commerce-insights-woocommerce-by-ppros' ) );
+		if ( ! self::llm_available() ) {
+			return array(
+				'error' => __( 'WordPress AI is not available. Connect a provider in WordPress settings. On-store models still run without it.', 'myrvento-loyalty-for-woocommerce' ),
+			);
 		}
 
 		$compact = wp_json_encode( $local );
-		$body    = array(
-			'model'       => $model,
-			'temperature' => 0.2,
-			'messages'    => array(
-				array(
-					'role'    => 'system',
-					'content' => 'You are Commerce Insights for WooCommerce by Ppros Commerce Brain for a WooCommerce merchant. Return ONLY a JSON array of 3 to 6 objects with keys: id, severity (info|warn|action), title, body, action, tab (predictions|pricing|forecast). Be specific and operational. Do not invent numbers that are not in the input.',
-				),
-				array(
-					'role'    => 'user',
-					'content' => $compact,
-				),
-			),
-		);
+		$result  = wp_ai_client_prompt( is_string( $compact ) ? $compact : '' )
+			->using_system_instruction( 'You are Myrvento Loyalty for WooCommerce, writing action cards for a WooCommerce merchant. Return ONLY a JSON array of 3 to 6 objects with keys: id, severity (info|warn|action), title, body, action, tab (predictions|pricing|forecast). Be specific and operational. Do not invent numbers that are not in the input.' )
+			->using_temperature( 0.2 )
+			->generate_text();
 
-		$response = wp_remote_post(
-			$base . '/chat/completions',
-			array(
-				'timeout' => 20,
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $key,
-					'Content-Type'  => 'application/json',
-				),
-				'body'    => wp_json_encode( $body ),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return array( 'error' => $response->get_error_message() );
+		if ( is_wp_error( $result ) ) {
+			return array( 'error' => $result->get_error_message() );
 		}
 
-		$code = (int) wp_remote_retrieve_response_code( $response );
-		$raw  = wp_remote_retrieve_body( $response );
-		$data = json_decode( $raw, true );
-
-		if ( $code >= 400 ) {
-			$msg = isset( $data['error']['message'] ) ? $data['error']['message'] : sprintf( 'HTTP %d', $code );
-			return array( 'error' => $msg );
-		}
-
-		$content = isset( $data['choices'][0]['message']['content'] ) ? $data['choices'][0]['message']['content'] : '';
-		$content = preg_replace( '/^```json\s*|\s*```$/', '', trim( $content ) );
+		$content = preg_replace( '/^```json\s*|\s*```$/', '', trim( (string) $result ) );
 		$parsed  = json_decode( $content, true );
 
 		if ( ! is_array( $parsed ) ) {
-			return array( 'error' => __( 'The model did not return JSON insights.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return array( 'error' => __( 'The model did not return JSON insights.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$clean = array();

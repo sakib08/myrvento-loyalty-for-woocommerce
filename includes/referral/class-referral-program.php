@@ -25,13 +25,14 @@ class Ciwp_Referral_Program {
 			return $code;
 		}
 
-		$base = strtoupper( substr( hash( 'sha256', $user_id . '|' . wp_salt( 'auth' ) ), 0, 8 ) );
-		$code = $base;
-		$i    = 0;
+		$secret = Ciwp::hash_secret();
+		$base   = strtoupper( substr( hash( 'sha256', $user_id . '|' . $secret ), 0, 8 ) );
+		$code   = $base;
+		$i      = 0;
 
 		while ( self::find_referrer_by_code( $code ) && $i < 10 ) {
 			++$i;
-			$code = strtoupper( substr( hash( 'sha256', $user_id . '|' . $i . '|' . wp_salt() ), 0, 8 ) );
+			$code = strtoupper( substr( hash( 'sha256', $user_id . '|' . $i . '|' . $secret ), 0, 8 ) );
 		}
 
 		update_user_meta( $user_id, 'gp_referral_code', $code );
@@ -152,7 +153,7 @@ class Ciwp_Referral_Program {
 		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(

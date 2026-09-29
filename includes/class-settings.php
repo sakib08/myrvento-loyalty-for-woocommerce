@@ -22,20 +22,17 @@ class Ciwp_Settings {
 	public static function defaults() {
 		return array(
 			'earn_order_status'          => 'completed',
-			'points_name'                => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
+			'points_name'                => __( 'Points', 'myrvento-loyalty-for-woocommerce' ),
 			'cookie_days'                => 30,
 			'expiration_days'            => 0,
 			'downgrade_enabled'          => true,
 			'downgrade_window_days'      => 365,
-			'myaccount_loyalty_label'    => __( 'Loyalty', 'commerce-insights-woocommerce-by-ppros' ),
-			'myaccount_referrals_label'  => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
+			'myaccount_loyalty_label'    => __( 'Loyalty', 'myrvento-loyalty-for-woocommerce' ),
+			'myaccount_referrals_label'  => __( 'Referrals', 'myrvento-loyalty-for-woocommerce' ),
 			'social_once'                => true,
 			'referral_param'             => 'gp_ref',
 			'ai_enabled'                 => true,
 			'ai_llm_enabled'             => false,
-			'ai_api_key'                 => '',
-			'ai_api_base'                => 'https://api.openai.com/v1', // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Optional admin endpoint. Requires WordPress 6.0, before wp_ai_client_prompt().
-			'ai_model'                   => 'gpt-4o-mini',
 		);
 	}
 
@@ -51,7 +48,13 @@ class Ciwp_Settings {
 			$stored = array();
 		}
 
-		return wp_parse_args( $stored, self::defaults() );
+		$settings = array_intersect_key( wp_parse_args( $stored, self::defaults() ), self::defaults() );
+
+		if ( isset( $stored['ai_api_key'] ) || isset( $stored['ai_api_base'] ) || isset( $stored['ai_model'] ) ) {
+			update_option( self::OPTION, $settings, false );
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -82,10 +85,6 @@ class Ciwp_Settings {
 		$clean  = array();
 
 		foreach ( self::defaults() as $key => $default ) {
-			if ( 'ai_api_key' === $key ) {
-				continue;
-			}
-
 			if ( ! array_key_exists( $key, $merged ) ) {
 				$clean[ $key ] = $default;
 				continue;
@@ -97,21 +96,9 @@ class Ciwp_Settings {
 				$clean[ $key ] = (bool) $value;
 			} elseif ( is_int( $default ) ) {
 				$clean[ $key ] = (int) $value;
-			} elseif ( 'ai_api_base' === $key ) {
-				$url            = esc_url_raw( (string) $value );
-				$clean[ $key ] = $url ? untrailingslashit( $url ) : $default;
 			} else {
 				$clean[ $key ] = is_string( $value ) ? sanitize_text_field( $value ) : $default;
 			}
-		}
-
-		$incoming = isset( $merged['ai_api_key'] ) ? (string) $merged['ai_api_key'] : '';
-		if ( ! empty( $merged['ai_clear_key'] ) ) {
-			$clean['ai_api_key'] = '';
-		} elseif ( '' === $incoming || '********' === $incoming ) {
-			$clean['ai_api_key'] = (string) self::get_value( 'ai_api_key', '' );
-		} else {
-			$clean['ai_api_key'] = sanitize_text_field( $incoming );
 		}
 
 		update_option( self::OPTION, $clean, false );
@@ -120,14 +107,13 @@ class Ciwp_Settings {
 	}
 
 	/**
-	 * Settings for the admin REST (API key masked).
+	 * Settings for the admin REST.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public static function for_admin() {
-		$settings                    = self::get();
-		$settings['ai_api_key_set']  = '' !== (string) $settings['ai_api_key'];
-		$settings['ai_api_key']      = $settings['ai_api_key_set'] ? '********' : '';
+		$settings                        = self::get();
+		$settings['ai_client_available'] = function_exists( 'wp_ai_client_prompt' ) && function_exists( 'wp_supports_ai' ) && wp_supports_ai();
 		return $settings;
 	}
 }

@@ -19,7 +19,6 @@ class Ciwp_Installer {
 	 * @return void
 	 */
 	public static function activate() {
-		self::migrate_legacy_keys();
 		self::create_tables();
 		self::seed();
 		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
@@ -56,8 +55,6 @@ class Ciwp_Installer {
 	 * @return void
 	 */
 	public static function maybe_upgrade() {
-		self::migrate_legacy_keys();
-
 		$installed = get_option( 'ciwp_db_version', '' );
 
 		if ( (string) $installed === (string) CIWP_DB_VERSION ) {
@@ -67,38 +64,6 @@ class Ciwp_Installer {
 		self::create_tables();
 		self::seed();
 		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
-	}
-
-	/**
-	 * Copy options and cron saved under the previous prefix.
-	 *
-	 * @return void
-	 */
-	private static function migrate_legacy_keys() {
-		$map = array(
-			'growthpilot_settings'    => 'ciwp_settings',
-			'growthpilot_db_version'  => 'ciwp_db_version',
-			'growthpilot_ai_last_run' => 'ciwp_ai_last_run',
-			'growthpilot_demo_seed'   => 'ciwp_demo_seed',
-		);
-
-		foreach ( $map as $old => $new ) {
-			$legacy = get_option( $old, null );
-			if ( null === $legacy ) {
-				continue;
-			}
-
-			if ( false === get_option( $new, false ) ) {
-				update_option( $new, $legacy, false );
-			}
-
-			delete_option( $old );
-		}
-
-		$timestamp = wp_next_scheduled( 'growthpilot_daily' );
-		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'growthpilot_daily' );
-		}
 	}
 
 	/**
@@ -479,7 +444,7 @@ class Ciwp_Installer {
 			$wpdb->insert(
 				$campaigns,
 				array(
-					'name'                  => __( 'Refer a friend', 'commerce-insights-woocommerce-by-ppros' ),
+					'name'                  => __( 'Refer a friend', 'myrvento-loyalty-for-woocommerce' ),
 					'enabled'               => 1,
 					'first_order_points'    => 200,
 					'referee_signup_points' => 50,

@@ -74,9 +74,9 @@ class Ciwp_Sales {
 				'session_id' => $row->session_id,
 				'stage'      => (int) $row->checkouts > 0 ? 'checkout' : 'cart',
 				'last_at'    => $row->last_at,
-				'customer'   => $user ? $user->display_name : __( 'Guest', 'commerce-insights-woocommerce-by-ppros' ),
+				'customer'   => $user ? $user->display_name : __( 'Guest', 'myrvento-loyalty-for-woocommerce' ),
 				'email'      => $user ? $user->user_email : '',
-				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'commerce-insights-woocommerce-by-ppros' ),
+				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'myrvento-loyalty-for-woocommerce' ),
 				'value'      => round( $price, 2 ),
 			);
 		}
@@ -280,7 +280,7 @@ class Ciwp_Sales {
 				'orders'      => (int) $row->orders,
 				'last_order'  => $row->last_order,
 				'days_since'  => (int) $row->days_since,
-				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'commerce-insights-woocommerce-by-ppros' ) : __( 'Loyalty reminder', 'commerce-insights-woocommerce-by-ppros' ),
+				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'myrvento-loyalty-for-woocommerce' ) : __( 'Loyalty reminder', 'myrvento-loyalty-for-woocommerce' ),
 			);
 		}
 

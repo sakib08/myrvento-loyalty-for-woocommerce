@@ -68,11 +68,11 @@ class Ciwp_Frontend {
 		$settings = Ciwp_Settings::get();
 
 		if ( isset( $wp->query_vars['loyalty'] ) ) {
-			return $settings['myaccount_loyalty_label'];
+			return esc_html( $settings['myaccount_loyalty_label'] );
 		}
 
 		if ( isset( $wp->query_vars['referrals'] ) ) {
-			return $settings['myaccount_referrals_label'];
+			return esc_html( $settings['myaccount_referrals_label'] );
 		}
 
 		return $title;
@@ -116,8 +116,8 @@ class Ciwp_Frontend {
 					'apiUrl' => rest_url( 'ciwp/v1/' ),
 					'nonce'  => wp_create_nonce( 'wp_rest' ),
 					'i18n'   => array(
-						'copied' => __( 'Copied!', 'commerce-insights-woocommerce-by-ppros' ),
-						'copy'   => __( 'Copy link', 'commerce-insights-woocommerce-by-ppros' ),
+						'copied' => __( 'Copied!', 'myrvento-loyalty-for-woocommerce' ),
+						'copy'   => __( 'Copy link', 'myrvento-loyalty-for-woocommerce' ),
 					),
 				)
 			);
@@ -167,7 +167,7 @@ class Ciwp_Frontend {
 	 */
 	public function shortcode_loyalty() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'commerce-insights-woocommerce-by-ppros' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'myrvento-loyalty-for-woocommerce' ) . '</p>';
 		}
 
 		ob_start();
@@ -182,7 +182,7 @@ class Ciwp_Frontend {
 	 */
 	public function shortcode_referral() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'commerce-insights-woocommerce-by-ppros' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'myrvento-loyalty-for-woocommerce' ) . '</p>';
 		}
 
 		ob_start();

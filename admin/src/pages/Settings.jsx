@@ -85,7 +85,7 @@ export default function Settings() {
         </div>
       </Card>
 
-      <Card title="AI Commerce Brain" description="Local models always run from WooCommerce orders. An OpenAI-compatible key is optional and only rewrites the Brain action cards.">
+      <Card title="Myrvento Brain" description="Local models always run from WooCommerce orders. Optional narration uses the WordPress AI Client and the provider connected in WordPress. This plugin does not store an API key.">
         <div className="ciwp-grid ciwp-gap-3">
           <Toggle
             label="Run on-store AI models"
@@ -95,38 +95,15 @@ export default function Settings() {
           />
           <Toggle
             label="LLM narration"
-            description="Send compact scores to an OpenAI-compatible chat API. Numbers still come from local models."
+            description="Ask the site's WordPress AI provider to rewrite action cards. Numbers still come from local models."
             checked={Boolean(settings.ai_llm_enabled)}
             onChange={(ai_llm_enabled) => setSettings({ ...settings, ai_llm_enabled })}
           />
         </div>
-        <div className="ciwp-mt-4 ciwp-grid ciwp-gap-4 md:ciwp-grid-cols-2">
-          <Field
-            label="API key"
-            description={settings.ai_api_key_set ? "A key is saved. Leave blank to keep it, or remove it below." : "Optional. Never shown in full after save."}
-          >
-            <input
-              className={inputClass}
-              type="password"
-              autoComplete="off"
-              value={settings.ai_api_key === "********" ? "" : (settings.ai_api_key || "")}
-              placeholder={settings.ai_api_key_set ? "********" : ""}
-              onChange={(e) => setSettings({ ...settings, ai_api_key: e.target.value, ai_clear_key: false })}
-            />
-          </Field>
-          <Field label="Model">
-            <input className={inputClass} value={settings.ai_model || ""} onChange={(e) => setSettings({ ...settings, ai_model: e.target.value })} />
-          </Field>
-          <Field label="API base URL">
-            <input className={inputClass} value={settings.ai_api_base || ""} onChange={(e) => setSettings({ ...settings, ai_api_base: e.target.value })} />
-          </Field>
-        </div>
-        {settings.ai_api_key_set && (
-          <div className="ciwp-mt-3">
-            <Button variant="secondary" onClick={() => setSettings({ ...settings, ai_clear_key: true, ai_api_key: "" })}>
-              Remove API key
-            </Button>
-          </div>
+        {!settings.ai_client_available && (
+          <p className="ciwp-mb-0 ciwp-mt-4 ciwp-text-sm ciwp-text-slate-600">
+            WordPress AI is not available on this site yet. On-store models still run. Narration needs WordPress 7.0 or newer with a provider connected.
+          </p>
         )}
         <div className="ciwp-mt-5">
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save AI settings"}</Button>

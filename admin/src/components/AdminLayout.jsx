@@ -33,7 +33,7 @@ export default function AdminLayout({ page, children }) {
             </span>
             <div>
               <h1 className="ciwp-m-0 ciwp-text-lg ciwp-font-bold ciwp-text-slate-900">
-                {i18n.pluginName || "Commerce Insights for WooCommerce by Ppros"}
+                {i18n.pluginName || "Myrvento Loyalty for WooCommerce"}
               </h1>
               <p className="ciwp-m-0 ciwp-mt-0.5 ciwp-text-xs ciwp-text-slate-500">
                 {i18n.tagline || "Loyalty & Referrals"}

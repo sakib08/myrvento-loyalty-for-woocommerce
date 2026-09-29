@@ -235,7 +235,7 @@ class Ciwp_Analytics_Customers {
 						'email'       => $user['email'],
 						'last_order'  => $row->last_order,
 						'days_since'  => $days,
-						'reason'      => __( 'No purchase in 60+ days', 'commerce-insights-woocommerce-by-ppros' ),
+						'reason'      => __( 'No purchase in 60+ days', 'myrvento-loyalty-for-woocommerce' ),
 					);
 				}
 			} else {

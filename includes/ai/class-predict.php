@@ -78,10 +78,10 @@ class Ciwp_AI_Predict {
 			$label      = isset( $labels[ $cid ] ) ? $labels[ $cid ] : array( 'name' => '#' . $cid, 'email' => '' );
 
 			$reason_churn = $days <= 60
-				? __( 'Still inside a typical repurchase window.', 'commerce-insights-woocommerce-by-ppros' )
+				? __( 'Still inside a typical repurchase window.', 'myrvento-loyalty-for-woocommerce' )
 				: sprintf(
 					/* translators: 1: days since order, 2: expected gap */
-					__( 'No order in %1$d days; typical gap is %2$d days.', 'commerce-insights-woocommerce-by-ppros' ),
+					__( 'No order in %1$d days; typical gap is %2$d days.', 'myrvento-loyalty-for-woocommerce' ),
 					$days,
 					(int) round( $expected )
 				);
@@ -116,8 +116,8 @@ class Ciwp_AI_Predict {
 					'product_id'       => $sku['product_id'],
 					'reason'           => sprintf(
 						/* translators: 1: product name, 2: expected days */
-						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'commerce-insights-woocommerce-by-ppros' ),
-						$sku['name'] ? $sku['name'] : __( 'their usual items', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'myrvento-loyalty-for-woocommerce' ),
+						$sku['name'] ? $sku['name'] : __( 'their usual items', 'myrvento-loyalty-for-woocommerce' ),
 						(int) round( $expected )
 					),
 				)
@@ -132,7 +132,7 @@ class Ciwp_AI_Predict {
 					'is_high_value'   => $revenue >= $cutoff && $cutoff > 0,
 					'reason'          => sprintf(
 						/* translators: score */
-						__( 'RFM value score %s (recency, frequency, spend).', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'RFM value score %s (recency, frequency, spend).', 'myrvento-loyalty-for-woocommerce' ),
 						number_format_i18n( $value, 1 )
 					),
 				)

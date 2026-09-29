@@ -130,7 +130,7 @@ class Ciwp_Gamification {
 						'source_id'   => (int) $badge->id,
 						'description' => sprintf(
 							/* translators: %s badge name */
-							__( 'Badge bonus: %s', 'commerce-insights-woocommerce-by-ppros' ),
+							__( 'Badge bonus: %s', 'myrvento-loyalty-for-woocommerce' ),
 							$badge->name
 						),
 						'no_expire'   => true,
@@ -225,7 +225,7 @@ class Ciwp_Gamification {
 						'source_id'   => (int) $challenge->id,
 						'description' => sprintf(
 							/* translators: %s challenge name */
-							__( 'Challenge completed: %s', 'commerce-insights-woocommerce-by-ppros' ),
+							__( 'Challenge completed: %s', 'myrvento-loyalty-for-woocommerce' ),
 							$challenge->name
 						),
 					)
@@ -299,7 +299,7 @@ class Ciwp_Gamification {
 		$table = esc_sql( Ciwp::table( 'badges' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(
@@ -359,7 +359,7 @@ class Ciwp_Gamification {
 		$table = esc_sql( Ciwp::table( 'challenges' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(

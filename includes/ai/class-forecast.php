@@ -149,8 +149,8 @@ class Ciwp_AI_Forecast {
 				'curve'   => $peak,
 				'history' => $monthly,
 				'note'    => count( $monthly ) < 6
-					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'commerce-insights-woocommerce-by-ppros' )
-					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'commerce-insights-woocommerce-by-ppros' ),
+					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'myrvento-loyalty-for-woocommerce' )
+					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'myrvento-loyalty-for-woocommerce' ),
 			),
 			'summary'      => array(
 				'stockout_risk' => $stockout,

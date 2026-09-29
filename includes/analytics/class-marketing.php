@@ -41,11 +41,11 @@ class Ciwp_Analytics_Marketing {
 
 		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
 		$steps = array(
-			'visit'        => __( 'Visitors', 'commerce-insights-woocommerce-by-ppros' ),
-			'product_view' => __( 'Product views', 'commerce-insights-woocommerce-by-ppros' ),
-			'add_to_cart'  => __( 'Add to cart', 'commerce-insights-woocommerce-by-ppros' ),
-			'checkout'     => __( 'Checkout', 'commerce-insights-woocommerce-by-ppros' ),
-			'purchase'     => __( 'Purchase', 'commerce-insights-woocommerce-by-ppros' ),
+			'visit'        => __( 'Visitors', 'myrvento-loyalty-for-woocommerce' ),
+			'product_view' => __( 'Product views', 'myrvento-loyalty-for-woocommerce' ),
+			'add_to_cart'  => __( 'Add to cart', 'myrvento-loyalty-for-woocommerce' ),
+			'checkout'     => __( 'Checkout', 'myrvento-loyalty-for-woocommerce' ),
+			'purchase'     => __( 'Purchase', 'myrvento-loyalty-for-woocommerce' ),
 		);
 
 		$out      = array();

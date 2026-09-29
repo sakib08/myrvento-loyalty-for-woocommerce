@@ -63,7 +63,7 @@ class Ciwp_Rewards {
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(
@@ -109,11 +109,11 @@ class Ciwp_Rewards {
 
 		$reward = self::get( $reward_id );
 		if ( ! $reward || ! $reward->enabled ) {
-			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( null !== $reward->stock && (int) $reward->redeemed_count >= (int) $reward->stock ) {
-			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'commerce-insights-woocommerce-by-ppros' ) );
+			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$balance = Ciwp_Points_Ledger::get_balance( $customer_id );
@@ -121,7 +121,7 @@ class Ciwp_Rewards {
 			$required = Ciwp_VIP_Tiers::get( (int) $reward->tier_id );
 			$current  = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : null;
 			if ( $required && ( ! $current || (int) $current->sort_order < (int) $required->sort_order ) ) {
-				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'commerce-insights-woocommerce-by-ppros' ) );
+				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'myrvento-loyalty-for-woocommerce' ) );
 			}
 		}
 
@@ -136,7 +136,7 @@ class Ciwp_Rewards {
 					'source_id'   => (int) $reward->id,
 					'description' => sprintf(
 						/* translators: %s reward name */
-						__( 'Redeemed: %s', 'commerce-insights-woocommerce-by-ppros' ),
+						__( 'Redeemed: %s', 'myrvento-loyalty-for-woocommerce' ),
 						$reward->name
 					),
 				)

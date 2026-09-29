@@ -1,12 +1,12 @@
 <?php
 // phpcs:ignoreFile -- CLI demo seeder. Not loaded on normal requests.
 /**
- * Local demo data for Commerce Insights for WooCommerce by Ppros (customers, orders, loyalty, referrals, analytics, AI).
+ * Local demo data for Myrvento Loyalty for WooCommerce (customers, orders, loyalty, referrals, analytics, AI).
  *
  * Usage (from the WordPress root):
- *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php
- *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php rename
- *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php reset
+ *   wp eval-file wp-content/plugins/myrvento-loyalty-for-woocommerce/bin/seed-demo.php
+ *   wp eval-file wp-content/plugins/myrvento-loyalty-for-woocommerce/bin/seed-demo.php rename
+ *   wp eval-file wp-content/plugins/myrvento-loyalty-for-woocommerce/bin/seed-demo.php reset
  *
  * @package Ciwp
  */

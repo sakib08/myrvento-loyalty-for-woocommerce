@@ -247,7 +247,7 @@ export default function Analytics() {
 
       <Card
         title="Analytics"
-        description="Ecommerce, customer, product, and marketing analytics from WooCommerce orders and Commerce Insights for WooCommerce by Ppros tracking."
+        description="Ecommerce, customer, product, and marketing analytics from WooCommerce orders and Myrvento Loyalty for WooCommerce tracking."
         actions={
           <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-gap-2">
             {PRESETS.map((item) => (

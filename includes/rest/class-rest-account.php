@@ -201,7 +201,7 @@ class Ciwp_REST_Account {
 		} elseif ( preg_match( '/^\d{2}-\d{2}$/', $date ) ) {
 			$mmdd = $date;
 		} else {
-			return Ciwp_REST::error( new WP_Error( 'gp_birthday', __( 'Use YYYY-MM-DD or MM-DD.', 'commerce-insights-woocommerce-by-ppros' ) ) );
+			return Ciwp_REST::error( new WP_Error( 'gp_birthday', __( 'Use YYYY-MM-DD or MM-DD.', 'myrvento-loyalty-for-woocommerce' ) ) );
 		}
 
 		update_user_meta( get_current_user_id(), 'gp_birthday', $mmdd );

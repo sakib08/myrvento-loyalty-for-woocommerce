@@ -108,7 +108,7 @@ export default function AI() {
   async function narrate() {
     try {
       setBrain(await api.narrateAI());
-      showToast("Commerce Brain narration updated.");
+      showToast("Narration updated.");
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -134,7 +134,7 @@ export default function AI() {
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card
-        title="AI Commerce Brain"
+        title="Myrvento Brain"
         description="On-store models predict churn, next purchase, prices, seasonality, and inventory. An optional LLM only rewrites the action cards."
         actions={
           <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-2">
@@ -186,7 +186,7 @@ export default function AI() {
           </div>
           <p className="ciwp-m-0 ciwp-text-xs ciwp-text-slate-500">
             Engine: {brain.engine}
-            {brain.llm?.enabled ? ` · LLM ${brain.llm.model}` : " · local models (no API key required)"}
+            {brain.llm?.enabled ? " · WordPress AI narration" : " · local models"}
             {brain.llm?.error ? ` · ${brain.llm.error}` : ""}
           </p>
           <div className="ciwp-grid ciwp-gap-3">

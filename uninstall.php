@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall Commerce Insights for WooCommerce by Ppros — drop custom tables and options.
+ * Uninstall Myrvento Loyalty for WooCommerce. Drops this plugin's tables and options.
  *
  * @package Ciwp
  */
@@ -41,10 +41,8 @@ foreach ( $ciwp_tables as $ciwp_table ) {
 delete_option( 'ciwp_settings' );
 delete_option( 'ciwp_db_version' );
 delete_option( 'ciwp_ai_last_run' );
-delete_option( 'growthpilot_settings' );
-delete_option( 'growthpilot_db_version' );
-delete_option( 'growthpilot_ai_last_run' );
-delete_option( 'growthpilot_demo_seed' );
+delete_option( 'ciwp_hash_secret' );
+delete_option( 'ciwp_demo_seed' );
 delete_transient( 'ciwp_ai_predict' );
 delete_transient( 'ciwp_ai_pricing' );
 delete_transient( 'ciwp_ai_forecast' );

@@ -44,6 +44,7 @@ class Ciwp_REST_Analytics {
 			);
 		}
 
+		// Public on purpose: storefront and email beacons. They record anonymous events and return no private data.
 		register_rest_route(
 			$ns,
 			'/track',

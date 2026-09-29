@@ -36,6 +36,7 @@ class Ciwp_Referral_Tracking {
 
 		$param = Ciwp_Settings::get_value( 'referral_param', 'gp_ref' );
 
+		// Public share links cannot carry a nonce. The value is sanitized and ignored unless it matches a stored referral code.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET[ $param ] ) ) {
 			return;
@@ -87,7 +88,7 @@ class Ciwp_Referral_Tracking {
 			array(
 				'code'        => $code,
 				'campaign_id' => $campaign_id ? $campaign_id : null,
-				'visitor_hash'=> hash( 'sha256', $ip . '|' . $ua . '|' . wp_salt( 'nonce' ) ),
+				'visitor_hash'=> hash( 'sha256', $ip . '|' . $ua . '|' . Ciwp::hash_secret() ),
 				'landing_url' => esc_url_raw( home_url( add_query_arg( array() ) ) ),
 				'created_at'  => current_time( 'mysql' ),
 			)
