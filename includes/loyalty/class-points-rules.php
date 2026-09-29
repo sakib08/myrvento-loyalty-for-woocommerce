@@ -2,7 +2,7 @@
 /**
  * Earn rules (purchase rate, product/category, review, signup, etc.).
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Point rules repository.
  */
-class Ciwp_Points_Rules {
+class Myrvento_Points_Rules {
 
 	/**
 	 * All rules, optionally filtered.
@@ -22,7 +22,7 @@ class Ciwp_Points_Rules {
 	public static function all( $args = array() ) {
 		global $wpdb;
 
-		$table   = esc_sql( Ciwp::table( 'point_rules' ) );
+		$table   = esc_sql( Myrvento::table( 'point_rules' ) );
 		$source  = ! empty( $args['source'] ) ? (string) $args['source'] : '';
 		$enabled = isset( $args['enabled'] ) ? (int) $args['enabled'] : -1;
 
@@ -50,7 +50,7 @@ class Ciwp_Points_Rules {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'point_rules' ) );
+		$table = esc_sql( Myrvento::table( 'point_rules' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -69,7 +69,7 @@ class Ciwp_Points_Rules {
 	public static function get_global( $source ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'point_rules' ) );
+		$table = esc_sql( Myrvento::table( 'point_rules' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -89,7 +89,7 @@ class Ciwp_Points_Rules {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'point_rules' ) );
+		$table = esc_sql( Myrvento::table( 'point_rules' ) );
 
 		$row = array(
 			'name'        => sanitize_text_field( $data['name'] ?? '' ),
@@ -104,7 +104,7 @@ class Ciwp_Points_Rules {
 		);
 
 		if ( '' === $row['name'] ) {
-			return new WP_Error( 'gp_rule_name', __( 'Rule name is required.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_rule_name', __( 'Rule name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( $id ) {
@@ -125,7 +125,7 @@ class Ciwp_Points_Rules {
 	public static function delete( $id ) {
 		global $wpdb;
 
-		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'point_rules' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Myrvento::table( 'point_rules' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Ciwp_Points_Rules {
 
 		$campaigns = self::all( array( 'source' => 'campaign', 'enabled' => 1 ) );
 		foreach ( $campaigns as $rule ) {
-			$config = Ciwp::decode( $rule->config );
+			$config = Myrvento::decode( $rule->config );
 			$start  = ! empty( $config['starts_at'] ) ? strtotime( $config['starts_at'] ) : 0;
 			$end    = ! empty( $config['ends_at'] ) ? strtotime( $config['ends_at'] ) : 0;
 
@@ -227,7 +227,7 @@ class Ciwp_Points_Rules {
 	private static function object_rules( $object_type, $object_id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'point_rules' ) );
+		$table = esc_sql( Myrvento::table( 'point_rules' ) );
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(

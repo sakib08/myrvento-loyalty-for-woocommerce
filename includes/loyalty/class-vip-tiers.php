@@ -2,7 +2,7 @@
 /**
  * VIP tiers — spending, order-count, or points based.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * VIP tier engine.
  */
-class Ciwp_VIP_Tiers {
+class Myrvento_VIP_Tiers {
 
 	/**
 	 * All tiers ordered by sort_order.
@@ -21,7 +21,7 @@ class Ciwp_VIP_Tiers {
 	public static function all() {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$table = esc_sql( Myrvento::table( 'vip_tiers' ) );
 		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY sort_order ASC, id ASC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $rows ? $rows : array();
@@ -36,7 +36,7 @@ class Ciwp_VIP_Tiers {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$table = esc_sql( Myrvento::table( 'vip_tiers' ) );
 
 		return $wpdb->get_row(
 			$wpdb->prepare(
@@ -56,11 +56,11 @@ class Ciwp_VIP_Tiers {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$table = esc_sql( Myrvento::table( 'vip_tiers' ) );
 		$slug  = sanitize_title( $data['slug'] ?? $data['name'] ?? '' );
 
 		if ( '' === $slug ) {
-			return new WP_Error( 'gp_tier_slug', __( 'Tier name is required.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_tier_slug', __( 'Tier name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$benefits = $data['benefits'] ?? array();
@@ -101,7 +101,7 @@ class Ciwp_VIP_Tiers {
 	public static function delete( $id ) {
 		global $wpdb;
 
-		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'vip_tiers' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Myrvento::table( 'vip_tiers' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -112,7 +112,7 @@ class Ciwp_VIP_Tiers {
 	public static function get_default() {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$table = esc_sql( Myrvento::table( 'vip_tiers' ) );
 		$row   = $wpdb->get_row( "SELECT * FROM {$table} WHERE is_default = 1 ORDER BY sort_order ASC LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( $row ) {
@@ -166,7 +166,7 @@ class Ciwp_VIP_Tiers {
 			return null;
 		}
 
-		$balance     = Ciwp_Points_Ledger::get_balance( $customer_id );
+		$balance     = Myrvento_Points_Ledger::get_balance( $customer_id );
 		$current_id  = (int) $balance->tier_id;
 		$new_id      = (int) $matched->id;
 
@@ -179,8 +179,8 @@ class Ciwp_VIP_Tiers {
 		$is_down = $current && (int) $current->sort_order > (int) $matched->sort_order;
 
 		if ( $is_down && ! $manual ) {
-			$enabled = (bool) Ciwp_Settings::get_value( 'downgrade_enabled', true );
-			$window  = (int) Ciwp_Settings::get_value( 'downgrade_window_days', 365 );
+			$enabled = (bool) Myrvento_Settings::get_value( 'downgrade_enabled', true );
+			$window  = (int) Myrvento_Settings::get_value( 'downgrade_window_days', 365 );
 			$last    = $balance->tier_evaluated_at ? strtotime( $balance->tier_evaluated_at ) : 0;
 
 			if ( ! $enabled ) {
@@ -212,7 +212,7 @@ class Ciwp_VIP_Tiers {
 		self::touch_balance_tier( $customer_id, $tier_id );
 
 		$wpdb->insert(
-			esc_sql( Ciwp::table( 'customer_tiers' ) ),
+			esc_sql( Myrvento::table( 'customer_tiers' ) ),
 			array(
 				'customer_id'      => (int) $customer_id,
 				'tier_id'          => (int) $tier_id,
@@ -231,7 +231,7 @@ class Ciwp_VIP_Tiers {
 	public static function evaluate_all() {
 		global $wpdb;
 
-		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
+		$balances = esc_sql( Myrvento::table( 'points_balances' ) );
 		$ids      = $wpdb->get_col( "SELECT customer_id FROM {$balances}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count    = 0;
 
@@ -267,7 +267,7 @@ class Ciwp_VIP_Tiers {
 			++$count;
 		}
 
-		$balance = Ciwp_Points_Ledger::get_balance( $customer_id );
+		$balance = Myrvento_Points_Ledger::get_balance( $customer_id );
 
 		return array(
 			'spending'    => $spend,
@@ -286,7 +286,7 @@ class Ciwp_VIP_Tiers {
 	private static function touch_balance_tier( $customer_id, $tier_id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'points_balances' ) );
+		$table = esc_sql( Myrvento::table( 'points_balances' ) );
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT customer_id FROM {$table} WHERE customer_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -337,7 +337,7 @@ class Ciwp_VIP_Tiers {
 			'qualifier_type'  => $tier->qualifier_type,
 			'qualifier_value' => (float) $tier->qualifier_value,
 			'sort_order'      => (int) $tier->sort_order,
-			'benefits'        => Ciwp::decode( $tier->benefits ),
+			'benefits'        => Myrvento::decode( $tier->benefits ),
 			'is_default'      => (bool) $tier->is_default,
 		);
 	}

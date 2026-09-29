@@ -2,7 +2,7 @@
 /**
  * Abandoned carts, upsell, cross-sell, and win-back recovery.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Sales and conversion.
  */
-class Ciwp_Sales {
+class Myrvento_Sales {
 
 	/**
 	 * Full sales report.
@@ -37,10 +37,10 @@ class Ciwp_Sales {
 	public static function abandoned() {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
+		$table = esc_sql( Myrvento::table( 'analytics_events' ) );
 		$since = gmdate( 'Y-m-d H:i:s', time() - ( 30 * DAY_IN_SECONDS ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Myrvento::table() ).
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT session_id,
@@ -81,7 +81,7 @@ class Ciwp_Sales {
 			);
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Myrvento::table() ).
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM (
@@ -112,9 +112,9 @@ class Ciwp_Sales {
 	private static function pairs() {
 		global $wpdb;
 
-		$products  = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$products  = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$from      = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
@@ -228,8 +228,8 @@ class Ciwp_Sales {
 	public static function recovery() {
 		global $wpdb;
 
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$now       = current_time( 'mysql' );
 
@@ -252,7 +252,7 @@ class Ciwp_Sales {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
-		$labels = Ciwp_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
+		$labels = Myrvento_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
 		$items  = array();
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$total  = (int) $wpdb->get_var(

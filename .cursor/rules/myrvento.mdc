@@ -9,21 +9,21 @@ WordPress + WooCommerce plugin (HPOS). PHP 7.4+, text domain `myrvento-loyalty-f
 
 ## Names
 
-- Classes `Ciwp_*`, files `includes/**/class-*.php`
-- Functions, hooks, options, cron, asset handles: `ciwp_*`
-- Tables `wp_gp_*` via `Ciwp::table()` — never hardcode `$wpdb->prefix`
-- REST namespace `ciwp/v1`; WP error codes `gp_*`
-- CSS/JS prefix `ciwp-` (Tailwind `prefix: "ciwp-"`, preflight off). Brand teal (`brand-500` `#14b8a6`)
-- Admin mount `#ciwp-admin-root` with `data-page`; body class `ciwp-admin-page`
+- Classes `Myrvento_*`, files `includes/**/class-*.php`
+- Functions, hooks, options, cron, asset handles: `myrvento_*`
+- Tables `wp_myrvento_*` via `Myrvento::table()` — never hardcode `$wpdb->prefix`
+- REST namespace `myrvento/v1`; WP error codes `myrvento_*`
+- CSS/JS prefix `myrvento-` (Tailwind `prefix: "myrvento-"`, preflight off). Brand teal (`brand-500` `#14b8a6`)
+- Admin mount `#myrvento-admin-root` with `data-page`; body class `myrvento-admin-page`
 
 ```php
 // ❌ BAD
-$wpdb->query( "SELECT * FROM {$wpdb->prefix}gp_points_ledger WHERE customer_id = $id" );
+$wpdb->query( "SELECT * FROM {$wpdb->prefix}myrvento_points_ledger WHERE customer_id = $id" );
 
 // ✅ GOOD
 $wpdb->get_results(
 	$wpdb->prepare(
-		'SELECT * FROM ' . Ciwp::table( 'points_ledger' ) . ' WHERE customer_id = %d',
+		'SELECT * FROM ' . Myrvento::table( 'points_ledger' ) . ' WHERE customer_id = %d',
 		$id
 	)
 );
@@ -31,17 +31,17 @@ $wpdb->get_results(
 
 ## PHP
 
-- `defined( 'ABSPATH' ) || exit;` and `@package Ciwp` on every file
+- `defined( 'ABSPATH' ) || exit;` and `@package Myrvento` on every file
 - WordPress style: tabs, Yoda, `array()`, sanitise/escape, i18n every string
-- All `$wpdb` reads/writes with variables must use `$wpdb->prepare()`. Identifiers (table via `Ciwp::table()`, columns) stay outside placeholders; values use `%d`, `%f`, `%s`. Never interpolate user or request data into SQL. Static SQL with no variables may skip `prepare()`
+- All `$wpdb` reads/writes with variables must use `$wpdb->prepare()`. Identifiers (table via `Myrvento::table()`, columns) stay outside placeholders; values use `%d`, `%f`, `%s`. Never interpolate user or request data into SQL. Static SQL with no variables may skip `prepare()`
 - Paid orders: `wc_get_is_paid_statuses()` with `wc-` prefix. Prefer WC lookup tables (`wc_order_stats`, `wc_order_product_lookup`, `wc_customer_lookup`). `wc_order_coupon_lookup` has no `customer_id` — join stats
-- Schema changes bump `CIWP_DB_VERSION` and `Ciwp_Installer::create_tables()`
-- Optional narration uses the WordPress AI Client. Do not store a provider API key or call a provider URL. Referral codes and visitor fingerprints use `Ciwp::hash_secret()`, never WordPress authentication salts
+- Schema changes bump `MYRVENTO_DB_VERSION` and `Myrvento_Installer::create_tables()`
+- Optional narration uses the WordPress AI Client. Do not store a provider API key or call a provider URL. Referral codes and visitor fingerprints use `Myrvento::hash_secret()`, never WordPress authentication salts
 
 ## Admin (React 18)
 
 - One WP submenu per feature; inner tabs stay in React
-- Pages in `admin/src/pages/`, API in `admin/src/api.js` (`window.ciwpAdmin`)
+- Pages in `admin/src/pages/`, API in `admin/src/api.js` (`window.myrventoAdmin`)
 - After JSX/CSS changes run the webpack admin build; empty store must show empty states, not errors
 - Browser-verify admin UI; WP login submit is `#loginform` (`<input>`), not a button
 

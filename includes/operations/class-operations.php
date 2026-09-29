@@ -2,7 +2,7 @@
 /**
  * Orders, subscriptions, coupons, and customer activity.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce operations.
  */
-class Ciwp_Operations {
+class Myrvento_Operations {
 
 	/**
 	 * Operations report.
@@ -147,7 +147,7 @@ class Ciwp_Operations {
 		global $wpdb;
 
 		$events = $wpdb->get_results(
-			'SELECT event_type, customer_id, product_id, channel, created_at FROM ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' ORDER BY id DESC LIMIT 20' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'SELECT event_type, customer_id, product_id, channel, created_at FROM ' . esc_sql( Myrvento::table( 'analytics_events' ) ) . ' ORDER BY id DESC LIMIT 20' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
 
 		$items = array();
@@ -163,7 +163,7 @@ class Ciwp_Operations {
 		}
 
 		$ledger = $wpdb->get_results(
-			'SELECT customer_id, amount, source, description, created_at FROM ' . esc_sql( Ciwp::table( 'points_ledger' ) ) . ' ORDER BY id DESC LIMIT 15' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'SELECT customer_id, amount, source, description, created_at FROM ' . esc_sql( Myrvento::table( 'points_ledger' ) ) . ' ORDER BY id DESC LIMIT 15' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
 
 		foreach ( $ledger ? $ledger : array() as $row ) {

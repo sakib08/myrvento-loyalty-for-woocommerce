@@ -2,7 +2,7 @@
 /**
  * Translation files are loaded from this directory.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 // Silence is golden.

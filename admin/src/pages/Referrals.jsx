@@ -59,12 +59,12 @@ export default function Referrals() {
   }
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card title="Referral campaigns" description="Referral bonuses credit the loyalty ledger. There is no separate referral wallet.">
         {campaigns.map((campaign) => (
-          <div key={campaign.id} className="ciwp-mb-4 ciwp-grid ciwp-gap-3 ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4 md:ciwp-grid-cols-4">
+          <div key={campaign.id} className="myrvento-mb-4 myrvento-grid myrvento-gap-3 myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-p-4 md:myrvento-grid-cols-4">
             <Field label="Name"><input className={inputClass} value={campaign.name} onChange={(e) => setCampaigns((c) => c.map((row) => row.id === campaign.id ? { ...row, name: e.target.value } : row))} /></Field>
             <Field label="First-order points"><input className={inputClass} type="number" value={campaign.first_order_points} onChange={(e) => setCampaigns((c) => c.map((row) => row.id === campaign.id ? { ...row, first_order_points: Number(e.target.value) } : row))} /></Field>
             <Field label="Referee signup points"><input className={inputClass} type="number" value={campaign.referee_signup_points} onChange={(e) => setCampaigns((c) => c.map((row) => row.id === campaign.id ? { ...row, referee_signup_points: Number(e.target.value) } : row))} /></Field>
@@ -72,15 +72,15 @@ export default function Referrals() {
             <Field label="Cookie days"><input className={inputClass} type="number" value={campaign.cookie_days} onChange={(e) => setCampaigns((c) => c.map((row) => row.id === campaign.id ? { ...row, cookie_days: Number(e.target.value) } : row))} /></Field>
             <Field label="Landing page slug"><input className={inputClass} value={campaign.landing_page || ""} onChange={(e) => setCampaigns((c) => c.map((row) => row.id === campaign.id ? { ...row, landing_page: e.target.value } : row))} /></Field>
             <Toggle label="Enabled" checked={campaign.enabled} onChange={(enabled) => save({ ...campaign, enabled })} />
-            <div className="ciwp-flex ciwp-items-end ciwp-gap-2">
+            <div className="myrvento-flex myrvento-items-end myrvento-gap-2">
               <Button onClick={() => save(campaign)}>Save</Button>
               <Button variant="danger" onClick={async () => { await api.deleteCampaign(campaign.id); load(); }}>Delete</Button>
             </div>
           </div>
         ))}
 
-        <h3 className="ciwp-mb-2 ciwp-text-sm ciwp-font-bold">New campaign</h3>
-        <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4 md:ciwp-items-end">
+        <h3 className="myrvento-mb-2 myrvento-text-sm myrvento-font-bold">New campaign</h3>
+        <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4 md:myrvento-items-end">
           <Field label="Name"><input className={inputClass} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></Field>
           <Field label="First-order points"><input className={inputClass} type="number" value={draft.first_order_points} onChange={(e) => setDraft({ ...draft, first_order_points: Number(e.target.value) })} /></Field>
           <Field label="Recurring points"><input className={inputClass} type="number" value={draft.recurring_points} onChange={(e) => setDraft({ ...draft, recurring_points: Number(e.target.value) })} /></Field>
@@ -104,7 +104,7 @@ export default function Referrals() {
             {(referrals.items || []).map((row) => (
               <tr key={row.id}>
                 <td>{row.created_at}</td>
-                <td>{row.referrer}<div className="ciwp-text-xs ciwp-text-slate-500">{row.referrer_email}</div></td>
+                <td>{row.referrer}<div className="myrvento-text-xs myrvento-text-slate-500">{row.referrer_email}</div></td>
                 <td>{row.referee || "—"}</td>
                 <td><code>{row.code}</code></td>
                 <td>{row.status}</td>
@@ -112,7 +112,7 @@ export default function Referrals() {
               </tr>
             ))}
             {(referrals.items || []).length === 0 && (
-              <tr><td colSpan="6" className="ciwp-text-slate-500">No referrals yet.</td></tr>
+              <tr><td colSpan="6" className="myrvento-text-slate-500">No referrals yet.</td></tr>
             )}
           </tbody>
         </table>

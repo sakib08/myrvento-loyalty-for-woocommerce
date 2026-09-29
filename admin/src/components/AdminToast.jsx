@@ -6,8 +6,8 @@ export default function AdminToast({ message, type = "success" }) {
   return (
     <div
       role="status"
-      className={`ciwp-fixed ciwp-bottom-6 ciwp-right-6 ciwp-z-50 ciwp-max-w-sm ciwp-rounded-xl ciwp-px-4 ciwp-py-3 ciwp-text-sm ciwp-font-medium ciwp-shadow-lg ${
-        type === "error" ? "ciwp-bg-red-600 ciwp-text-white" : "ciwp-bg-emerald-600 ciwp-text-white"
+      className={`myrvento-fixed myrvento-bottom-6 myrvento-right-6 myrvento-z-50 myrvento-max-w-sm myrvento-rounded-xl myrvento-px-4 myrvento-py-3 myrvento-text-sm myrvento-font-medium myrvento-shadow-lg ${
+        type === "error" ? "myrvento-bg-red-600 myrvento-text-white" : "myrvento-bg-emerald-600 myrvento-text-white"
       }`}
     >
       {message}

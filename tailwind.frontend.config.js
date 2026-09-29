@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./frontend/src/**/*.{js,jsx}", "./templates/**/*.php"],
-  prefix: "ciwp-",
+  prefix: "myrvento-",
   corePlugins: {
     preflight: false,
   },

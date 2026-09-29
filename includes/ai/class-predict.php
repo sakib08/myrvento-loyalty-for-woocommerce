@@ -2,7 +2,7 @@
 /**
  * Next purchase, churn, and high-value customer models.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Predictive AI.
  */
-class Ciwp_AI_Predict {
+class Myrvento_AI_Predict {
 
 	/**
 	 * Full prediction report.
@@ -19,8 +19,8 @@ class Ciwp_AI_Predict {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return Ciwp_AI_Engine::remember(
-			'ciwp_ai_predict',
+		return Myrvento_AI_Engine::remember(
+			'myrvento_ai_predict',
 			static function () {
 				return self::compute();
 			},
@@ -34,7 +34,7 @@ class Ciwp_AI_Predict {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$features = Ciwp_AI_Engine::customer_features();
+		$features = Myrvento_AI_Engine::customer_features();
 		$rows     = $features['rows'];
 		$gap      = max( 14.0, (float) $features['median_gap'] );
 		$max_rev  = max( 1.0, (float) $features['max_revenue'] );
@@ -45,8 +45,8 @@ class Ciwp_AI_Predict {
 		foreach ( $rows as $row ) {
 			$ids[] = (int) $row->customer_id;
 		}
-		$labels   = Ciwp_AI_Engine::customer_labels( $ids );
-		$last_sku = Ciwp_AI_Engine::last_products( $ids );
+		$labels   = Myrvento_AI_Engine::customer_labels( $ids );
+		$last_sku = Myrvento_AI_Engine::last_products( $ids );
 
 		$churn       = array();
 		$next        = array();
@@ -61,13 +61,13 @@ class Ciwp_AI_Predict {
 			$own_gap    = ( $orders >= 2 && (int) $row->span_days > 0 ) ? ( (int) $row->span_days / max( 1, $orders - 1 ) ) : $gap;
 			$expected   = max( 14.0, (float) $own_gap );
 			$ratio      = $days / $expected;
-			$churn_p    = Ciwp_AI_Engine::logistic( 1.6 * ( $ratio - 1.35 ) );
+			$churn_p    = Myrvento_AI_Engine::logistic( 1.6 * ( $ratio - 1.35 ) );
 			$churn_pct  = round( $churn_p * 100, 1 );
-			$conf       = Ciwp_AI_Engine::clamp( 38 + ( $orders * 11 ), 40, 96 );
+			$conf       = Myrvento_AI_Engine::clamp( 38 + ( $orders * 11 ), 40, 96 );
 
-			$recency    = Ciwp_AI_Engine::clamp( 100 - ( $days / 1.8 ), 0, 100 );
-			$frequency  = Ciwp_AI_Engine::clamp( ( $orders / $max_ord ) * 100, 0, 100 );
-			$monetary   = Ciwp_AI_Engine::clamp( ( $revenue / $max_rev ) * 100, 0, 100 );
+			$recency    = Myrvento_AI_Engine::clamp( 100 - ( $days / 1.8 ), 0, 100 );
+			$frequency  = Myrvento_AI_Engine::clamp( ( $orders / $max_ord ) * 100, 0, 100 );
+			$monetary   = Myrvento_AI_Engine::clamp( ( $revenue / $max_rev ) * 100, 0, 100 );
 			$value      = round( ( 0.2 * $recency ) + ( 0.3 * $frequency ) + ( 0.5 * $monetary ), 1 );
 			$span       = max( 30, (int) $row->span_days, $days );
 			$pred_90    = round( ( $revenue / $span ) * 90, 2 );
@@ -161,7 +161,7 @@ class Ciwp_AI_Predict {
 			}
 		);
 
-		Ciwp_AI_Engine::persist( 'churn', $persist );
+		Myrvento_AI_Engine::persist( 'churn', $persist );
 
 		$high_n  = 0;
 		$watch_n = 0;

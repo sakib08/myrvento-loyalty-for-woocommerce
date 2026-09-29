@@ -50,21 +50,21 @@ export default function Revenue() {
   const churn = customers?.churn || {};
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-justify-between ciwp-gap-3">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-items-end myrvento-justify-between myrvento-gap-3">
         <div>
-          <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Revenue intelligence</h2>
-          <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">Lifetime value, retention, churn, attribution, profit, and the 30-day forecast.</p>
+          <h2 className="myrvento-m-0 myrvento-text-xl myrvento-font-bold myrvento-text-slate-900">Revenue intelligence</h2>
+          <p className="myrvento-m-0 myrvento-mt-1 myrvento-text-sm myrvento-text-slate-500">Lifetime value, retention, churn, attribution, profit, and the 30-day forecast.</p>
         </div>
-        <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
+        <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-1 myrvento-rounded-xl myrvento-bg-slate-100 myrvento-p-1">
           {TABS.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ${
-                tab === item.id ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm" : "ciwp-bg-transparent ciwp-text-slate-600"
+              className={`myrvento-rounded-lg myrvento-border-0 myrvento-px-3 myrvento-py-2 myrvento-text-sm myrvento-font-semibold ${
+                tab === item.id ? "myrvento-bg-white myrvento-text-brand-700 myrvento-shadow-sm" : "myrvento-bg-transparent myrvento-text-slate-600"
               }`}
             >
               {item.label}
@@ -74,7 +74,7 @@ export default function Revenue() {
       </div>
 
       {tab === "ltv" && (
-        <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-3">
+        <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-3">
           {[
             ["Average LTV", money(kpis.ltv?.value)],
             ["Repeat purchase rate", `${number(kpis.repeat_rate?.value, 1)}%`],
@@ -83,9 +83,9 @@ export default function Revenue() {
             ["Returning customers", number(kpis.returning_customers?.value)],
             ["Net revenue", money(kpis.net_revenue?.value)],
           ].map(([label, value]) => (
-            <div key={label} className="ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-bg-white ciwp-p-4">
-              <div className="ciwp-text-xs ciwp-font-semibold ciwp-uppercase ciwp-text-slate-500">{label}</div>
-              <div className="ciwp-mt-1 ciwp-text-2xl ciwp-font-bold">{value}</div>
+            <div key={label} className="myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-bg-white myrvento-p-4">
+              <div className="myrvento-text-xs myrvento-font-semibold myrvento-uppercase myrvento-text-slate-500">{label}</div>
+              <div className="myrvento-mt-1 myrvento-text-2xl myrvento-font-bold">{value}</div>
             </div>
           ))}
         </div>
@@ -93,36 +93,36 @@ export default function Revenue() {
 
       {tab === "retention" && (
         <Card title="Retention" description="Share of customers who come back, and the typical gap between orders.">
-          <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4">
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Customers</div><div className="ciwp-text-2xl ciwp-font-bold">{number(retention.customers)}</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">2nd purchase</div><div className="ciwp-text-2xl ciwp-font-bold">{number(retention.second_purchase_rate, 1)}%</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">3rd purchase</div><div className="ciwp-text-2xl ciwp-font-bold">{number(retention.third_purchase_rate, 1)}%</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Median gap</div><div className="ciwp-text-2xl ciwp-font-bold">{number(retention.median_days_between, 1)}d</div></div>
+          <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4">
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Customers</div><div className="myrvento-text-2xl myrvento-font-bold">{number(retention.customers)}</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">2nd purchase</div><div className="myrvento-text-2xl myrvento-font-bold">{number(retention.second_purchase_rate, 1)}%</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">3rd purchase</div><div className="myrvento-text-2xl myrvento-font-bold">{number(retention.third_purchase_rate, 1)}%</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Median gap</div><div className="myrvento-text-2xl myrvento-font-bold">{number(retention.median_days_between, 1)}d</div></div>
           </div>
         </Card>
       )}
 
       {tab === "churn" && (
         <Card title="Churn" description="Active means an order in the last 60 days. At risk is 61–180 days. Churned is longer.">
-          <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4">
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Active</div><div className="ciwp-text-2xl ciwp-font-bold">{number(churn.active)}</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">At risk</div><div className="ciwp-text-2xl ciwp-font-bold">{number(churn.at_risk)}</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Churned</div><div className="ciwp-text-2xl ciwp-font-bold">{number(churn.churned)}</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Churn rate</div><div className="ciwp-text-2xl ciwp-font-bold">{number(churn.churn_rate, 1)}%</div></div>
+          <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4">
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Active</div><div className="myrvento-text-2xl myrvento-font-bold">{number(churn.active)}</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">At risk</div><div className="myrvento-text-2xl myrvento-font-bold">{number(churn.at_risk)}</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Churned</div><div className="myrvento-text-2xl myrvento-font-bold">{number(churn.churned)}</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Churn rate</div><div className="myrvento-text-2xl myrvento-font-bold">{number(churn.churn_rate, 1)}%</div></div>
           </div>
         </Card>
       )}
 
       {tab === "attribution" && (
-        <div className="ciwp-grid ciwp-gap-5 md:ciwp-grid-cols-2">
+        <div className="myrvento-grid myrvento-gap-5 md:myrvento-grid-cols-2">
           {["first_touch", "last_touch"].map((key) => (
             <Card key={key} title={key === "first_touch" ? "First touch" : "Last touch"}>
-              {!(marketing?.attribution?.[key] || []).length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No attributed orders in this range.</p>}
+              {!(marketing?.attribution?.[key] || []).length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No attributed orders in this range.</p>}
               <table>
                 <tbody>
                   {(marketing?.attribution?.[key] || []).map((row) => (
                     <tr key={row.source}>
-                      <td className="ciwp-capitalize">{row.source}</td>
+                      <td className="myrvento-capitalize">{row.source}</td>
                       <td>{number(row.orders)} orders</td>
                     </tr>
                   ))}
@@ -135,7 +135,7 @@ export default function Revenue() {
 
       {tab === "profitability" && (
         <Card title="Product profitability" description="Net revenue for products sold in the selected analytics range. Unit cost is used when a product has COGS.">
-          {!(products?.profitability || []).length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">Profitability appears after products sell.</p>}
+          {!(products?.profitability || []).length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">Profitability appears after products sell.</p>}
           {(products?.profitability || []).length > 0 && (
             <table>
               <thead>
@@ -163,10 +163,10 @@ export default function Revenue() {
 
       {tab === "forecast" && (
         <Card title="Revenue forecasting" description="On-store seasonal forecast. It stays directional until there is at least six months of sales.">
-          <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-3">
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Next 30 days</div><div className="ciwp-text-2xl ciwp-font-bold">{money(forecast?.store?.forecast_30_revenue)}</div><div className="ciwp-text-sm ciwp-text-slate-500">{number(forecast?.store?.forecast_30_units, 1)} units</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Next 90 days</div><div className="ciwp-text-2xl ciwp-font-bold">{number(forecast?.store?.forecast_90_units, 1)} units</div></div>
-            <div><div className="ciwp-text-xs ciwp-uppercase ciwp-text-slate-500">Confidence</div><div className="ciwp-text-2xl ciwp-font-bold">{number(forecast?.store?.confidence)}%</div></div>
+          <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-3">
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Next 30 days</div><div className="myrvento-text-2xl myrvento-font-bold">{money(forecast?.store?.forecast_30_revenue)}</div><div className="myrvento-text-sm myrvento-text-slate-500">{number(forecast?.store?.forecast_30_units, 1)} units</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Next 90 days</div><div className="myrvento-text-2xl myrvento-font-bold">{number(forecast?.store?.forecast_90_units, 1)} units</div></div>
+            <div><div className="myrvento-text-xs myrvento-uppercase myrvento-text-slate-500">Confidence</div><div className="myrvento-text-2xl myrvento-font-bold">{number(forecast?.store?.confidence)}%</div></div>
           </div>
         </Card>
       )}

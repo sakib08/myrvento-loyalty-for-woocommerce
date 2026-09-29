@@ -2,7 +2,7 @@
 /**
  * Shared feature extraction and cache for on-store AI models.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * AI engine helpers.
  */
-class Ciwp_AI_Engine {
+class Myrvento_AI_Engine {
 
 	const CACHE_TTL = 6 * HOUR_IN_SECONDS;
 
@@ -21,11 +21,11 @@ class Ciwp_AI_Engine {
 	 * @return void
 	 */
 	public static function flush() {
-		delete_transient( 'ciwp_ai_predict' );
-		delete_transient( 'ciwp_ai_pricing' );
-		delete_transient( 'ciwp_ai_forecast' );
-		delete_transient( 'ciwp_ai_brain' );
-		delete_transient( 'ciwp_ai_brain_llm' );
+		delete_transient( 'myrvento_ai_predict' );
+		delete_transient( 'myrvento_ai_pricing' );
+		delete_transient( 'myrvento_ai_forecast' );
+		delete_transient( 'myrvento_ai_brain' );
+		delete_transient( 'myrvento_ai_brain_llm' );
 	}
 
 	/**
@@ -35,11 +35,11 @@ class Ciwp_AI_Engine {
 	 */
 	public static function refresh_all() {
 		self::flush();
-		$predict  = Ciwp_AI_Predict::report( true );
-		$pricing  = Ciwp_AI_Pricing::report( true );
-		$forecast = Ciwp_AI_Forecast::report( true );
-		$brain    = Ciwp_AI_Brain::report( true, false );
-		update_option( 'ciwp_ai_last_run', current_time( 'mysql' ), false );
+		$predict  = Myrvento_AI_Predict::report( true );
+		$pricing  = Myrvento_AI_Pricing::report( true );
+		$forecast = Myrvento_AI_Forecast::report( true );
+		$brain    = Myrvento_AI_Brain::report( true, false );
+		update_option( 'myrvento_ai_last_run', current_time( 'mysql' ), false );
 		return compact( 'predict', 'pricing', 'forecast', 'brain' );
 	}
 
@@ -74,7 +74,7 @@ class Ciwp_AI_Engine {
 	public static function persist( $kind, $rows ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'ai_predictions' ) );
+		$table = esc_sql( Myrvento::table( 'ai_predictions' ) );
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		if ( $found !== $table ) {
 			return;
@@ -107,8 +107,8 @@ class Ciwp_AI_Engine {
 	public static function customer_features() {
 		global $wpdb;
 
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$now       = current_time( 'mysql' );
 
@@ -174,9 +174,9 @@ class Ciwp_AI_Engine {
 			return array();
 		}
 
-		$table        = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats        = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses     = Ciwp_Analytics_Query::paid_statuses();
+		$table        = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats        = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses     = Myrvento_Analytics_Query::paid_statuses();
 		$status_in    = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$placeholders = implode( ',', array_fill( 0, count( $customer_ids ), '%d' ) );
 
@@ -214,9 +214,9 @@ class Ciwp_AI_Engine {
 	public static function product_sales() {
 		global $wpdb;
 
-		$table     = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$table     = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$from      = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
@@ -251,9 +251,9 @@ class Ciwp_AI_Engine {
 	public static function product_monthly() {
 		global $wpdb;
 
-		$table     = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$table     = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$from      = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
@@ -290,8 +290,8 @@ class Ciwp_AI_Engine {
 	public static function store_monthly() {
 		global $wpdb;
 
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$from      = gmdate( 'Y-m-01 00:00:00', strtotime( '-17 months' ) );
 
@@ -338,7 +338,7 @@ class Ciwp_AI_Engine {
 			return array();
 		}
 
-		$table        = esc_sql( Ciwp_Analytics_Query::customers_table() );
+		$table        = esc_sql( Myrvento_Analytics_Query::customers_table() );
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Lookup table and generated %d list.
 		$rows = $wpdb->get_results(
@@ -431,6 +431,6 @@ class Ciwp_AI_Engine {
 	 * @return bool
 	 */
 	public static function enabled() {
-		return (bool) Ciwp_Settings::get_value( 'ai_enabled', true );
+		return (bool) Myrvento_Settings::get_value( 'ai_enabled', true );
 	}
 }

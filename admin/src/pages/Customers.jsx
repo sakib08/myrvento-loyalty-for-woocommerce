@@ -54,7 +54,7 @@ export default function Customers() {
   }
 
   return (
-    <div className="ciwp-grid ciwp-gap-5 lg:ciwp-grid-cols-[1.2fr_1fr]">
+    <div className="myrvento-grid myrvento-gap-5 lg:myrvento-grid-cols-[1.2fr_1fr]">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="Customer points" description="Balances and VIP tiers from the shared ledger.">
         <Field label="Search">
@@ -68,7 +68,7 @@ export default function Customers() {
             placeholder="Name or email"
           />
         </Field>
-        <table className="ciwp-mt-4">
+        <table className="myrvento-mt-4">
           <thead>
             <tr>
               <th>Customer</th>
@@ -79,10 +79,10 @@ export default function Customers() {
           </thead>
           <tbody>
             {data.items.map((row) => (
-              <tr key={row.id} className="ciwp-cursor-pointer hover:ciwp-bg-slate-50" onClick={() => openCustomer(row.id)}>
+              <tr key={row.id} className="myrvento-cursor-pointer hover:myrvento-bg-slate-50" onClick={() => openCustomer(row.id)}>
                 <td>
                   <strong>{row.name}</strong>
-                  <div className="ciwp-text-xs ciwp-text-slate-500">{row.email}</div>
+                  <div className="myrvento-text-xs myrvento-text-slate-500">{row.email}</div>
                 </td>
                 <td>{row.available}</td>
                 <td>{row.lifetime_earned}</td>
@@ -92,32 +92,32 @@ export default function Customers() {
               </tr>
             ))}
             {data.items.length === 0 && (
-              <tr><td colSpan="4" className="ciwp-text-slate-500">No customers with points yet.</td></tr>
+              <tr><td colSpan="4" className="myrvento-text-slate-500">No customers with points yet.</td></tr>
             )}
           </tbody>
         </table>
       </Card>
 
       <Card title={selected ? selected.name : "Customer detail"} description={selected ? selected.email : "Select a customer to view history and adjust points."}>
-        {!selected && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">Nothing selected.</p>}
+        {!selected && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">Nothing selected.</p>}
         {selected && (
-          <div className="ciwp-grid ciwp-gap-4">
-            <div className="ciwp-grid ciwp-grid-cols-3 ciwp-gap-3">
-              <div className="ciwp-rounded-xl ciwp-bg-brand-50 ciwp-p-3">
-                <div className="ciwp-text-xs ciwp-text-slate-500">Available</div>
-                <div className="ciwp-text-xl ciwp-font-bold">{selected.available}</div>
+          <div className="myrvento-grid myrvento-gap-4">
+            <div className="myrvento-grid myrvento-grid-cols-3 myrvento-gap-3">
+              <div className="myrvento-rounded-xl myrvento-bg-brand-50 myrvento-p-3">
+                <div className="myrvento-text-xs myrvento-text-slate-500">Available</div>
+                <div className="myrvento-text-xl myrvento-font-bold">{selected.available}</div>
               </div>
-              <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                <div className="ciwp-text-xs ciwp-text-slate-500">Lifetime</div>
-                <div className="ciwp-text-xl ciwp-font-bold">{selected.lifetime_earned}</div>
+              <div className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                <div className="myrvento-text-xs myrvento-text-slate-500">Lifetime</div>
+                <div className="myrvento-text-xl myrvento-font-bold">{selected.lifetime_earned}</div>
               </div>
-              <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                <div className="ciwp-text-xs ciwp-text-slate-500">Tier</div>
-                <div className="ciwp-text-xl ciwp-font-bold" style={{ color: selected.tier?.color }}>{selected.tier?.name || "—"}</div>
+              <div className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                <div className="myrvento-text-xs myrvento-text-slate-500">Tier</div>
+                <div className="myrvento-text-xl myrvento-font-bold" style={{ color: selected.tier?.color }}>{selected.tier?.name || "—"}</div>
               </div>
             </div>
 
-            <div className="ciwp-grid ciwp-gap-2 md:ciwp-grid-cols-[1fr_2fr_auto] md:ciwp-items-end">
+            <div className="myrvento-grid myrvento-gap-2 md:myrvento-grid-cols-[1fr_2fr_auto] md:myrvento-items-end">
               <Field label="Adjust (+/−)">
                 <input className={inputClass} type="number" value={adjust.amount} onChange={(e) => setAdjust({ ...adjust, amount: e.target.value })} />
               </Field>
@@ -128,7 +128,7 @@ export default function Customers() {
             </div>
 
             <div>
-              <h3 className="ciwp-mb-2 ciwp-mt-0 ciwp-text-sm ciwp-font-bold">Transaction history</h3>
+              <h3 className="myrvento-mb-2 myrvento-mt-0 myrvento-text-sm myrvento-font-bold">Transaction history</h3>
               <table>
                 <thead>
                   <tr>
@@ -142,7 +142,7 @@ export default function Customers() {
                     <tr key={row.id}>
                       <td>{row.created_at}</td>
                       <td>{row.description || row.source}</td>
-                      <td className={Number(row.amount) < 0 ? "ciwp-text-red-600" : "ciwp-text-brand-700"}>
+                      <td className={Number(row.amount) < 0 ? "myrvento-text-red-600" : "myrvento-text-brand-700"}>
                         {Number(row.amount) > 0 ? `+${row.amount}` : row.amount}
                       </td>
                     </tr>

@@ -2,7 +2,7 @@
 /**
  * Share channel helpers for referral links.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Share & invite URLs.
  */
-class Ciwp_Share {
+class Myrvento_Share {
 
 	/**
 	 * Share payload for a customer.
@@ -19,8 +19,8 @@ class Ciwp_Share {
 	 * @return array<string, mixed>
 	 */
 	public static function payload( $user_id ) {
-		$url  = Ciwp_Referral_Program::share_url( $user_id );
-		$code = Ciwp_Referral_Program::get_or_create_code( $user_id );
+		$url  = Myrvento_Referral_Program::share_url( $user_id );
+		$code = Myrvento_Referral_Program::get_or_create_code( $user_id );
 		$text = rawurlencode(
 			sprintf(
 				/* translators: %s site name */

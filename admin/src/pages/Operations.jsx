@@ -29,21 +29,21 @@ export default function Operations() {
   }, [load]);
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-justify-between ciwp-gap-3">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-items-end myrvento-justify-between myrvento-gap-3">
         <div>
-          <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">WooCommerce operations</h2>
-          <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">Orders, subscriptions, coupons, and what customers just did.</p>
+          <h2 className="myrvento-m-0 myrvento-text-xl myrvento-font-bold myrvento-text-slate-900">WooCommerce operations</h2>
+          <p className="myrvento-m-0 myrvento-mt-1 myrvento-text-sm myrvento-text-slate-500">Orders, subscriptions, coupons, and what customers just did.</p>
         </div>
-        <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
+        <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-1 myrvento-rounded-xl myrvento-bg-slate-100 myrvento-p-1">
           {TABS.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ${
-                tab === item.id ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm" : "ciwp-bg-transparent ciwp-text-slate-600"
+              className={`myrvento-rounded-lg myrvento-border-0 myrvento-px-3 myrvento-py-2 myrvento-text-sm myrvento-font-semibold ${
+                tab === item.id ? "myrvento-bg-white myrvento-text-brand-700 myrvento-shadow-sm" : "myrvento-bg-transparent myrvento-text-slate-600"
               }`}
             >
               {item.label}
@@ -53,17 +53,17 @@ export default function Operations() {
       </div>
 
       {tab === "orders" && (
-        <div className="ciwp-grid ciwp-gap-5">
-          <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4">
+        <div className="myrvento-grid myrvento-gap-5">
+          <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4">
             {(data?.orders?.summary || []).map((row) => (
-              <div key={row.status} className="ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-bg-white ciwp-p-4">
-                <div className="ciwp-text-xs ciwp-font-semibold ciwp-uppercase ciwp-text-slate-500">{row.label}</div>
-                <div className="ciwp-mt-1 ciwp-text-2xl ciwp-font-bold">{number(row.count)}</div>
+              <div key={row.status} className="myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-bg-white myrvento-p-4">
+                <div className="myrvento-text-xs myrvento-font-semibold myrvento-uppercase myrvento-text-slate-500">{row.label}</div>
+                <div className="myrvento-mt-1 myrvento-text-2xl myrvento-font-bold">{number(row.count)}</div>
               </div>
             ))}
           </div>
           <Card title="Latest orders">
-            {!data?.orders?.recent?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No orders yet.</p>}
+            {!data?.orders?.recent?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No orders yet.</p>}
             {data?.orders?.recent?.length > 0 && (
               <table>
                 <thead>
@@ -95,7 +95,7 @@ export default function Operations() {
       {tab === "subscriptions" && (
         <Card title="Subscriptions" description={data?.subscriptions?.available ? "Active recurring orders." : (data?.subscriptions?.note || "Checking for WooCommerce Subscriptions…")}>
           {data?.subscriptions?.available && !data.subscriptions.items?.length && (
-            <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No subscriptions yet.</p>
+            <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No subscriptions yet.</p>
           )}
           {data?.subscriptions?.items?.length > 0 && (
             <table>
@@ -126,7 +126,7 @@ export default function Operations() {
 
       {tab === "coupons" && (
         <Card title="Coupons" description="Published WooCommerce coupons and how many times each has been used.">
-          {!data?.coupons?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No coupons yet.</p>}
+          {!data?.coupons?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No coupons yet.</p>}
           {data?.coupons?.length > 0 && (
             <table>
               <thead>
@@ -156,7 +156,7 @@ export default function Operations() {
 
       {tab === "activity" && (
         <Card title="Customer activity" description="Recent storefront events and points movements.">
-          {!data?.activity?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">Activity appears after visits, carts, and point changes.</p>}
+          {!data?.activity?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">Activity appears after visits, carts, and point changes.</p>}
           {data?.activity?.length > 0 && (
             <table>
               <thead>

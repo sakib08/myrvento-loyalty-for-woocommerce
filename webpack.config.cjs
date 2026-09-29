@@ -27,7 +27,7 @@ module.exports = [
     entry: path.resolve(__dirname, "admin/src/main.jsx"),
     output: {
       path: path.resolve(__dirname, "assets/admin"),
-      filename: "ciwp-admin.js",
+      filename: "myrvento-admin.js",
       clean: true,
     },
     resolve: {
@@ -46,7 +46,7 @@ module.exports = [
         },
       ],
     },
-    plugins: [new MiniCssExtractPlugin({ filename: "ciwp-admin.css" })],
+    plugins: [new MiniCssExtractPlugin({ filename: "myrvento-admin.css" })],
     mode: process.env.NODE_ENV === "development" ? "development" : "production",
     devtool: process.env.NODE_ENV === "development" ? "source-map" : false,
     stats: "minimal",
@@ -56,7 +56,7 @@ module.exports = [
     entry: path.resolve(__dirname, "frontend/src/main.js"),
     output: {
       path: path.resolve(__dirname, "assets/frontend"),
-      filename: "ciwp.js",
+      filename: "myrvento.js",
       clean: true,
     },
     module: {
@@ -72,7 +72,7 @@ module.exports = [
         },
       ],
     },
-    plugins: [new MiniCssExtractPlugin({ filename: "ciwp.css" })],
+    plugins: [new MiniCssExtractPlugin({ filename: "myrvento.css" })],
     mode: process.env.NODE_ENV === "development" ? "development" : "production",
     devtool: process.env.NODE_ENV === "development" ? "source-map" : false,
     stats: "minimal",

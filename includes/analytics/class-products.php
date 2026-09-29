@@ -2,7 +2,7 @@
 /**
  * Product sales, underperformers, profitability.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Product intelligence.
  */
-class Ciwp_Analytics_Products {
+class Myrvento_Analytics_Products {
 
 	/**
 	 * Product report.
@@ -51,9 +51,9 @@ class Ciwp_Analytics_Products {
 	public static function sold( $from, $to ) {
 		global $wpdb;
 
-		$table     = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$table     = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.

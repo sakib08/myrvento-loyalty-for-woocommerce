@@ -2,7 +2,7 @@
 /**
  * AI REST.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * AI routes.
  */
-class Ciwp_REST_AI {
+class Myrvento_REST_AI {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class Ciwp_REST_AI {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		foreach ( array( 'brain', 'predictions', 'pricing', 'forecast' ) as $report ) {
 			register_rest_route(
@@ -27,7 +27,7 @@ class Ciwp_REST_AI {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'get_' . $report ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				)
 			);
 		}
@@ -38,7 +38,7 @@ class Ciwp_REST_AI {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'refresh' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 
@@ -48,7 +48,7 @@ class Ciwp_REST_AI {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'narrate' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 
@@ -58,7 +58,7 @@ class Ciwp_REST_AI {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'apply_price' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -69,7 +69,7 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function get_brain() {
-		return rest_ensure_response( Ciwp_AI_Brain::report() );
+		return rest_ensure_response( Myrvento_AI_Brain::report() );
 	}
 
 	/**
@@ -78,7 +78,7 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function get_predictions() {
-		return rest_ensure_response( Ciwp_AI_Predict::report() );
+		return rest_ensure_response( Myrvento_AI_Predict::report() );
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function get_pricing() {
-		return rest_ensure_response( Ciwp_AI_Pricing::report() );
+		return rest_ensure_response( Myrvento_AI_Pricing::report() );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function get_forecast() {
-		return rest_ensure_response( Ciwp_AI_Forecast::report() );
+		return rest_ensure_response( Myrvento_AI_Forecast::report() );
 	}
 
 	/**
@@ -105,7 +105,7 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function refresh() {
-		return rest_ensure_response( Ciwp_AI_Engine::refresh_all() );
+		return rest_ensure_response( Myrvento_AI_Engine::refresh_all() );
 	}
 
 	/**
@@ -114,8 +114,8 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function narrate() {
-		delete_transient( 'ciwp_ai_brain_llm' );
-		return rest_ensure_response( Ciwp_AI_Brain::report( true, true ) );
+		delete_transient( 'myrvento_ai_brain_llm' );
+		return rest_ensure_response( Myrvento_AI_Brain::report( true, true ) );
 	}
 
 	/**
@@ -125,14 +125,14 @@ class Ciwp_REST_AI {
 	 * @return WP_REST_Response
 	 */
 	public static function apply_price( $request ) {
-		$result = Ciwp_AI_Pricing::apply(
+		$result = Myrvento_AI_Pricing::apply(
 			(int) $request->get_param( 'product_id' ),
 			(float) $request->get_param( 'price' ),
 			sanitize_key( (string) $request->get_param( 'mode' ) ) ? sanitize_key( (string) $request->get_param( 'mode' ) ) : 'sale'
 		);
 
 		if ( is_wp_error( $result ) ) {
-			return Ciwp_REST::error( $result );
+			return Myrvento_REST::error( $result );
 		}
 
 		return rest_ensure_response( $result );

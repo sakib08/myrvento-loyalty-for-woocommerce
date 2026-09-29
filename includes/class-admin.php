@@ -2,7 +2,7 @@
 /**
  * WordPress admin — React mount.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Admin menus and assets.
  */
-class Ciwp_Admin {
+class Myrvento_Admin {
 
-	const MENU_SLUG = 'ciwp';
+	const MENU_SLUG = 'myrvento';
 
 	/**
 	 * Constructor.
@@ -77,7 +77,7 @@ class Ciwp_Admin {
 	 * @return void
 	 */
 	public function setup_admin_screen( $screen ) {
-		if ( ! $this->is_ciwp_screen( $screen ) ) {
+		if ( ! $this->is_myrvento_screen( $screen ) ) {
 			return;
 		}
 
@@ -96,8 +96,8 @@ class Ciwp_Admin {
 	public function admin_body_class( $classes ) {
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		if ( $screen && $this->is_ciwp_screen( $screen ) ) {
-			$classes .= ' ciwp-admin-page';
+		if ( $screen && $this->is_myrvento_screen( $screen ) ) {
+			$classes .= ' myrvento-admin-page';
 		}
 
 		return $classes;
@@ -115,9 +115,9 @@ class Ciwp_Admin {
 
 		$page = $this->get_current_page();
 		?>
-		<div id="ciwp-admin-shell" class="ciwp-admin-shell">
+		<div id="myrvento-admin-shell" class="myrvento-admin-shell">
 			<div
-				id="ciwp-admin-root"
+				id="myrvento-admin-root"
 				data-page="<?php echo esc_attr( $page ); ?>"
 			></div>
 		</div>
@@ -158,7 +158,7 @@ class Ciwp_Admin {
 	 * @param WP_Screen $screen Screen.
 	 * @return bool
 	 */
-	private function is_ciwp_screen( $screen ) {
+	private function is_myrvento_screen( $screen ) {
 		return $screen && false !== strpos( $screen->id, self::MENU_SLUG );
 	}
 
@@ -173,39 +173,39 @@ class Ciwp_Admin {
 			return;
 		}
 
-		$js_path  = CIWP_PATH . 'assets/admin/ciwp-admin.js';
-		$css_path = CIWP_PATH . 'assets/admin/ciwp-admin.css';
+		$js_path  = MYRVENTO_PATH . 'assets/admin/myrvento-admin.js';
+		$css_path = MYRVENTO_PATH . 'assets/admin/myrvento-admin.css';
 
 		if ( ! file_exists( $js_path ) ) {
 			return;
 		}
 
 		$js_version  = filemtime( $js_path );
-		$css_version = file_exists( $css_path ) ? filemtime( $css_path ) : CIWP_VERSION;
+		$css_version = file_exists( $css_path ) ? filemtime( $css_path ) : MYRVENTO_VERSION;
 
 		if ( file_exists( $css_path ) ) {
 			wp_enqueue_style(
-				'ciwp-admin',
-				CIWP_URL . 'assets/admin/ciwp-admin.css',
+				'myrvento-admin',
+				MYRVENTO_URL . 'assets/admin/myrvento-admin.css',
 				array(),
 				$css_version
 			);
 
 			wp_add_inline_style(
-				'ciwp-admin',
-				'body.ciwp-admin-page #wpbody-content { padding-bottom: 0; }
-body.ciwp-admin-page #wpbody-content > :not(.ciwp-admin-shell) { display: none !important; }
-body.ciwp-admin-page .ciwp-admin-shell { margin: 0; padding: 0; max-width: none; }
-body.ciwp-admin-page .woocommerce-layout__header,
-body.ciwp-admin-page .woo-nav-tab-wrapper,
-body.ciwp-admin-page #screen-meta,
-body.ciwp-admin-page #screen-meta-links { display: none !important; }'
+				'myrvento-admin',
+				'body.myrvento-admin-page #wpbody-content { padding-bottom: 0; }
+body.myrvento-admin-page #wpbody-content > :not(.myrvento-admin-shell) { display: none !important; }
+body.myrvento-admin-page .myrvento-admin-shell { margin: 0; padding: 0; max-width: none; }
+body.myrvento-admin-page .woocommerce-layout__header,
+body.myrvento-admin-page .woo-nav-tab-wrapper,
+body.myrvento-admin-page #screen-meta,
+body.myrvento-admin-page #screen-meta-links { display: none !important; }'
 			);
 		}
 
 		wp_enqueue_script(
-			'ciwp-admin',
-			CIWP_URL . 'assets/admin/ciwp-admin.js',
+			'myrvento-admin',
+			MYRVENTO_URL . 'assets/admin/myrvento-admin.js',
 			array(),
 			$js_version,
 			true
@@ -218,12 +218,12 @@ body.ciwp-admin-page #screen-meta-links { display: none !important; }'
 		}
 
 		wp_localize_script(
-			'ciwp-admin',
-			'ciwpAdmin',
+			'myrvento-admin',
+			'myrventoAdmin',
 			array(
-				'apiUrl'    => rest_url( 'ciwp/v1/' ),
+				'apiUrl'    => rest_url( 'myrvento/v1/' ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'version'   => CIWP_VERSION,
+				'version'   => MYRVENTO_VERSION,
 				'page'      => $this->get_current_page(),
 				'urls'      => $urls,
 				'currency'  => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',

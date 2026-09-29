@@ -2,7 +2,7 @@
 /**
  * Customer-facing REST (My Account).
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Account routes.
  */
-class Ciwp_REST_Account {
+class Myrvento_REST_Account {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class Ciwp_REST_Account {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -26,7 +26,7 @@ class Ciwp_REST_Account {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'loyalty' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_account' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_account' ),
 			)
 		);
 
@@ -36,7 +36,7 @@ class Ciwp_REST_Account {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'redeem' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_account' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_account' ),
 			)
 		);
 
@@ -46,7 +46,7 @@ class Ciwp_REST_Account {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'referrals' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_account' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_account' ),
 			)
 		);
 
@@ -56,7 +56,7 @@ class Ciwp_REST_Account {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'share' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_account' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_account' ),
 			)
 		);
 
@@ -66,7 +66,7 @@ class Ciwp_REST_Account {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'birthday' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_account' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_account' ),
 			)
 		);
 	}
@@ -78,16 +78,16 @@ class Ciwp_REST_Account {
 	 */
 	public static function loyalty() {
 		$user_id  = get_current_user_id();
-		$balance  = Ciwp_Points_Ledger::get_balance( $user_id );
-		$history  = Ciwp_Points_Ledger::get_history( $user_id, array( 'per_page' => 20 ) );
-		$tier     = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : Ciwp_VIP_Tiers::get_default();
+		$balance  = Myrvento_Points_Ledger::get_balance( $user_id );
+		$history  = Myrvento_Points_Ledger::get_history( $user_id, array( 'per_page' => 20 ) );
+		$tier     = $balance->tier_id ? Myrvento_VIP_Tiers::get( (int) $balance->tier_id ) : Myrvento_VIP_Tiers::get_default();
 		$rewards  = array();
 
-		foreach ( Ciwp_Rewards::all( true ) as $reward ) {
-			$rewards[] = Ciwp_Rewards::to_array( $reward );
+		foreach ( Myrvento_Rewards::all( true ) as $reward ) {
+			$rewards[] = Myrvento_Rewards::to_array( $reward );
 		}
 
-		$redemptions = Ciwp_Rewards::redemptions(
+		$redemptions = Myrvento_Rewards::redemptions(
 			array(
 				'customer_id' => $user_id,
 				'per_page'    => 20,
@@ -99,15 +99,15 @@ class Ciwp_REST_Account {
 				'available'         => (int) $balance->available,
 				'lifetime_earned'   => (int) $balance->lifetime_earned,
 				'lifetime_redeemed' => (int) $balance->lifetime_redeemed,
-				'points_name'       => Ciwp_Settings::get_value( 'points_name', 'Points' ),
-				'tier'              => Ciwp_VIP_Tiers::to_array( $tier ),
+				'points_name'       => Myrvento_Settings::get_value( 'points_name', 'Points' ),
+				'tier'              => Myrvento_VIP_Tiers::to_array( $tier ),
 				'history'           => $history['items'],
 				'rewards'           => $rewards,
 				'redemptions'       => $redemptions['items'],
-				'badges'            => Ciwp_Gamification::customer_badges( $user_id ),
-				'challenges'        => Ciwp_Gamification::customer_challenges( $user_id ),
-				'streak'            => (int) get_user_meta( $user_id, 'gp_streak_count', true ),
-				'birthday'          => get_user_meta( $user_id, 'gp_birthday', true ),
+				'badges'            => Myrvento_Gamification::customer_badges( $user_id ),
+				'challenges'        => Myrvento_Gamification::customer_challenges( $user_id ),
+				'streak'            => (int) get_user_meta( $user_id, 'myrvento_streak_count', true ),
+				'birthday'          => get_user_meta( $user_id, 'myrvento_birthday', true ),
 			)
 		);
 	}
@@ -120,10 +120,10 @@ class Ciwp_REST_Account {
 	 */
 	public static function redeem( $request ) {
 		$reward_id = (int) $request->get_param( 'reward_id' );
-		$result    = Ciwp_Rewards::redeem( get_current_user_id(), $reward_id );
+		$result    = Myrvento_Rewards::redeem( get_current_user_id(), $reward_id );
 
 		if ( is_wp_error( $result ) ) {
-			return Ciwp_REST::error( $result );
+			return Myrvento_REST::error( $result );
 		}
 
 		return rest_ensure_response( $result );
@@ -136,8 +136,8 @@ class Ciwp_REST_Account {
 	 */
 	public static function referrals() {
 		$user_id  = get_current_user_id();
-		$campaign = Ciwp_Referral_Program::active_campaign();
-		$list     = Ciwp_Referral_Program::list(
+		$campaign = Myrvento_Referral_Program::active_campaign();
+		$list     = Myrvento_Referral_Program::list(
 			array(
 				'referrer_id' => $user_id,
 				'per_page'    => 50,
@@ -146,8 +146,8 @@ class Ciwp_REST_Account {
 
 		return rest_ensure_response(
 			array(
-				'share'    => Ciwp_Share::payload( $user_id ),
-				'stats'    => Ciwp_Referral_Program::stats_for( $user_id ),
+				'share'    => Myrvento_Share::payload( $user_id ),
+				'stats'    => Myrvento_Referral_Program::stats_for( $user_id ),
 				'campaign' => $campaign ? array(
 					'name'                  => $campaign->name,
 					'first_order_points'    => (int) $campaign->first_order_points,
@@ -167,7 +167,7 @@ class Ciwp_REST_Account {
 	 */
 	public static function share( $request ) {
 		$channel = sanitize_key( (string) $request->get_param( 'channel' ) );
-		$result  = Ciwp_Points_Earner::award_social( get_current_user_id(), $channel ? $channel : 'copy' );
+		$result  = Myrvento_Points_Earner::award_social( get_current_user_id(), $channel ? $channel : 'copy' );
 
 		if ( is_wp_error( $result ) ) {
 			return rest_ensure_response(
@@ -201,10 +201,10 @@ class Ciwp_REST_Account {
 		} elseif ( preg_match( '/^\d{2}-\d{2}$/', $date ) ) {
 			$mmdd = $date;
 		} else {
-			return Ciwp_REST::error( new WP_Error( 'gp_birthday', __( 'Use YYYY-MM-DD or MM-DD.', 'myrvento-loyalty-for-woocommerce' ) ) );
+			return Myrvento_REST::error( new WP_Error( 'myrvento_birthday', __( 'Use YYYY-MM-DD or MM-DD.', 'myrvento-loyalty-for-woocommerce' ) ) );
 		}
 
-		update_user_meta( get_current_user_id(), 'gp_birthday', $mmdd );
+		update_user_meta( get_current_user_id(), 'myrvento_birthday', $mmdd );
 
 		return rest_ensure_response( array( 'birthday' => $mmdd ) );
 	}

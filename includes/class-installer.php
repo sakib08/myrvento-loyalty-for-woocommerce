@@ -2,7 +2,7 @@
 /**
  * Activation, schema, and seed data.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Installer.
  */
-class Ciwp_Installer {
+class Myrvento_Installer {
 
 	/**
 	 * Activate plugin.
@@ -19,19 +19,20 @@ class Ciwp_Installer {
 	 * @return void
 	 */
 	public static function activate() {
+		self::migrate_legacy_prefix();
 		self::create_tables();
 		self::seed();
-		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
+		update_option( 'myrvento_db_version', MYRVENTO_DB_VERSION, false );
 
-		if ( false === get_option( Ciwp_Settings::OPTION, false ) ) {
-			update_option( Ciwp_Settings::OPTION, Ciwp_Settings::defaults(), false );
+		if ( false === get_option( Myrvento_Settings::OPTION, false ) ) {
+			update_option( Myrvento_Settings::OPTION, Myrvento_Settings::defaults(), false );
 		}
 
 		self::register_endpoints();
 		flush_rewrite_rules();
 
-		if ( ! wp_next_scheduled( 'ciwp_daily' ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'ciwp_daily' );
+		if ( ! wp_next_scheduled( 'myrvento_daily' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'myrvento_daily' );
 		}
 	}
 
@@ -41,9 +42,9 @@ class Ciwp_Installer {
 	 * @return void
 	 */
 	public static function deactivate() {
-		$timestamp = wp_next_scheduled( 'ciwp_daily' );
+		$timestamp = wp_next_scheduled( 'myrvento_daily' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'ciwp_daily' );
+			wp_unschedule_event( $timestamp, 'myrvento_daily' );
 		}
 
 		flush_rewrite_rules();
@@ -55,15 +56,115 @@ class Ciwp_Installer {
 	 * @return void
 	 */
 	public static function maybe_upgrade() {
-		$installed = get_option( 'ciwp_db_version', '' );
+		$installed = get_option( 'myrvento_db_version', '' );
 
-		if ( (string) $installed === (string) CIWP_DB_VERSION ) {
+		if ( (string) $installed === (string) MYRVENTO_DB_VERSION && null === get_option( 'ciwp_db_version', null ) ) {
+			return;
+		}
+
+		self::migrate_legacy_prefix();
+
+		$installed = get_option( 'myrvento_db_version', '' );
+
+		if ( (string) $installed === (string) MYRVENTO_DB_VERSION ) {
 			return;
 		}
 
 		self::create_tables();
 		self::seed();
-		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
+		update_option( 'myrvento_db_version', MYRVENTO_DB_VERSION, false );
+	}
+
+	/**
+	 * Move data from the previous ciwp/gp prefix onto myrvento.
+	 *
+	 * @return void
+	 */
+	private static function migrate_legacy_prefix() {
+		global $wpdb;
+
+		$options = array(
+			'ciwp_settings'    => 'myrvento_settings',
+			'ciwp_db_version'  => 'myrvento_db_version',
+			'ciwp_ai_last_run' => 'myrvento_ai_last_run',
+			'ciwp_hash_secret' => 'myrvento_hash_secret',
+			'ciwp_demo_seed'   => 'myrvento_demo_seed',
+		);
+
+		foreach ( $options as $old => $new ) {
+			$legacy = get_option( $old, null );
+			if ( null === $legacy ) {
+				continue;
+			}
+			if ( null === get_option( $new, null ) ) {
+				update_option( $new, $legacy, false );
+			}
+			delete_option( $old );
+		}
+
+		$settings = get_option( 'myrvento_settings', array() );
+		if ( is_array( $settings ) && isset( $settings['referral_param'] ) && 'gp_ref' === $settings['referral_param'] ) {
+			$settings['referral_param'] = 'myrvento_ref';
+			update_option( 'myrvento_settings', $settings, false );
+		}
+
+		$tables = array(
+			'points_ledger',
+			'points_balances',
+			'point_rules',
+			'vip_tiers',
+			'customer_tiers',
+			'rewards',
+			'redemptions',
+			'badges',
+			'customer_badges',
+			'challenges',
+			'challenge_progress',
+			'referral_campaigns',
+			'referrals',
+			'referral_clicks',
+			'analytics_events',
+			'email_stats',
+			'ai_predictions',
+		);
+
+		foreach ( $tables as $table ) {
+			$old = $wpdb->prefix . 'gp_' . $table;
+			$new = $wpdb->prefix . 'myrvento_' . $table;
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Names come from a fixed list plus the site prefix.
+			$old_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $old ) ) );
+			$new_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $new ) ) );
+			if ( $old_exists && ! $new_exists ) {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Identifiers are escaped and not user input.
+				$wpdb->query( 'RENAME TABLE `' . esc_sql( $old ) . '` TO `' . esc_sql( $new ) . '`' );
+			}
+		}
+
+		$meta_tables = array(
+			$wpdb->usermeta,
+			$wpdb->postmeta,
+			$wpdb->commentmeta,
+			$wpdb->prefix . 'wc_orders_meta',
+		);
+
+		foreach ( $meta_tables as $meta_table ) {
+			$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $meta_table ) ) );
+			if ( $exists !== $meta_table ) {
+				continue;
+			}
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is a core or WooCommerce table.
+			$wpdb->query( "UPDATE `{$meta_table}` SET meta_key = CONCAT('myrvento_', SUBSTRING(meta_key, 4)) WHERE meta_key LIKE 'gp\\_%'" );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is a core or WooCommerce table.
+			$wpdb->query( "UPDATE `{$meta_table}` SET meta_key = CONCAT('_myrvento_', SUBSTRING(meta_key, 5)) WHERE meta_key LIKE '\\_gp\\_%'" );
+		}
+
+		foreach ( array( 'ciwp_ai_predict', 'ciwp_ai_pricing', 'ciwp_ai_forecast', 'ciwp_ai_brain', 'ciwp_ai_brain_llm' ) as $transient ) {
+			delete_transient( $transient );
+		}
+
+		if ( function_exists( 'wp_unschedule_hook' ) ) {
+			wp_unschedule_hook( 'ciwp_daily' );
+		}
 	}
 
 	/**
@@ -91,7 +192,7 @@ class Ciwp_Installer {
 
 		$sql = array();
 
-		$sql[] = "CREATE TABLE {$prefix}gp_points_ledger (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_points_ledger (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			customer_id BIGINT UNSIGNED NOT NULL,
 			amount INT NOT NULL,
@@ -114,7 +215,7 @@ class Ciwp_Installer {
 			KEY created_at (created_at)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_points_balances (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_points_balances (
 			customer_id BIGINT UNSIGNED NOT NULL,
 			available INT NOT NULL DEFAULT 0,
 			pending INT NOT NULL DEFAULT 0,
@@ -128,7 +229,7 @@ class Ciwp_Installer {
 			KEY tier_id (tier_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_point_rules (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_point_rules (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(191) NOT NULL,
 			source VARCHAR(40) NOT NULL,
@@ -144,7 +245,7 @@ class Ciwp_Installer {
 			KEY object_lookup (object_type, object_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_vip_tiers (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_vip_tiers (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			slug VARCHAR(50) NOT NULL,
 			name VARCHAR(191) NOT NULL,
@@ -158,7 +259,7 @@ class Ciwp_Installer {
 			UNIQUE KEY slug (slug)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_customer_tiers (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_customer_tiers (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			customer_id BIGINT UNSIGNED NOT NULL,
 			tier_id BIGINT UNSIGNED NOT NULL,
@@ -170,7 +271,7 @@ class Ciwp_Installer {
 			KEY tier_id (tier_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_rewards (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_rewards (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(191) NOT NULL,
 			type VARCHAR(40) NOT NULL,
@@ -183,7 +284,7 @@ class Ciwp_Installer {
 			PRIMARY KEY  (id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_redemptions (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_redemptions (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			customer_id BIGINT UNSIGNED NOT NULL,
 			reward_id BIGINT UNSIGNED NOT NULL,
@@ -198,7 +299,7 @@ class Ciwp_Installer {
 			KEY reward_id (reward_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_badges (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_badges (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			slug VARCHAR(50) NOT NULL,
 			name VARCHAR(191) NOT NULL,
@@ -212,7 +313,7 @@ class Ciwp_Installer {
 			UNIQUE KEY slug (slug)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_customer_badges (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_customer_badges (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			customer_id BIGINT UNSIGNED NOT NULL,
 			badge_id BIGINT UNSIGNED NOT NULL,
@@ -221,7 +322,7 @@ class Ciwp_Installer {
 			UNIQUE KEY customer_badge (customer_id, badge_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_challenges (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_challenges (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(191) NOT NULL,
 			description TEXT NULL,
@@ -234,7 +335,7 @@ class Ciwp_Installer {
 			PRIMARY KEY  (id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_challenge_progress (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_challenge_progress (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			challenge_id BIGINT UNSIGNED NOT NULL,
 			customer_id BIGINT UNSIGNED NOT NULL,
@@ -244,7 +345,7 @@ class Ciwp_Installer {
 			UNIQUE KEY challenge_customer (challenge_id, customer_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_referral_campaigns (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_referral_campaigns (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(191) NOT NULL,
 			enabled TINYINT(1) NOT NULL DEFAULT 1,
@@ -258,7 +359,7 @@ class Ciwp_Installer {
 			PRIMARY KEY  (id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_referrals (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_referrals (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			referrer_id BIGINT UNSIGNED NOT NULL,
 			referee_id BIGINT UNSIGNED NULL,
@@ -277,7 +378,7 @@ class Ciwp_Installer {
 			KEY status (status)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_referral_clicks (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_referral_clicks (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			code VARCHAR(40) NOT NULL,
 			campaign_id BIGINT UNSIGNED NULL,
@@ -289,7 +390,7 @@ class Ciwp_Installer {
 			KEY created_at (created_at)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_analytics_events (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_analytics_events (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			session_id VARCHAR(64) NOT NULL,
 			customer_id BIGINT UNSIGNED NULL,
@@ -310,7 +411,7 @@ class Ciwp_Installer {
 			KEY order_id (order_id)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_email_stats (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_email_stats (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			email_key VARCHAR(100) NOT NULL,
 			email_title VARCHAR(191) NULL,
@@ -324,7 +425,7 @@ class Ciwp_Installer {
 			UNIQUE KEY email_day (email_key, stat_date)
 		) $charset;";
 
-		$sql[] = "CREATE TABLE {$prefix}gp_ai_predictions (
+		$sql[] = "CREATE TABLE {$prefix}myrvento_ai_predictions (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			subject_type VARCHAR(20) NOT NULL,
 			subject_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -351,7 +452,7 @@ class Ciwp_Installer {
 	public static function seed() {
 		global $wpdb;
 
-		$rules_table = esc_sql( Ciwp::table( 'point_rules' ) );
+		$rules_table = esc_sql( Myrvento::table( 'point_rules' ) );
 		$count       = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $count ) {
@@ -380,7 +481,7 @@ class Ciwp_Installer {
 			}
 		}
 
-		$tiers_table = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$tiers_table = esc_sql( Myrvento::table( 'vip_tiers' ) );
 		$tier_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$tiers_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $tier_count ) {
@@ -408,7 +509,7 @@ class Ciwp_Installer {
 			}
 		}
 
-		$badges_table = esc_sql( Ciwp::table( 'badges' ) );
+		$badges_table = esc_sql( Myrvento::table( 'badges' ) );
 		$badge_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$badges_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $badge_count ) {
@@ -437,7 +538,7 @@ class Ciwp_Installer {
 			}
 		}
 
-		$campaigns = esc_sql( Ciwp::table( 'referral_campaigns' ) );
+		$campaigns = esc_sql( Myrvento::table( 'referral_campaigns' ) );
 		$camp_n    = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$campaigns}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $camp_n ) {
@@ -454,7 +555,7 @@ class Ciwp_Installer {
 			);
 		}
 
-		$rewards = esc_sql( Ciwp::table( 'rewards' ) );
+		$rewards = esc_sql( Myrvento::table( 'rewards' ) );
 		$rew_n   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rewards}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $rew_n ) {

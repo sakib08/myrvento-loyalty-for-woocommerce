@@ -2,7 +2,7 @@
 /**
  * Rewards REST.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Rewards routes.
  */
-class Ciwp_REST_Rewards {
+class Myrvento_REST_Rewards {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class Ciwp_REST_Rewards {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,12 +27,12 @@ class Ciwp_REST_Rewards {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_rewards' ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create' ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -44,12 +44,12 @@ class Ciwp_REST_Rewards {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update' ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete' ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class Ciwp_REST_Rewards {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'redemptions' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -72,8 +72,8 @@ class Ciwp_REST_Rewards {
 	 */
 	public static function list_rewards() {
 		$out = array();
-		foreach ( Ciwp_Rewards::all() as $reward ) {
-			$out[] = Ciwp_Rewards::to_array( $reward );
+		foreach ( Myrvento_Rewards::all() as $reward ) {
+			$out[] = Myrvento_Rewards::to_array( $reward );
 		}
 		return rest_ensure_response( $out );
 	}
@@ -85,11 +85,11 @@ class Ciwp_REST_Rewards {
 	 * @return WP_REST_Response
 	 */
 	public static function create( $request ) {
-		$id = Ciwp_Rewards::save( self::payload( $request ) );
+		$id = Myrvento_Rewards::save( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return Ciwp_REST::error( $id );
+			return Myrvento_REST::error( $id );
 		}
-		return rest_ensure_response( Ciwp_Rewards::to_array( Ciwp_Rewards::get( $id ) ) );
+		return rest_ensure_response( Myrvento_Rewards::to_array( Myrvento_Rewards::get( $id ) ) );
 	}
 
 	/**
@@ -99,11 +99,11 @@ class Ciwp_REST_Rewards {
 	 * @return WP_REST_Response
 	 */
 	public static function update( $request ) {
-		$id = Ciwp_Rewards::save( self::payload( $request ), (int) $request['id'] );
+		$id = Myrvento_Rewards::save( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return Ciwp_REST::error( $id );
+			return Myrvento_REST::error( $id );
 		}
-		return rest_ensure_response( Ciwp_Rewards::to_array( Ciwp_Rewards::get( $id ) ) );
+		return rest_ensure_response( Myrvento_Rewards::to_array( Myrvento_Rewards::get( $id ) ) );
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Ciwp_REST_Rewards {
 	 * @return WP_REST_Response
 	 */
 	public static function delete( $request ) {
-		Ciwp_Rewards::delete( (int) $request['id'] );
+		Myrvento_Rewards::delete( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 
@@ -124,7 +124,7 @@ class Ciwp_REST_Rewards {
 	 * @return WP_REST_Response
 	 */
 	public static function redemptions( $request ) {
-		$data  = Ciwp_Rewards::redemptions(
+		$data  = Myrvento_Rewards::redemptions(
 			array(
 				'page'     => $request->get_param( 'page' ),
 				'per_page' => $request->get_param( 'per_page' ),
@@ -134,7 +134,7 @@ class Ciwp_REST_Rewards {
 
 		foreach ( $data['items'] as $row ) {
 			$user     = get_userdata( (int) $row->customer_id );
-			$reward   = Ciwp_Rewards::get( (int) $row->reward_id );
+			$reward   = Myrvento_Rewards::get( (int) $row->reward_id );
 			$items[]  = array(
 				'id'           => (int) $row->id,
 				'customer_id'  => (int) $row->customer_id,

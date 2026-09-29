@@ -2,7 +2,7 @@
 /**
  * Reward catalog and redemption via WooCommerce coupons.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Rewards.
  */
-class Ciwp_Rewards {
+class Myrvento_Rewards {
 
 	/**
 	 * List rewards.
@@ -22,7 +22,7 @@ class Ciwp_Rewards {
 	public static function all( $enabled_only = false ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'rewards' ) );
+		$table = esc_sql( Myrvento::table( 'rewards' ) );
 		$sql   = $enabled_only
 			? "SELECT * FROM {$table} WHERE enabled = 1 ORDER BY points_cost ASC, id ASC"
 			: "SELECT * FROM {$table} ORDER BY points_cost ASC, id ASC";
@@ -40,7 +40,7 @@ class Ciwp_Rewards {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'rewards' ) );
+		$table = esc_sql( Myrvento::table( 'rewards' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -59,11 +59,11 @@ class Ciwp_Rewards {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'rewards' ) );
+		$table = esc_sql( Myrvento::table( 'rewards' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_reward_name', __( 'Reward name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(
@@ -94,7 +94,7 @@ class Ciwp_Rewards {
 	 */
 	public static function delete( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'rewards' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Myrvento::table( 'rewards' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -109,25 +109,25 @@ class Ciwp_Rewards {
 
 		$reward = self::get( $reward_id );
 		if ( ! $reward || ! $reward->enabled ) {
-			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_reward_missing', __( 'Reward is not available.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( null !== $reward->stock && (int) $reward->redeemed_count >= (int) $reward->stock ) {
-			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_reward_stock', __( 'This reward is out of stock.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
-		$balance = Ciwp_Points_Ledger::get_balance( $customer_id );
+		$balance = Myrvento_Points_Ledger::get_balance( $customer_id );
 		if ( (int) $reward->tier_id ) {
-			$required = Ciwp_VIP_Tiers::get( (int) $reward->tier_id );
-			$current  = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : null;
+			$required = Myrvento_VIP_Tiers::get( (int) $reward->tier_id );
+			$current  = $balance->tier_id ? Myrvento_VIP_Tiers::get( (int) $balance->tier_id ) : null;
 			if ( $required && ( ! $current || (int) $current->sort_order < (int) $required->sort_order ) ) {
-				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'myrvento-loyalty-for-woocommerce' ) );
+				return new WP_Error( 'myrvento_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'myrvento-loyalty-for-woocommerce' ) );
 			}
 		}
 
 		$cost = (int) $reward->points_cost;
 		if ( $cost > 0 ) {
-			$ledger_id = Ciwp_Points_Ledger::debit(
+			$ledger_id = Myrvento_Points_Ledger::debit(
 				$customer_id,
 				$cost,
 				'redeem',
@@ -150,11 +150,11 @@ class Ciwp_Rewards {
 		}
 
 		$user   = get_userdata( $customer_id );
-		$config = Ciwp::decode( $reward->config );
+		$config = Myrvento::decode( $reward->config );
 		$coupon = self::create_coupon( $reward, $config, $user );
 
 		$wpdb->insert(
-			esc_sql( Ciwp::table( 'redemptions' ) ),
+			esc_sql( Myrvento::table( 'redemptions' ) ),
 			array(
 				'customer_id'  => $customer_id,
 				'reward_id'    => (int) $reward->id,
@@ -171,7 +171,7 @@ class Ciwp_Rewards {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE " . esc_sql( Ciwp::table( 'rewards' ) ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"UPDATE " . esc_sql( Myrvento::table( 'rewards' ) ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				(int) $reward->id
 			)
 		);
@@ -247,7 +247,7 @@ class Ciwp_Rewards {
 				return null;
 		}
 
-		$coupon->update_meta_data( '_gp_reward_id', (int) $reward->id );
+		$coupon->update_meta_data( '_myrvento_reward_id', (int) $reward->id );
 		$coupon->save();
 
 		return array(
@@ -270,7 +270,7 @@ class Ciwp_Rewards {
 			return;
 		}
 
-		$ents   = get_user_meta( $customer_id, 'gp_entitlements', true );
+		$ents   = get_user_meta( $customer_id, 'myrvento_entitlements', true );
 		$ents   = is_array( $ents ) ? $ents : array();
 		$ents[] = array(
 			'reward_id'   => (int) $reward->id,
@@ -278,7 +278,7 @@ class Ciwp_Rewards {
 			'product_id'  => (int) ( $config['product_id'] ?? 0 ),
 			'granted_at'  => current_time( 'mysql' ),
 		);
-		update_user_meta( $customer_id, 'gp_entitlements', $ents );
+		update_user_meta( $customer_id, 'myrvento_entitlements', $ents );
 	}
 
 	/**
@@ -290,7 +290,7 @@ class Ciwp_Rewards {
 	public static function redemptions( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( Ciwp::table( 'redemptions' ) );
+		$table    = esc_sql( Myrvento::table( 'redemptions' ) );
 		$where    = array( '1=1' );
 		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
@@ -336,7 +336,7 @@ class Ciwp_Rewards {
 			'tier_id'        => $reward->tier_id ? (int) $reward->tier_id : null,
 			'stock'          => null === $reward->stock ? null : (int) $reward->stock,
 			'redeemed_count' => (int) $reward->redeemed_count,
-			'config'         => Ciwp::decode( $reward->config ),
+			'config'         => Myrvento::decode( $reward->config ),
 		);
 	}
 }

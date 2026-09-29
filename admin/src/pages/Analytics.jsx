@@ -67,26 +67,26 @@ function formatKpi(key, value) {
 
 function Delta({ value }) {
   if (value === null || value === undefined) {
-    return <span className="ciwp-text-xs ciwp-text-slate-400">New</span>;
+    return <span className="myrvento-text-xs myrvento-text-slate-400">New</span>;
   }
   const up = value >= 0;
   return (
-    <span className={`ciwp-text-xs ciwp-font-semibold ${up ? "ciwp-text-emerald-600" : "ciwp-text-rose-600"}`}>
+    <span className={`myrvento-text-xs myrvento-font-semibold ${up ? "myrvento-text-emerald-600" : "myrvento-text-rose-600"}`}>
       {up ? "▲" : "▼"} {Math.abs(value).toFixed(1)}%
     </span>
   );
 }
 
 function heatClass(pct) {
-  if (!pct) return "ciwp-bg-slate-50 ciwp-text-slate-400";
-  if (pct >= 60) return "ciwp-bg-brand-600 ciwp-text-white";
-  if (pct >= 40) return "ciwp-bg-brand-400 ciwp-text-white";
-  if (pct >= 20) return "ciwp-bg-brand-100 ciwp-text-brand-700";
-  return "ciwp-bg-slate-100 ciwp-text-slate-600";
+  if (!pct) return "myrvento-bg-slate-50 myrvento-text-slate-400";
+  if (pct >= 60) return "myrvento-bg-brand-600 myrvento-text-white";
+  if (pct >= 40) return "myrvento-bg-brand-400 myrvento-text-white";
+  if (pct >= 20) return "myrvento-bg-brand-100 myrvento-text-brand-700";
+  return "myrvento-bg-slate-100 myrvento-text-slate-600";
 }
 
 function Empty({ children }) {
-  return <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">{children}</p>;
+  return <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">{children}</p>;
 }
 
 function TrendChart({ rows }) {
@@ -97,25 +97,25 @@ function TrendChart({ rows }) {
   const max = Math.max(...rows.map((row) => Number(row.net) || 0), 1);
 
   return (
-    <div className="ciwp-grid ciwp-gap-3">
-      <div className="ciwp-flex ciwp-h-44 ciwp-items-end ciwp-gap-px">
+    <div className="myrvento-grid myrvento-gap-3">
+      <div className="myrvento-flex myrvento-h-44 myrvento-items-end myrvento-gap-px">
         {rows.map((row) => {
           const height = Math.max(2, (Number(row.net) / max) * 100);
           return (
             <div
               key={row.date}
-              className="ciwp-group ciwp-relative ciwp-flex ciwp-min-w-0 ciwp-flex-1 ciwp-flex-col ciwp-items-center ciwp-justify-end"
+              className="myrvento-group myrvento-relative myrvento-flex myrvento-min-w-0 myrvento-flex-1 myrvento-flex-col myrvento-items-center myrvento-justify-end"
               title={`${row.date}: ${money(row.net)} · ${row.orders} orders`}
             >
               <div
-                className="ciwp-w-full ciwp-rounded-t ciwp-bg-brand-500 ciwp-transition group-hover:ciwp-bg-brand-600"
+                className="myrvento-w-full myrvento-rounded-t myrvento-bg-brand-500 myrvento-transition group-hover:myrvento-bg-brand-600"
                 style={{ height: `${height}%` }}
               />
             </div>
           );
         })}
       </div>
-      <div className="ciwp-flex ciwp-justify-between ciwp-text-xs ciwp-text-slate-400">
+      <div className="myrvento-flex myrvento-justify-between myrvento-text-xs myrvento-text-slate-400">
         <span>{rows[0].date}</span>
         <span>{rows[rows.length - 1].date}</span>
       </div>
@@ -130,25 +130,25 @@ function Funnel({ funnel }) {
   const max = Math.max(...steps.map((step) => step.count), 1);
 
   return (
-    <div className="ciwp-grid ciwp-gap-3">
+    <div className="myrvento-grid myrvento-gap-3">
       {steps.map((step, index) => (
         <div key={step.step}>
-          <div className="ciwp-mb-1 ciwp-flex ciwp-items-center ciwp-justify-between ciwp-text-sm">
-            <span className="ciwp-font-semibold ciwp-text-slate-800">{step.label}</span>
-            <span className="ciwp-text-slate-500">
+          <div className="myrvento-mb-1 myrvento-flex myrvento-items-center myrvento-justify-between myrvento-text-sm">
+            <span className="myrvento-font-semibold myrvento-text-slate-800">{step.label}</span>
+            <span className="myrvento-text-slate-500">
               {number(step.count)}
               {index > 0 ? ` · ${number(step.from_prev, 1)}% from previous` : ""}
             </span>
           </div>
-          <div className="ciwp-h-3 ciwp-overflow-hidden ciwp-rounded-full ciwp-bg-slate-100">
+          <div className="myrvento-h-3 myrvento-overflow-hidden myrvento-rounded-full myrvento-bg-slate-100">
             <div
-              className="ciwp-h-full ciwp-rounded-full ciwp-bg-brand-500"
+              className="myrvento-h-full myrvento-rounded-full myrvento-bg-brand-500"
               style={{ width: `${Math.max(step.count ? 4 : 0, (step.count / max) * 100)}%` }}
             />
           </div>
         </div>
       ))}
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-4 ciwp-text-sm ciwp-text-slate-600">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-4 myrvento-text-sm myrvento-text-slate-600">
         <span>Overall conversion <strong>{number(funnel.overall_conversion, 2)}%</strong></span>
         <span>Abandoned checkouts <strong>{number(funnel.abandoned_checkout)}</strong></span>
       </div>
@@ -160,7 +160,7 @@ function ProductTable({ rows, empty }) {
   if (!rows?.length) return <Empty>{empty}</Empty>;
 
   return (
-    <div className="ciwp-overflow-x-auto">
+    <div className="myrvento-overflow-x-auto">
       <table>
         <thead>
           <tr>
@@ -175,7 +175,7 @@ function ProductTable({ rows, empty }) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.product_id}>
-              <td className="ciwp-font-semibold">{row.name}</td>
+              <td className="myrvento-font-semibold">{row.name}</td>
               <td>{number(row.units)}</td>
               <td>{number(row.orders)}</td>
               <td>{money(row.revenue)}</td>
@@ -242,14 +242,14 @@ export default function Analytics() {
   }, [overview]);
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card
         title="Analytics"
         description="Ecommerce, customer, product, and marketing analytics from WooCommerce orders and Myrvento Loyalty for WooCommerce tracking."
         actions={
-          <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-gap-2">
+          <div className="myrvento-flex myrvento-flex-wrap myrvento-items-end myrvento-gap-2">
             {PRESETS.map((item) => (
               <Button
                 key={item.id}
@@ -260,7 +260,7 @@ export default function Analytics() {
               </Button>
             ))}
             <input
-              className="ciwp-w-40 ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-px-3 ciwp-py-2 ciwp-text-sm focus:ciwp-border-brand-400 focus:ciwp-outline-none focus:ciwp-ring-2 focus:ciwp-ring-brand-100"
+              className="myrvento-w-40 myrvento-rounded-lg myrvento-border myrvento-border-slate-200 myrvento-px-3 myrvento-py-2 myrvento-text-sm focus:myrvento-border-brand-400 focus:myrvento-outline-none focus:myrvento-ring-2 focus:myrvento-ring-brand-100"
               type="date"
               value={from}
               onChange={(e) => {
@@ -269,7 +269,7 @@ export default function Analytics() {
               }}
             />
             <input
-              className="ciwp-w-40 ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-px-3 ciwp-py-2 ciwp-text-sm focus:ciwp-border-brand-400 focus:ciwp-outline-none focus:ciwp-ring-2 focus:ciwp-ring-brand-100"
+              className="myrvento-w-40 myrvento-rounded-lg myrvento-border myrvento-border-slate-200 myrvento-px-3 myrvento-py-2 myrvento-text-sm focus:myrvento-border-brand-400 focus:myrvento-outline-none focus:myrvento-ring-2 focus:myrvento-ring-brand-100"
               type="date"
               value={to}
               onChange={(e) => {
@@ -280,14 +280,14 @@ export default function Analytics() {
           </div>
         }
       >
-        <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
+        <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-1 myrvento-rounded-xl myrvento-bg-slate-100 myrvento-p-1">
           {TABS.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ciwp-transition ${
-                tab === item.id ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm" : "ciwp-bg-transparent ciwp-text-slate-600"
+              className={`myrvento-rounded-lg myrvento-border-0 myrvento-px-3 myrvento-py-2 myrvento-text-sm myrvento-font-semibold myrvento-transition ${
+                tab === item.id ? "myrvento-bg-white myrvento-text-brand-700 myrvento-shadow-sm" : "myrvento-bg-transparent myrvento-text-slate-600"
               }`}
             >
               {item.label}
@@ -296,18 +296,18 @@ export default function Analytics() {
         </div>
       </Card>
 
-      {loading && <p className="ciwp-text-slate-500">Loading analytics…</p>}
+      {loading && <p className="myrvento-text-slate-500">Loading analytics…</p>}
 
       {!loading && tab === "overview" && overview && (
         <>
-          <div className="ciwp-grid ciwp-gap-3 sm:ciwp-grid-cols-2 lg:ciwp-grid-cols-3">
+          <div className="myrvento-grid myrvento-gap-3 sm:myrvento-grid-cols-2 lg:myrvento-grid-cols-3">
             {kpis.primary.map(([key, row]) => (
-              <div key={key} className="ciwp-rounded-2xl ciwp-border ciwp-border-slate-200 ciwp-bg-white ciwp-p-4 ciwp-shadow-sm">
-                <div className="ciwp-flex ciwp-items-start ciwp-justify-between ciwp-gap-2">
-                  <span className="ciwp-text-xs ciwp-font-semibold ciwp-uppercase ciwp-tracking-wide ciwp-text-slate-500">{row.label}</span>
+              <div key={key} className="myrvento-rounded-2xl myrvento-border myrvento-border-slate-200 myrvento-bg-white myrvento-p-4 myrvento-shadow-sm">
+                <div className="myrvento-flex myrvento-items-start myrvento-justify-between myrvento-gap-2">
+                  <span className="myrvento-text-xs myrvento-font-semibold myrvento-uppercase myrvento-tracking-wide myrvento-text-slate-500">{row.label}</span>
                   <Delta value={row.delta} />
                 </div>
-                <div className="ciwp-mt-2 ciwp-text-2xl ciwp-font-bold ciwp-text-slate-900">{formatKpi(key, row.value)}</div>
+                <div className="myrvento-mt-2 myrvento-text-2xl myrvento-font-bold myrvento-text-slate-900">{formatKpi(key, row.value)}</div>
               </div>
             ))}
           </div>
@@ -317,14 +317,14 @@ export default function Analytics() {
           </Card>
 
           <Card title="More revenue metrics">
-            <div className="ciwp-grid ciwp-gap-3 sm:ciwp-grid-cols-2 lg:ciwp-grid-cols-4">
+            <div className="myrvento-grid myrvento-gap-3 sm:myrvento-grid-cols-2 lg:myrvento-grid-cols-4">
               {kpis.rest.map(([key, row]) => (
-                <div key={key} className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                  <div className="ciwp-flex ciwp-justify-between ciwp-gap-2">
-                    <span className="ciwp-text-xs ciwp-text-slate-500">{row.label}</span>
+                <div key={key} className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                  <div className="myrvento-flex myrvento-justify-between myrvento-gap-2">
+                    <span className="myrvento-text-xs myrvento-text-slate-500">{row.label}</span>
                     <Delta value={row.delta} />
                   </div>
-                  <div className="ciwp-mt-1 ciwp-text-lg ciwp-font-bold">{formatKpi(key, row.value)}</div>
+                  <div className="myrvento-mt-1 myrvento-text-lg myrvento-font-bold">{formatKpi(key, row.value)}</div>
                 </div>
               ))}
             </div>
@@ -334,16 +334,16 @@ export default function Analytics() {
 
       {!loading && tab === "customers" && customers && (
         <>
-          <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4">
+          <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4">
             {[
               ["Customers", number(customers.retention?.customers)],
               ["2nd purchase", `${number(customers.retention?.second_purchase_rate, 1)}%`],
               ["3rd purchase", `${number(customers.retention?.third_purchase_rate, 1)}%`],
               ["Median days between", number(customers.retention?.median_days_between, 1)],
             ].map(([label, value]) => (
-              <div key={label} className="ciwp-rounded-2xl ciwp-border ciwp-border-slate-200 ciwp-bg-white ciwp-p-4">
-                <div className="ciwp-text-xs ciwp-font-semibold ciwp-uppercase ciwp-text-slate-500">{label}</div>
-                <div className="ciwp-mt-1 ciwp-text-2xl ciwp-font-bold">{value}</div>
+              <div key={label} className="myrvento-rounded-2xl myrvento-border myrvento-border-slate-200 myrvento-bg-white myrvento-p-4">
+                <div className="myrvento-text-xs myrvento-font-semibold myrvento-uppercase myrvento-text-slate-500">{label}</div>
+                <div className="myrvento-mt-1 myrvento-text-2xl myrvento-font-bold">{value}</div>
               </div>
             ))}
           </div>
@@ -351,7 +351,7 @@ export default function Analytics() {
           <Card title="Cohort retention" description="Share of each acquisition month that purchased again in months 0–5.">
             {!customers.cohorts?.length && <Empty>Cohorts appear after customers place their first paid order.</Empty>}
             {customers.cohorts?.length > 0 && (
-              <div className="ciwp-overflow-x-auto">
+              <div className="myrvento-overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
@@ -366,12 +366,12 @@ export default function Analytics() {
                   <tbody>
                     {customers.cohorts.map((row) => (
                       <tr key={row.cohort}>
-                        <td className="ciwp-font-semibold">{row.cohort}</td>
+                        <td className="myrvento-font-semibold">{row.cohort}</td>
                         <td>{number(row.customers)}</td>
                         <td>{money(row.value)}</td>
                         {row.months.map((cell) => (
                           <td key={cell.offset}>
-                            <span className={`ciwp-inline-block ciwp-min-w-[3.5rem] ciwp-rounded-md ciwp-px-2 ciwp-py-1 ciwp-text-center ciwp-text-xs ciwp-font-semibold ${heatClass(cell.retention)}`}>
+                            <span className={`myrvento-inline-block myrvento-min-w-[3.5rem] myrvento-rounded-md myrvento-px-2 myrvento-py-1 myrvento-text-center myrvento-text-xs myrvento-font-semibold ${heatClass(cell.retention)}`}>
                               {number(cell.retention, 0)}%
                             </span>
                           </td>
@@ -384,27 +384,27 @@ export default function Analytics() {
             )}
           </Card>
 
-          <div className="ciwp-grid ciwp-gap-5 lg:ciwp-grid-cols-2">
+          <div className="myrvento-grid myrvento-gap-5 lg:myrvento-grid-cols-2">
             <Card title="Churn" description="Active ≤ 60 days, at-risk 61–180, churned 180+.">
-              <div className="ciwp-grid ciwp-grid-cols-3 ciwp-gap-3">
-                <div className="ciwp-rounded-xl ciwp-bg-emerald-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">Active</div>
-                  <div className="ciwp-text-xl ciwp-font-bold">{number(customers.churn?.active)}</div>
+              <div className="myrvento-grid myrvento-grid-cols-3 myrvento-gap-3">
+                <div className="myrvento-rounded-xl myrvento-bg-emerald-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">Active</div>
+                  <div className="myrvento-text-xl myrvento-font-bold">{number(customers.churn?.active)}</div>
                 </div>
-                <div className="ciwp-rounded-xl ciwp-bg-amber-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">At risk</div>
-                  <div className="ciwp-text-xl ciwp-font-bold">{number(customers.churn?.at_risk)}</div>
+                <div className="myrvento-rounded-xl myrvento-bg-amber-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">At risk</div>
+                  <div className="myrvento-text-xl myrvento-font-bold">{number(customers.churn?.at_risk)}</div>
                 </div>
-                <div className="ciwp-rounded-xl ciwp-bg-rose-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">Churned</div>
-                  <div className="ciwp-text-xl ciwp-font-bold">{number(customers.churn?.churned)}</div>
+                <div className="myrvento-rounded-xl myrvento-bg-rose-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">Churned</div>
+                  <div className="myrvento-text-xl myrvento-font-bold">{number(customers.churn?.churned)}</div>
                 </div>
               </div>
-              <p className="ciwp-mt-3 ciwp-text-sm ciwp-text-slate-600">
+              <p className="myrvento-mt-3 myrvento-text-sm myrvento-text-slate-600">
                 Churn rate <strong>{number(customers.churn?.churn_rate, 1)}%</strong>
               </p>
               {customers.churn?.winback?.length > 0 && (
-                <table className="ciwp-mt-3">
+                <table className="myrvento-mt-3">
                   <thead>
                     <tr>
                       <th>Win-back</th>
@@ -416,7 +416,7 @@ export default function Analytics() {
                       <tr key={row.customer_id}>
                         <td>
                           <strong>{row.name}</strong>
-                          <div className="ciwp-text-xs ciwp-text-slate-500">{row.email}</div>
+                          <div className="myrvento-text-xs myrvento-text-slate-500">{row.email}</div>
                         </td>
                         <td>{row.days_since}</td>
                       </tr>
@@ -429,7 +429,7 @@ export default function Analytics() {
             <Card title="Segment performance" description="VIP, spend, frequency, coupons, referrals, and loyalty.">
               {!customers.segments?.length && <Empty>Segments need paid customer history.</Empty>}
               {customers.segments?.length > 0 && (
-                <div className="ciwp-overflow-x-auto">
+                <div className="myrvento-overflow-x-auto">
                   <table>
                     <thead>
                       <tr>
@@ -442,7 +442,7 @@ export default function Analytics() {
                     <tbody>
                       {customers.segments.map((row) => (
                         <tr key={row.id}>
-                          <td className="ciwp-font-semibold">{row.name}</td>
+                          <td className="myrvento-font-semibold">{row.name}</td>
                           <td>{number(row.customers)}</td>
                           <td>{money(row.revenue)}</td>
                           <td>{money(row.aov)}</td>
@@ -483,7 +483,7 @@ export default function Analytics() {
           <Card title="Campaign ROI" description="Referral campaign revenue versus loyalty points issued.">
             {!marketing.campaigns?.length && <Empty>Create a referral campaign to measure ROI.</Empty>}
             {marketing.campaigns?.length > 0 && (
-              <div className="ciwp-overflow-x-auto">
+              <div className="myrvento-overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
@@ -498,7 +498,7 @@ export default function Analytics() {
                   <tbody>
                     {marketing.campaigns.map((row) => (
                       <tr key={row.id}>
-                        <td className="ciwp-font-semibold">{row.name}</td>
+                        <td className="myrvento-font-semibold">{row.name}</td>
                         <td>{number(row.clicks)}</td>
                         <td>{number(row.orders)}</td>
                         <td>{number(row.conversion, 2)}%</td>
@@ -512,25 +512,25 @@ export default function Analytics() {
             )}
           </Card>
 
-          <div className="ciwp-grid ciwp-gap-5 lg:ciwp-grid-cols-2">
+          <div className="myrvento-grid myrvento-gap-5 lg:myrvento-grid-cols-2">
             <Card title="Email performance" description="WooCommerce transactional sends, with opens from the tracking pixel.">
-              <div className="ciwp-mb-4 ciwp-grid ciwp-grid-cols-3 ciwp-gap-3">
-                <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">Sent</div>
-                  <div className="ciwp-text-lg ciwp-font-bold">{number(marketing.email?.totals?.sent)}</div>
+              <div className="myrvento-mb-4 myrvento-grid myrvento-grid-cols-3 myrvento-gap-3">
+                <div className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">Sent</div>
+                  <div className="myrvento-text-lg myrvento-font-bold">{number(marketing.email?.totals?.sent)}</div>
                 </div>
-                <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">Open rate</div>
-                  <div className="ciwp-text-lg ciwp-font-bold">{number(marketing.email?.totals?.open_rate, 1)}%</div>
+                <div className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">Open rate</div>
+                  <div className="myrvento-text-lg myrvento-font-bold">{number(marketing.email?.totals?.open_rate, 1)}%</div>
                 </div>
-                <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
-                  <div className="ciwp-text-xs ciwp-text-slate-500">Click rate</div>
-                  <div className="ciwp-text-lg ciwp-font-bold">{number(marketing.email?.totals?.click_rate, 1)}%</div>
+                <div className="myrvento-rounded-xl myrvento-bg-slate-50 myrvento-p-3">
+                  <div className="myrvento-text-xs myrvento-text-slate-500">Click rate</div>
+                  <div className="myrvento-text-lg myrvento-font-bold">{number(marketing.email?.totals?.click_rate, 1)}%</div>
                 </div>
               </div>
               {!marketing.email?.emails?.length && <Empty>No emails sent in this range.</Empty>}
               {marketing.email?.emails?.length > 0 && (
-                <div className="ciwp-overflow-x-auto">
+                <div className="myrvento-overflow-x-auto">
                   <table>
                     <thead>
                       <tr>
@@ -544,7 +544,7 @@ export default function Analytics() {
                     <tbody>
                       {marketing.email.emails.map((row) => (
                         <tr key={row.key}>
-                          <td className="ciwp-font-semibold">{row.title}</td>
+                          <td className="myrvento-font-semibold">{row.title}</td>
                           <td>{number(row.sent)}</td>
                           <td>{number(row.open_rate, 1)}%</td>
                           <td>{number(row.click_rate, 1)}%</td>
@@ -558,15 +558,15 @@ export default function Analytics() {
             </Card>
 
             <Card title="Attribution" description="First-touch, last-touch, and multi-touch sources plus referral orders.">
-              <p className="ciwp-mt-0 ciwp-text-sm ciwp-text-slate-600">
+              <p className="myrvento-mt-0 myrvento-text-sm myrvento-text-slate-600">
                 Referral-attributed orders <strong>{number(marketing.attribution?.referral)}</strong>
               </p>
               {["first_touch", "last_touch", "multi_touch"].map((key) => {
                 const rows = marketing.attribution?.[key] || [];
                 const title = key.replace("_", " ");
                 return (
-                  <div key={key} className="ciwp-mt-4">
-                    <h3 className="ciwp-mb-2 ciwp-mt-0 ciwp-text-sm ciwp-font-bold ciwp-capitalize ciwp-text-slate-800">{title}</h3>
+                  <div key={key} className="myrvento-mt-4">
+                    <h3 className="myrvento-mb-2 myrvento-mt-0 myrvento-text-sm myrvento-font-bold myrvento-capitalize myrvento-text-slate-800">{title}</h3>
                     {!rows.length && <Empty>No {title} data yet. UTM and referral links populate this report.</Empty>}
                     {rows.length > 0 && (
                       <table>
@@ -595,7 +595,7 @@ export default function Analytics() {
           <Card title="Coupon performance">
             {!marketing.coupons?.length && <Empty>No coupons used in this range.</Empty>}
             {marketing.coupons?.length > 0 && (
-              <div className="ciwp-overflow-x-auto">
+              <div className="myrvento-overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
@@ -607,7 +607,7 @@ export default function Analytics() {
                   <tbody>
                     {marketing.coupons.map((row) => (
                       <tr key={row.coupon_id}>
-                        <td className="ciwp-font-semibold">{row.code}</td>
+                        <td className="myrvento-font-semibold">{row.code}</td>
                         <td>{number(row.orders)}</td>
                         <td>{money(row.discount)}</td>
                       </tr>

@@ -2,7 +2,7 @@
 /**
  * Unified points ledger — the only writer of customer balances.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Points ledger.
  */
-class Ciwp_Points_Ledger {
+class Myrvento_Points_Ledger {
 
 	/**
 	 * Credit points (earn or positive adjustment).
@@ -26,7 +26,7 @@ class Ciwp_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		return self::write(
@@ -51,7 +51,7 @@ class Ciwp_Points_Ledger {
 		$amount = (int) $amount;
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'gp_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_invalid_amount', __( 'Points amount must be greater than zero.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$type = isset( $args['type'] ) ? $args['type'] : 'redeem';
@@ -74,11 +74,11 @@ class Ciwp_Points_Ledger {
 
 		$customer_id = (int) $customer_id;
 		if ( $customer_id <= 0 ) {
-			return new WP_Error( 'gp_invalid_customer', __( 'Invalid customer.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_invalid_customer', __( 'Invalid customer.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
-		$ledger   = esc_sql( Ciwp::table( 'points_ledger' ) );
-		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
+		$ledger   = esc_sql( Myrvento::table( 'points_ledger' ) );
+		$balances = esc_sql( Myrvento::table( 'points_balances' ) );
 
 		$wpdb->query( 'START TRANSACTION' );
 
@@ -114,7 +114,7 @@ class Ciwp_Points_Ledger {
 
 		if ( $amount < 0 && $available < abs( $amount ) && empty( $args['allow_negative'] ) ) {
 			$wpdb->query( 'ROLLBACK' );
-			return new WP_Error( 'gp_insufficient_points', __( 'Not enough points.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_insufficient_points', __( 'Not enough points.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		if ( $amount < 0 && empty( $args['skip_consume'] ) ) {
@@ -143,7 +143,7 @@ class Ciwp_Points_Ledger {
 
 		if ( $amount > 0 ) {
 			$remaining = $amount;
-			$days      = (int) Ciwp_Settings::get_value( 'expiration_days', 0 );
+			$days      = (int) Myrvento_Settings::get_value( 'expiration_days', 0 );
 			if ( $days > 0 && empty( $args['no_expire'] ) ) {
 				$expires_at = gmdate( 'Y-m-d H:i:s', time() + ( $days * DAY_IN_SECONDS ) );
 				if ( function_exists( 'wp_date' ) ) {
@@ -203,7 +203,7 @@ class Ciwp_Points_Ledger {
 		 * @param int    $amount      Signed amount.
 		 * @param string $source      Source key.
 		 */
-		do_action( 'ciwp_points_changed', $customer_id, $ledger_id, $amount, $source );
+		do_action( 'myrvento_points_changed', $customer_id, $ledger_id, $amount, $source );
 
 		return $ledger_id;
 	}
@@ -218,7 +218,7 @@ class Ciwp_Points_Ledger {
 	private static function consume_lots( $customer_id, $amount ) {
 		global $wpdb;
 
-		$ledger = esc_sql( Ciwp::table( 'points_ledger' ) );
+		$ledger = esc_sql( Myrvento::table( 'points_ledger' ) );
 		$left   = $amount;
 
 		$rows = $wpdb->get_results(
@@ -253,7 +253,7 @@ class Ciwp_Points_Ledger {
 	public static function expire_due_points() {
 		global $wpdb;
 
-		$ledger = esc_sql( Ciwp::table( 'points_ledger' ) );
+		$ledger = esc_sql( Myrvento::table( 'points_ledger' ) );
 		$now    = current_time( 'mysql' );
 
 		$rows = $wpdb->get_results(
@@ -304,7 +304,7 @@ class Ciwp_Points_Ledger {
 	public static function get_balance( $customer_id ) {
 		global $wpdb;
 
-		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
+		$balances = esc_sql( Myrvento::table( 'points_balances' ) );
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
@@ -349,7 +349,7 @@ class Ciwp_Points_Ledger {
 	public static function get_history( $customer_id, $args = array() ) {
 		global $wpdb;
 
-		$ledger   = esc_sql( Ciwp::table( 'points_ledger' ) );
+		$ledger   = esc_sql( Myrvento::table( 'points_ledger' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -387,7 +387,7 @@ class Ciwp_Points_Ledger {
 	public static function already_awarded( $customer_id, $source, $source_id ) {
 		global $wpdb;
 
-		$ledger = esc_sql( Ciwp::table( 'points_ledger' ) );
+		$ledger = esc_sql( Myrvento::table( 'points_ledger' ) );
 
 		$found = $wpdb->get_var(
 			$wpdb->prepare(

@@ -2,27 +2,27 @@
 /**
  * My Account — Referrals.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// Included from Ciwp_Frontend::load_template(), so these assignments stay in that method.
+// Included from Myrvento_Frontend::load_template(), so these assignments stay in that method.
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 $user_id  = get_current_user_id();
-$share    = Ciwp_Share::payload( $user_id );
-$stats    = Ciwp_Referral_Program::stats_for( $user_id );
-$campaign = Ciwp_Referral_Program::active_campaign();
-$history  = Ciwp_Referral_Program::list( array( 'referrer_id' => $user_id, 'per_page' => 20 ) );
+$share    = Myrvento_Share::payload( $user_id );
+$stats    = Myrvento_Referral_Program::stats_for( $user_id );
+$campaign = Myrvento_Referral_Program::active_campaign();
+$history  = Myrvento_Referral_Program::list( array( 'referrer_id' => $user_id, 'per_page' => 20 ) );
 ?>
-<div class="ciwp-account ciwp-referrals">
-	<div class="ciwp-account__hero">
+<div class="myrvento-account myrvento-referrals">
+	<div class="myrvento-account__hero">
 		<div>
-			<p class="ciwp-account__kicker"><?php esc_html_e( 'Your referral code', 'myrvento-loyalty-for-woocommerce' ); ?></p>
-			<p class="ciwp-account__balance"><?php echo esc_html( $share['code'] ); ?></p>
+			<p class="myrvento-account__kicker"><?php esc_html_e( 'Your referral code', 'myrvento-loyalty-for-woocommerce' ); ?></p>
+			<p class="myrvento-account__balance"><?php echo esc_html( $share['code'] ); ?></p>
 			<?php if ( $campaign ) : ?>
-				<p class="ciwp-account__muted">
+				<p class="myrvento-account__muted">
 					<?php
 					printf(
 						/* translators: %d points */
@@ -33,26 +33,26 @@ $history  = Ciwp_Referral_Program::list( array( 'referrer_id' => $user_id, 'per_
 				</p>
 			<?php endif; ?>
 		</div>
-		<div class="ciwp-account__stats">
+		<div class="myrvento-account__stats">
 			<div><strong><?php echo esc_html( (string) $stats['clicks'] ); ?></strong><span><?php esc_html_e( 'Clicks', 'myrvento-loyalty-for-woocommerce' ); ?></span></div>
 			<div><strong><?php echo esc_html( (string) $stats['signups'] ); ?></strong><span><?php esc_html_e( 'Signups', 'myrvento-loyalty-for-woocommerce' ); ?></span></div>
 			<div><strong><?php echo esc_html( (string) $stats['converted'] ); ?></strong><span><?php esc_html_e( 'Orders', 'myrvento-loyalty-for-woocommerce' ); ?></span></div>
 		</div>
 	</div>
 
-	<div class="ciwp-share" data-ciwp-share>
+	<div class="myrvento-share" data-myrvento-share>
 		<label>
 			<?php esc_html_e( 'Referral link', 'myrvento-loyalty-for-woocommerce' ); ?>
-			<input type="text" readonly value="<?php echo esc_attr( $share['url'] ); ?>" data-ciwp-copy-target>
+			<input type="text" readonly value="<?php echo esc_attr( $share['url'] ); ?>" data-myrvento-copy-target>
 		</label>
-		<button type="button" class="button" data-ciwp-copy><?php esc_html_e( 'Copy link', 'myrvento-loyalty-for-woocommerce' ); ?></button>
-		<div class="ciwp-share__channels">
-			<a class="button" href="<?php echo esc_url( $share['email'] ); ?>" data-ciwp-share-channel="email"><?php esc_html_e( 'Email', 'myrvento-loyalty-for-woocommerce' ); ?></a>
-			<a class="button" href="<?php echo esc_url( $share['whatsapp'] ); ?>" target="_blank" rel="noopener noreferrer" data-ciwp-share-channel="whatsapp"><?php esc_html_e( 'WhatsApp', 'myrvento-loyalty-for-woocommerce' ); ?></a>
-			<a class="button" href="<?php echo esc_url( $share['facebook'] ); ?>" target="_blank" rel="noopener noreferrer" data-ciwp-share-channel="facebook"><?php esc_html_e( 'Facebook', 'myrvento-loyalty-for-woocommerce' ); ?></a>
-			<a class="button" href="<?php echo esc_url( $share['twitter'] ); ?>" target="_blank" rel="noopener noreferrer" data-ciwp-share-channel="twitter"><?php esc_html_e( 'X', 'myrvento-loyalty-for-woocommerce' ); ?></a>
+		<button type="button" class="button" data-myrvento-copy><?php esc_html_e( 'Copy link', 'myrvento-loyalty-for-woocommerce' ); ?></button>
+		<div class="myrvento-share__channels">
+			<a class="button" href="<?php echo esc_url( $share['email'] ); ?>" data-myrvento-share-channel="email"><?php esc_html_e( 'Email', 'myrvento-loyalty-for-woocommerce' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $share['whatsapp'] ); ?>" target="_blank" rel="noopener noreferrer" data-myrvento-share-channel="whatsapp"><?php esc_html_e( 'WhatsApp', 'myrvento-loyalty-for-woocommerce' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $share['facebook'] ); ?>" target="_blank" rel="noopener noreferrer" data-myrvento-share-channel="facebook"><?php esc_html_e( 'Facebook', 'myrvento-loyalty-for-woocommerce' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $share['twitter'] ); ?>" target="_blank" rel="noopener noreferrer" data-myrvento-share-channel="twitter"><?php esc_html_e( 'X', 'myrvento-loyalty-for-woocommerce' ); ?></a>
 		</div>
-		<canvas data-ciwp-qr="<?php echo esc_attr( $share['url'] ); ?>" width="160" height="160" aria-label="<?php esc_attr_e( 'Referral QR code', 'myrvento-loyalty-for-woocommerce' ); ?>"></canvas>
+		<canvas data-myrvento-qr="<?php echo esc_attr( $share['url'] ); ?>" width="160" height="160" aria-label="<?php esc_attr_e( 'Referral QR code', 'myrvento-loyalty-for-woocommerce' ); ?>"></canvas>
 	</div>
 
 	<h3><?php esc_html_e( 'Referral history', 'myrvento-loyalty-for-woocommerce' ); ?></h3>

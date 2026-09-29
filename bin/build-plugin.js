@@ -15,9 +15,9 @@ const versionMatch = header.match(/^\s*\*\s*Version:\s*(.+)$/m);
 const version = versionMatch ? versionMatch[1].trim() : "0.0.0";
 const folder = "myrvento-loyalty-for-woocommerce";
 // Outside the plugin so Plugin Check does not scan the zip or a second copy of the code.
-const dist = path.resolve(root, "..", "..", "ciwp-dist");
+const dist = path.resolve(root, "..", "..", "myrvento-dist");
 const stage = path.join(dist, folder);
-const zipName = `ciwp-${version}.zip`;
+const zipName = `myrvento-${version}.zip`;
 
 const include = [
   "myrvento-loyalty-for-woocommerce.php",

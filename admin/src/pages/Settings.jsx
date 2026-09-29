@@ -33,14 +33,14 @@ export default function Settings() {
   }
 
   if (!settings) {
-    return <p className="ciwp-text-slate-500">Loading settings…</p>;
+    return <p className="myrvento-text-slate-500">Loading settings…</p>;
   }
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="Loyalty settings" description="These control when points are earned and how they appear on My Account.">
-        <div className="ciwp-grid ciwp-gap-4 md:ciwp-grid-cols-2">
+        <div className="myrvento-grid myrvento-gap-4 md:myrvento-grid-cols-2">
           <Field label="Points name">
             <input className={inputClass} value={settings.points_name} onChange={(e) => setSettings({ ...settings, points_name: e.target.value })} />
           </Field>
@@ -66,7 +66,7 @@ export default function Settings() {
             <input className={inputClass} type="number" value={settings.downgrade_window_days} onChange={(e) => setSettings({ ...settings, downgrade_window_days: Number(e.target.value) })} />
           </Field>
         </div>
-        <div className="ciwp-mt-4 ciwp-grid ciwp-gap-3">
+        <div className="myrvento-mt-4 myrvento-grid myrvento-gap-3">
           <Toggle
             label="Allow VIP downgrades"
             description="If off, customers keep a higher tier even when they fall below the qualifier."
@@ -80,13 +80,13 @@ export default function Settings() {
             onChange={(social_once) => setSettings({ ...settings, social_once })}
           />
         </div>
-        <div className="ciwp-mt-5">
+        <div className="myrvento-mt-5">
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save settings"}</Button>
         </div>
       </Card>
 
       <Card title="Myrvento Brain" description="Local models always run from WooCommerce orders. Optional narration uses the WordPress AI Client and the provider connected in WordPress. This plugin does not store an API key.">
-        <div className="ciwp-grid ciwp-gap-3">
+        <div className="myrvento-grid myrvento-gap-3">
           <Toggle
             label="Run on-store AI models"
             description="Churn, next purchase, pricing, and demand forecasts. Daily cron refreshes the snapshot."
@@ -101,11 +101,11 @@ export default function Settings() {
           />
         </div>
         {!settings.ai_client_available && (
-          <p className="ciwp-mb-0 ciwp-mt-4 ciwp-text-sm ciwp-text-slate-600">
+          <p className="myrvento-mb-0 myrvento-mt-4 myrvento-text-sm myrvento-text-slate-600">
             WordPress AI is not available on this site yet. On-store models still run. Narration needs WordPress 7.0 or newer with a provider connected.
           </p>
         )}
-        <div className="ciwp-mt-5">
+        <div className="myrvento-mt-5">
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save AI settings"}</Button>
         </div>
       </Card>

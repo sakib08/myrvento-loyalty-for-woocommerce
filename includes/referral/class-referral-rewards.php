@@ -2,7 +2,7 @@
 /**
  * Referral rewards — always credited through the loyalty ledger.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral → points.
  */
-class Ciwp_Referral_Rewards {
+class Myrvento_Referral_Rewards {
 
 	/**
 	 * Referee signup bonus (to the new customer).
@@ -21,16 +21,16 @@ class Ciwp_Referral_Rewards {
 	 * @return void
 	 */
 	public static function on_signup( $referee_id, $referrer_id ) {
-		$campaign = Ciwp_Referral_Program::active_campaign();
+		$campaign = Myrvento_Referral_Program::active_campaign();
 		if ( ! $campaign || (int) $campaign->referee_signup_points <= 0 ) {
 			return;
 		}
 
-		if ( get_user_meta( $referee_id, '_gp_referral_signup_points', true ) ) {
+		if ( get_user_meta( $referee_id, '_myrvento_referral_signup_points', true ) ) {
 			return;
 		}
 
-		$result = Ciwp_Points_Ledger::credit(
+		$result = Myrvento_Points_Ledger::credit(
 			$referee_id,
 			(int) $campaign->referee_signup_points,
 			'referral',
@@ -41,7 +41,7 @@ class Ciwp_Referral_Rewards {
 		);
 
 		if ( ! is_wp_error( $result ) ) {
-			update_user_meta( $referee_id, '_gp_referral_signup_points', $result );
+			update_user_meta( $referee_id, '_myrvento_referral_signup_points', $result );
 		}
 	}
 
@@ -61,20 +61,20 @@ class Ciwp_Referral_Rewards {
 			return;
 		}
 
-		$code = (string) $order->get_meta( '_gp_referral_code' );
+		$code = (string) $order->get_meta( '_myrvento_referral_code' );
 		if ( '' === $code ) {
-			$code = (string) get_user_meta( $referee_id, 'gp_referred_code', true );
+			$code = (string) get_user_meta( $referee_id, 'myrvento_referred_code', true );
 		}
 
-		$row = Ciwp_Referral_Program::get_for_referee( $referee_id );
+		$row = Myrvento_Referral_Program::get_for_referee( $referee_id );
 
 		if ( ! $row && '' !== $code ) {
-			$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
+			$referrer_id = Myrvento_Referral_Program::find_referrer_by_code( $code );
 			if ( $referrer_id && $referrer_id !== $referee_id ) {
-				$id  = Ciwp_Referral_Program::upsert( $referrer_id, $code, $referee_id, 'signed_up' );
+				$id  = Myrvento_Referral_Program::upsert( $referrer_id, $code, $referee_id, 'signed_up' );
 				$row = null;
 				global $wpdb;
-				$table = esc_sql( Ciwp::table( 'referrals' ) );
+				$table = esc_sql( Myrvento::table( 'referrals' ) );
 				$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		}
@@ -89,8 +89,8 @@ class Ciwp_Referral_Rewards {
 		}
 
 		$campaign = $row->campaign_id
-			? Ciwp_Referral_Program::get_campaign( (int) $row->campaign_id )
-			: Ciwp_Referral_Program::active_campaign();
+			? Myrvento_Referral_Program::get_campaign( (int) $row->campaign_id )
+			: Myrvento_Referral_Program::active_campaign();
 
 		if ( ! $campaign ) {
 			return;
@@ -99,11 +99,11 @@ class Ciwp_Referral_Rewards {
 		$is_first = empty( $row->first_order_rewarded );
 
 		if ( $is_first && (int) $campaign->first_order_points > 0 ) {
-			if ( $order->get_meta( '_gp_referral_first_awarded' ) ) {
+			if ( $order->get_meta( '_myrvento_referral_first_awarded' ) ) {
 				return;
 			}
 
-			$result = Ciwp_Points_Ledger::credit(
+			$result = Myrvento_Points_Ledger::credit(
 				$referrer_id,
 				(int) $campaign->first_order_points,
 				'referral',
@@ -121,7 +121,7 @@ class Ciwp_Referral_Rewards {
 			if ( ! is_wp_error( $result ) ) {
 				global $wpdb;
 				$wpdb->update(
-					esc_sql( Ciwp::table( 'referrals' ) ),
+					esc_sql( Myrvento::table( 'referrals' ) ),
 					array(
 						'status'               => 'rewarded',
 						'attributed_order_id'  => $order->get_id(),
@@ -130,20 +130,20 @@ class Ciwp_Referral_Rewards {
 					),
 					array( 'id' => (int) $row->id )
 				);
-				$order->update_meta_data( '_gp_referral_first_awarded', $result );
+				$order->update_meta_data( '_myrvento_referral_first_awarded', $result );
 				$order->save();
-				do_action( 'ciwp_referral_converted', $referrer_id, $referee_id, $order->get_id() );
+				do_action( 'myrvento_referral_converted', $referrer_id, $referee_id, $order->get_id() );
 			}
 
 			return;
 		}
 
 		if ( ! $is_first && (int) $campaign->recurring_points > 0 ) {
-			if ( $order->get_meta( '_gp_referral_recurring_awarded' ) ) {
+			if ( $order->get_meta( '_myrvento_referral_recurring_awarded' ) ) {
 				return;
 			}
 
-			$result = Ciwp_Points_Ledger::credit(
+			$result = Myrvento_Points_Ledger::credit(
 				$referrer_id,
 				(int) $campaign->recurring_points,
 				'referral',
@@ -162,12 +162,12 @@ class Ciwp_Referral_Rewards {
 				global $wpdb;
 				$wpdb->query(
 					$wpdb->prepare(
-						'UPDATE ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+						'UPDATE ' . esc_sql( Myrvento::table( 'referrals' ) ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 						'rewarded',
 						(int) $row->id
 					)
 				);
-				$order->update_meta_data( '_gp_referral_recurring_awarded', $result );
+				$order->update_meta_data( '_myrvento_referral_recurring_awarded', $result );
 				$order->save();
 			}
 		}

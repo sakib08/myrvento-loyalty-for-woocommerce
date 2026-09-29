@@ -2,7 +2,7 @@
 /**
  * Myrvento Brain — action cards from local models, optional LLM narration.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Myrvento Brain.
  */
-class Ciwp_AI_Brain {
+class Myrvento_AI_Brain {
 
 	/**
 	 * Brain report.
@@ -20,8 +20,8 @@ class Ciwp_AI_Brain {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false, $use_llm = true ) {
-		$local = Ciwp_AI_Engine::remember(
-			'ciwp_ai_brain',
+		$local = Myrvento_AI_Engine::remember(
+			'myrvento_ai_brain',
 			static function () {
 				return self::local_insights();
 			},
@@ -30,8 +30,8 @@ class Ciwp_AI_Brain {
 
 		$llm = null;
 		if ( $use_llm && self::llm_enabled() ) {
-			$llm = Ciwp_AI_Engine::remember(
-				'ciwp_ai_brain_llm',
+			$llm = Myrvento_AI_Engine::remember(
+				'myrvento_ai_brain_llm',
 				static function () use ( $local ) {
 					return self::narrate( $local );
 				},
@@ -60,9 +60,9 @@ class Ciwp_AI_Brain {
 	 * @return array<string, mixed>
 	 */
 	public static function local_insights() {
-		$predict  = Ciwp_AI_Predict::report();
-		$pricing  = Ciwp_AI_Pricing::report();
-		$forecast = Ciwp_AI_Forecast::report();
+		$predict  = Myrvento_AI_Predict::report();
+		$pricing  = Myrvento_AI_Pricing::report();
+		$forecast = Myrvento_AI_Forecast::report();
 
 		$insights = array();
 
@@ -213,7 +213,7 @@ class Ciwp_AI_Brain {
 	 * @return bool
 	 */
 	public static function llm_enabled() {
-		return (bool) Ciwp_Settings::get_value( 'ai_llm_enabled', false ) && self::llm_available();
+		return (bool) Myrvento_Settings::get_value( 'ai_llm_enabled', false ) && self::llm_available();
 	}
 
 	/**

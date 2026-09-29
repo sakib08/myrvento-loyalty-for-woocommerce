@@ -6,25 +6,25 @@ import { money, number } from "../format";
 
 function Kpi({ label, value, hint }) {
   return (
-    <div className="ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-bg-slate-50 ciwp-p-4">
-      <div className="ciwp-text-xs ciwp-font-semibold ciwp-uppercase ciwp-tracking-wide ciwp-text-slate-500">{label}</div>
-      <div className="ciwp-mt-1 ciwp-text-2xl ciwp-font-bold ciwp-text-slate-900">{value}</div>
-      {hint && <div className="ciwp-mt-1 ciwp-text-xs ciwp-text-slate-500">{hint}</div>}
+    <div className="myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-bg-slate-50 myrvento-p-4">
+      <div className="myrvento-text-xs myrvento-font-semibold myrvento-uppercase myrvento-tracking-wide myrvento-text-slate-500">{label}</div>
+      <div className="myrvento-mt-1 myrvento-text-2xl myrvento-font-bold myrvento-text-slate-900">{value}</div>
+      {hint && <div className="myrvento-mt-1 myrvento-text-xs myrvento-text-slate-500">{hint}</div>}
     </div>
   );
 }
 
 function Trend({ rows }) {
   if (!rows?.length) {
-    return <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">Paid orders will draw the revenue trend.</p>;
+    return <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">Paid orders will draw the revenue trend.</p>;
   }
   const max = Math.max(...rows.map((row) => Number(row.net) || 0), 1);
   return (
-    <div className="ciwp-flex ciwp-h-40 ciwp-items-end ciwp-gap-px">
+    <div className="myrvento-flex myrvento-h-40 myrvento-items-end myrvento-gap-px">
       {rows.map((row) => (
         <div
           key={row.date}
-          className="ciwp-min-w-0 ciwp-flex-1 ciwp-rounded-t ciwp-bg-brand-500"
+          className="myrvento-min-w-0 myrvento-flex-1 myrvento-rounded-t myrvento-bg-brand-500"
           style={{ height: `${Math.max(2, (Number(row.net) / max) * 100)}%` }}
           title={`${row.date}: ${money(row.net)}`}
         />
@@ -53,16 +53,16 @@ export default function Dashboard() {
   const kpis = data?.kpis || {};
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
       <div>
-        <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Dashboard</h2>
-        <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">
+        <h2 className="myrvento-m-0 myrvento-text-xl myrvento-font-bold myrvento-text-slate-900">Dashboard</h2>
+        <p className="myrvento-m-0 myrvento-mt-1 myrvento-text-sm myrvento-text-slate-500">
           Last 30 days{data?.range ? ` · ${data.range.from} to ${data.range.to}` : ""}. Sales, orders, and revenue in one place.
         </p>
       </div>
 
-      <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4">
+      <div className="myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-4">
         <Kpi label="Net revenue" value={money(kpis.net_revenue?.value)} hint={kpis.net_revenue?.delta != null ? `${kpis.net_revenue.delta}% vs previous` : ""} />
         <Kpi label="Orders" value={number(kpis.orders?.value)} />
         <Kpi label="Average order value" value={money(kpis.aov?.value)} />
@@ -73,19 +73,19 @@ export default function Dashboard() {
         <Kpi label="Forecast, 30 days" value={money(data?.forecast?.revenue_30)} hint={`${number(data?.forecast?.units_30, 1)} units`} />
       </div>
 
-      <div className="ciwp-grid ciwp-gap-5 lg:ciwp-grid-cols-3">
-        <div className="lg:ciwp-col-span-2">
+      <div className="myrvento-grid myrvento-gap-5 lg:myrvento-grid-cols-3">
+        <div className="lg:myrvento-col-span-2">
           <Card title="Revenue trend">
             <Trend rows={data?.trend} />
           </Card>
         </div>
         <Card title="Top products">
-          {!data?.top?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No product sales in this range.</p>}
-          <ul className="ciwp-m-0 ciwp-grid ciwp-list-none ciwp-gap-3 ciwp-p-0">
+          {!data?.top?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No product sales in this range.</p>}
+          <ul className="myrvento-m-0 myrvento-grid myrvento-list-none myrvento-gap-3 myrvento-p-0">
             {(data?.top || []).map((row) => (
-              <li key={row.name} className="ciwp-flex ciwp-items-center ciwp-justify-between ciwp-gap-3 ciwp-text-sm">
-                <span className="ciwp-font-semibold ciwp-text-slate-800">{row.name}</span>
-                <span className="ciwp-text-slate-500">{money(row.revenue)}</span>
+              <li key={row.name} className="myrvento-flex myrvento-items-center myrvento-justify-between myrvento-gap-3 myrvento-text-sm">
+                <span className="myrvento-font-semibold myrvento-text-slate-800">{row.name}</span>
+                <span className="myrvento-text-slate-500">{money(row.revenue)}</span>
               </li>
             ))}
           </ul>
@@ -93,7 +93,7 @@ export default function Dashboard() {
       </div>
 
       <Card title="Recent orders">
-        {!data?.orders?.recent?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No orders yet.</p>}
+        {!data?.orders?.recent?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No orders yet.</p>}
         {data?.orders?.recent?.length > 0 && (
           <table>
             <thead>
@@ -118,11 +118,11 @@ export default function Dashboard() {
             </tbody>
           </table>
         )}
-        <div className="ciwp-mt-4 ciwp-flex ciwp-flex-wrap ciwp-gap-3 ciwp-text-sm">
-          <a className="ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline" href={urls.sales}>Sales & conversion</a>
-          <a className="ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline" href={urls.operations}>Operations</a>
-          <a className="ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline" href={urls.analytics}>Analytics</a>
-          <a className="ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline" href={urls.revenue}>Revenue intelligence</a>
+        <div className="myrvento-mt-4 myrvento-flex myrvento-flex-wrap myrvento-gap-3 myrvento-text-sm">
+          <a className="myrvento-font-semibold myrvento-text-brand-700 myrvento-no-underline" href={urls.sales}>Sales & conversion</a>
+          <a className="myrvento-font-semibold myrvento-text-brand-700 myrvento-no-underline" href={urls.operations}>Operations</a>
+          <a className="myrvento-font-semibold myrvento-text-brand-700 myrvento-no-underline" href={urls.analytics}>Analytics</a>
+          <a className="myrvento-font-semibold myrvento-text-brand-700 myrvento-no-underline" href={urls.revenue}>Revenue intelligence</a>
         </div>
       </Card>
     </div>

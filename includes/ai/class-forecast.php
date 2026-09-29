@@ -2,7 +2,7 @@
 /**
  * Seasonal demand and inventory forecasting.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Demand forecasting.
  */
-class Ciwp_AI_Forecast {
+class Myrvento_AI_Forecast {
 
 	/**
 	 * Forecast report.
@@ -19,8 +19,8 @@ class Ciwp_AI_Forecast {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return Ciwp_AI_Engine::remember(
-			'ciwp_ai_forecast',
+		return Myrvento_AI_Engine::remember(
+			'myrvento_ai_forecast',
 			static function () {
 				return self::compute();
 			},
@@ -34,9 +34,9 @@ class Ciwp_AI_Forecast {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$monthly = Ciwp_AI_Engine::store_monthly();
-		$sales   = Ciwp_AI_Engine::product_sales();
-		$by_sku  = Ciwp_AI_Engine::product_monthly();
+		$monthly = Myrvento_AI_Engine::store_monthly();
+		$sales   = Myrvento_AI_Engine::product_sales();
+		$by_sku  = Myrvento_AI_Engine::product_monthly();
 
 		$seasonal = self::seasonal_curve( $monthly );
 		$next_m   = gmdate( 'n' ) % 12 + 1;
@@ -122,7 +122,7 @@ class Ciwp_AI_Forecast {
 			}
 		);
 
-		Ciwp_AI_Engine::persist( 'demand', $persist );
+		Myrvento_AI_Engine::persist( 'demand', $persist );
 
 		$peak = array();
 		if ( $monthly ) {

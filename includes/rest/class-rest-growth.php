@@ -2,7 +2,7 @@
 /**
  * Dashboard, sales, and operations REST.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Growth routes.
  */
-class Ciwp_REST_Growth {
+class Myrvento_REST_Growth {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class Ciwp_REST_Growth {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		foreach ( array( 'dashboard', 'sales', 'operations' ) as $route ) {
 			register_rest_route(
@@ -27,7 +27,7 @@ class Ciwp_REST_Growth {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'get_' . $route ),
-					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+					'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 				)
 			);
 		}
@@ -39,7 +39,7 @@ class Ciwp_REST_Growth {
 	 * @return WP_REST_Response
 	 */
 	public static function get_dashboard() {
-		return rest_ensure_response( Ciwp_Dashboard::report() );
+		return rest_ensure_response( Myrvento_Dashboard::report() );
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Ciwp_REST_Growth {
 	 * @return WP_REST_Response
 	 */
 	public static function get_sales() {
-		return rest_ensure_response( Ciwp_Sales::report() );
+		return rest_ensure_response( Myrvento_Sales::report() );
 	}
 
 	/**
@@ -57,6 +57,6 @@ class Ciwp_REST_Growth {
 	 * @return WP_REST_Response
 	 */
 	public static function get_operations() {
-		return rest_ensure_response( Ciwp_Operations::report() );
+		return rest_ensure_response( Myrvento_Operations::report() );
 	}
 }

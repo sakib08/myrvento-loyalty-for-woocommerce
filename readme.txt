@@ -77,7 +77,7 @@ From this plugin directory, after Node.js and npm are installed:
 1. `npm install`
 2. `npm run build`
 
-`npm run build` writes the admin files to `assets/admin/` (`ciwp-admin.js`, `ciwp-admin.css`) and the storefront files to `assets/frontend/` (`ciwp.js`, `ciwp.css`). `npm run build:admin` and `npm run build:frontend` rebuild one of those bundles.
+`npm run build` writes the admin files to `assets/admin/` (`myrvento-admin.js`, `myrvento-admin.css`) and the storefront files to `assets/frontend/` (`myrvento.js`, `myrvento.css`). `npm run build:admin` and `npm run build:frontend` rebuild one of those bundles.
 
 == Third-party licenses ==
 
@@ -118,4 +118,4 @@ The connected provider's terms and privacy policy apply. Those are chosen by the
 * Myrvento Brain: predictive churn / next purchase / high-value, pricing suggestions, seasonal and inventory forecasts.
 * Dashboard plus Sales & conversion (abandoned cart, upsell, cross-sell, recovery), WooCommerce operations, and a Revenue intelligence screen for LTV, retention, churn, attribution, profitability, and forecasting.
 * Help screen with guides for loyalty, referrals, sales, analytics, AI, and the customer account.
-* Display name is Myrvento Loyalty for WooCommerce. Styles use the ciwp- prefix. Text domain is myrvento-loyalty-for-woocommerce.
+* Display name is Myrvento Loyalty for WooCommerce. Styles use the myrvento- prefix. Text domain is myrvento-loyalty-for-woocommerce.

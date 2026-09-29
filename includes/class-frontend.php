@@ -2,7 +2,7 @@
 /**
  * Storefront — My Account endpoints, shortcodes, assets.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,20 +10,20 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Frontend.
  */
-class Ciwp_Frontend {
+class Myrvento_Frontend {
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( 'Ciwp_Installer', 'register_endpoints' ) );
+		add_action( 'init', array( 'Myrvento_Installer', 'register_endpoints' ) );
 		add_filter( 'woocommerce_account_menu_items', array( $this, 'menu_items' ) );
 		add_action( 'woocommerce_account_loyalty_endpoint', array( $this, 'render_loyalty' ) );
 		add_action( 'woocommerce_account_referrals_endpoint', array( $this, 'render_referrals' ) );
 		add_filter( 'the_title', array( $this, 'endpoint_title' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
-		add_shortcode( 'ciwp_loyalty', array( $this, 'shortcode_loyalty' ) );
-		add_shortcode( 'ciwp_referral', array( $this, 'shortcode_referral' ) );
+		add_shortcode( 'myrvento_loyalty', array( $this, 'shortcode_loyalty' ) );
+		add_shortcode( 'myrvento_referral', array( $this, 'shortcode_referral' ) );
 	}
 
 	/**
@@ -33,7 +33,7 @@ class Ciwp_Frontend {
 	 * @return array<string, string>
 	 */
 	public function menu_items( $items ) {
-		$settings = Ciwp_Settings::get();
+		$settings = Myrvento_Settings::get();
 		$new      = array();
 
 		foreach ( $items as $key => $label ) {
@@ -65,7 +65,7 @@ class Ciwp_Frontend {
 		}
 
 		global $wp;
-		$settings = Ciwp_Settings::get();
+		$settings = Myrvento_Settings::get();
 
 		if ( isset( $wp->query_vars['loyalty'] ) ) {
 			return esc_html( $settings['myaccount_loyalty_label'] );
@@ -88,13 +88,13 @@ class Ciwp_Frontend {
 			return;
 		}
 
-		$js  = CIWP_PATH . 'assets/frontend/ciwp.js';
-		$css = CIWP_PATH . 'assets/frontend/ciwp.css';
+		$js  = MYRVENTO_PATH . 'assets/frontend/myrvento.js';
+		$css = MYRVENTO_PATH . 'assets/frontend/myrvento.css';
 
 		if ( file_exists( $css ) ) {
 			wp_enqueue_style(
-				'ciwp',
-				CIWP_URL . 'assets/frontend/ciwp.css',
+				'myrvento',
+				MYRVENTO_URL . 'assets/frontend/myrvento.css',
 				array(),
 				filemtime( $css )
 			);
@@ -102,18 +102,18 @@ class Ciwp_Frontend {
 
 		if ( file_exists( $js ) ) {
 			wp_enqueue_script(
-				'ciwp',
-				CIWP_URL . 'assets/frontend/ciwp.js',
+				'myrvento',
+				MYRVENTO_URL . 'assets/frontend/myrvento.js',
 				array(),
 				filemtime( $js ),
 				true
 			);
 
 			wp_localize_script(
-				'ciwp',
-				'ciwpFrontend',
+				'myrvento',
+				'myrventoFrontend',
 				array(
-					'apiUrl' => rest_url( 'ciwp/v1/' ),
+					'apiUrl' => rest_url( 'myrvento/v1/' ),
 					'nonce'  => wp_create_nonce( 'wp_rest' ),
 					'i18n'   => array(
 						'copied' => __( 'Copied!', 'myrvento-loyalty-for-woocommerce' ),
@@ -135,7 +135,7 @@ class Ciwp_Frontend {
 		}
 
 		global $post;
-		if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'ciwp_loyalty' ) || has_shortcode( $post->post_content, 'ciwp_referral' ) ) ) {
+		if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'myrvento_loyalty' ) || has_shortcode( $post->post_content, 'myrvento_referral' ) ) ) {
 			return true;
 		}
 
@@ -197,7 +197,7 @@ class Ciwp_Frontend {
 	 * @return void
 	 */
 	private function load_template( $file ) {
-		$path = CIWP_PATH . 'templates/myaccount/' . $file;
+		$path = MYRVENTO_PATH . 'templates/myaccount/' . $file;
 		if ( file_exists( $path ) ) {
 			include $path;
 		}

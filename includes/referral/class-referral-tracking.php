@@ -2,7 +2,7 @@
 /**
  * Cookie + click attribution for referral codes.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral tracking.
  */
-class Ciwp_Referral_Tracking {
+class Myrvento_Referral_Tracking {
 
 	/**
 	 * Hooks.
@@ -25,7 +25,7 @@ class Ciwp_Referral_Tracking {
 	}
 
 	/**
-	 * Capture ?gp_ref= on the request and set a cookie.
+	 * Capture ?myrvento_ref= on the request and set a cookie.
 	 *
 	 * @return void
 	 */
@@ -34,7 +34,7 @@ class Ciwp_Referral_Tracking {
 			return;
 		}
 
-		$param = Ciwp_Settings::get_value( 'referral_param', 'gp_ref' );
+		$param = Myrvento_Settings::get_value( 'referral_param', 'myrvento_ref' );
 
 		// Public share links cannot carry a nonce. The value is sanitized and ignored unless it matches a stored referral code.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -48,7 +48,7 @@ class Ciwp_Referral_Tracking {
 			return;
 		}
 
-		$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
+		$referrer_id = Myrvento_Referral_Program::find_referrer_by_code( $code );
 		if ( $referrer_id <= 0 ) {
 			return;
 		}
@@ -57,17 +57,17 @@ class Ciwp_Referral_Tracking {
 			return;
 		}
 
-		$campaign    = Ciwp_Referral_Program::active_campaign();
-		$cookie_days = $campaign ? (int) $campaign->cookie_days : (int) Ciwp_Settings::get_value( 'cookie_days', 30 );
+		$campaign    = Myrvento_Referral_Program::active_campaign();
+		$cookie_days = $campaign ? (int) $campaign->cookie_days : (int) Myrvento_Settings::get_value( 'cookie_days', 30 );
 		$expire      = time() + ( max( 1, $cookie_days ) * DAY_IN_SECONDS );
 
 		if ( ! headers_sent() ) {
-			setcookie( 'gp_ref', $code, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
+			setcookie( 'myrvento_ref', $code, $expire, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
 		}
-		$_COOKIE['gp_ref'] = $code;
+		$_COOKIE['myrvento_ref'] = $code;
 
 		self::log_click( $code, $campaign ? (int) $campaign->id : 0 );
-		Ciwp_Referral_Program::upsert( $referrer_id, $code, 0, 'clicked' );
+		Myrvento_Referral_Program::upsert( $referrer_id, $code, 0, 'clicked' );
 	}
 
 	/**
@@ -84,11 +84,11 @@ class Ciwp_Referral_Tracking {
 		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
 		$wpdb->insert(
-			esc_sql( Ciwp::table( 'referral_clicks' ) ),
+			esc_sql( Myrvento::table( 'referral_clicks' ) ),
 			array(
 				'code'        => $code,
 				'campaign_id' => $campaign_id ? $campaign_id : null,
-				'visitor_hash'=> hash( 'sha256', $ip . '|' . $ua . '|' . Ciwp::hash_secret() ),
+				'visitor_hash'=> hash( 'sha256', $ip . '|' . $ua . '|' . Myrvento::hash_secret() ),
 				'landing_url' => esc_url_raw( home_url( add_query_arg( array() ) ) ),
 				'created_at'  => current_time( 'mysql' ),
 			)
@@ -127,20 +127,20 @@ class Ciwp_Referral_Tracking {
 			return;
 		}
 
-		$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
+		$referrer_id = Myrvento_Referral_Program::find_referrer_by_code( $code );
 		if ( $referrer_id <= 0 || $referrer_id === $user_id ) {
 			return;
 		}
 
-		if ( Ciwp_Referral_Program::get_for_referee( $user_id ) ) {
+		if ( Myrvento_Referral_Program::get_for_referee( $user_id ) ) {
 			return;
 		}
 
-		Ciwp_Referral_Program::upsert( $referrer_id, $code, $user_id, 'signed_up' );
-		update_user_meta( $user_id, 'gp_referred_by', $referrer_id );
-		update_user_meta( $user_id, 'gp_referred_code', $code );
+		Myrvento_Referral_Program::upsert( $referrer_id, $code, $user_id, 'signed_up' );
+		update_user_meta( $user_id, 'myrvento_referred_by', $referrer_id );
+		update_user_meta( $user_id, 'myrvento_referred_code', $code );
 
-		Ciwp_Referral_Rewards::on_signup( $user_id, $referrer_id );
+		Myrvento_Referral_Rewards::on_signup( $user_id, $referrer_id );
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Ciwp_Referral_Tracking {
 			return;
 		}
 
-		if ( $order->get_meta( '_gp_referral_code' ) ) {
+		if ( $order->get_meta( '_myrvento_referral_code' ) ) {
 			return;
 		}
 
@@ -162,12 +162,12 @@ class Ciwp_Referral_Tracking {
 		if ( '' === $code ) {
 			$customer_id = (int) $order->get_customer_id();
 			if ( $customer_id ) {
-				$code = (string) get_user_meta( $customer_id, 'gp_referred_code', true );
+				$code = (string) get_user_meta( $customer_id, 'myrvento_referred_code', true );
 			}
 		}
 
 		if ( '' !== $code ) {
-			$order->update_meta_data( '_gp_referral_code', $code );
+			$order->update_meta_data( '_myrvento_referral_code', $code );
 		}
 	}
 
@@ -177,10 +177,10 @@ class Ciwp_Referral_Tracking {
 	 * @return string
 	 */
 	public static function cookie_code() {
-		if ( empty( $_COOKIE['gp_ref'] ) ) {
+		if ( empty( $_COOKIE['myrvento_ref'] ) ) {
 			return '';
 		}
 
-		return strtoupper( sanitize_text_field( wp_unslash( $_COOKIE['gp_ref'] ) ) );
+		return strtoupper( sanitize_text_field( wp_unslash( $_COOKIE['myrvento_ref'] ) ) );
 	}
 }

@@ -1,5 +1,5 @@
-const config = window.ciwpAdmin ?? {
-  apiUrl: "/wp-json/ciwp/v1/",
+const config = window.myrventoAdmin ?? {
+  apiUrl: "/wp-json/myrvento/v1/",
   nonce: "",
   urls: {},
   i18n: {},

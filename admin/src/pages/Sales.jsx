@@ -13,9 +13,9 @@ const TABS = [
 
 function Pairs({ title, description, pairs, linked, empty }) {
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <Card title={title} description={description}>
-        {!pairs?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">{empty}</p>}
+        {!pairs?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">{empty}</p>}
         {pairs?.length > 0 && (
           <table>
             <thead>
@@ -40,13 +40,13 @@ function Pairs({ title, description, pairs, linked, empty }) {
         )}
       </Card>
       <Card title="Linked in WooCommerce" description="Products that already have this relationship saved on the product.">
-        {!linked?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">None of the catalog products have these links yet.</p>}
+        {!linked?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">None of the catalog products have these links yet.</p>}
         {linked?.length > 0 && (
-          <ul className="ciwp-m-0 ciwp-grid ciwp-list-none ciwp-gap-2 ciwp-p-0 ciwp-text-sm">
+          <ul className="myrvento-m-0 myrvento-grid myrvento-list-none myrvento-gap-2 myrvento-p-0 myrvento-text-sm">
             {linked.map((row) => (
               <li key={row.product}>
                 <strong>{row.product}</strong>
-                <span className="ciwp-text-slate-500"> → {row.related.join(", ")}</span>
+                <span className="myrvento-text-slate-500"> → {row.related.join(", ")}</span>
               </li>
             ))}
           </ul>
@@ -76,21 +76,21 @@ export default function Sales() {
   const abandoned = data?.abandoned;
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-justify-between ciwp-gap-3">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-items-end myrvento-justify-between myrvento-gap-3">
         <div>
-          <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Sales & conversion</h2>
-          <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">Carts left behind, product pairs, and customers ready for a win-back.</p>
+          <h2 className="myrvento-m-0 myrvento-text-xl myrvento-font-bold myrvento-text-slate-900">Sales & conversion</h2>
+          <p className="myrvento-m-0 myrvento-mt-1 myrvento-text-sm myrvento-text-slate-500">Carts left behind, product pairs, and customers ready for a win-back.</p>
         </div>
-        <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
+        <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-1 myrvento-rounded-xl myrvento-bg-slate-100 myrvento-p-1">
           {TABS.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ${
-                tab === item.id ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm" : "ciwp-bg-transparent ciwp-text-slate-600"
+              className={`myrvento-rounded-lg myrvento-border-0 myrvento-px-3 myrvento-py-2 myrvento-text-sm myrvento-font-semibold ${
+                tab === item.id ? "myrvento-bg-white myrvento-text-brand-700 myrvento-shadow-sm" : "myrvento-bg-transparent myrvento-text-slate-600"
               }`}
             >
               {item.label}
@@ -101,7 +101,7 @@ export default function Sales() {
 
       {tab === "abandoned" && (
         <Card title="Abandoned carts" description={`${number(abandoned?.count)} sessions in the last 30 days added to cart or reached checkout without paying. Listed value ${money(abandoned?.value)}.`}>
-          {!abandoned?.items?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No abandoned carts in the last 30 days.</p>}
+          {!abandoned?.items?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No abandoned carts in the last 30 days.</p>}
           {abandoned?.items?.length > 0 && (
             <table>
               <thead>
@@ -118,9 +118,9 @@ export default function Sales() {
                   <tr key={row.session_id}>
                     <td>
                       <strong>{row.customer}</strong>
-                      {row.email && <div className="ciwp-text-xs ciwp-text-slate-500">{row.email}</div>}
+                      {row.email && <div className="myrvento-text-xs myrvento-text-slate-500">{row.email}</div>}
                     </td>
-                    <td className="ciwp-capitalize">{row.stage}</td>
+                    <td className="myrvento-capitalize">{row.stage}</td>
                     <td>{row.product}</td>
                     <td>{money(row.value)}</td>
                     <td>{row.last_at}</td>
@@ -154,7 +154,7 @@ export default function Sales() {
 
       {tab === "recovery" && (
         <Card title="Recovery" description={`${number(data?.recovery?.count)} customers have not ordered in 60 days or more.`}>
-          {!data?.recovery?.items?.length && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No quiet customers yet.</p>}
+          {!data?.recovery?.items?.length && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No quiet customers yet.</p>}
           {data?.recovery?.items?.length > 0 && (
             <table>
               <thead>
@@ -171,7 +171,7 @@ export default function Sales() {
                   <tr key={row.customer_id}>
                     <td>
                       <strong>{row.name}</strong>
-                      <div className="ciwp-text-xs ciwp-text-slate-500">{row.email}</div>
+                      <div className="myrvento-text-xs myrvento-text-slate-500">{row.email}</div>
                     </td>
                     <td>{number(row.orders)}</td>
                     <td>{money(row.revenue)}</td>

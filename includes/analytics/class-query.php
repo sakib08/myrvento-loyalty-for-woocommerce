@@ -2,7 +2,7 @@
 /**
  * Shared analytics query helpers (HPOS lookup tables).
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Date range and WooCommerce stats access.
  */
-class Ciwp_Analytics_Query {
+class Myrvento_Analytics_Query {
 
 	/**
 	 * Normalize a from/to range.
@@ -76,7 +76,7 @@ class Ciwp_Analytics_Query {
 		foreach ( $paid as $status ) {
 			$out[] = 0 === strpos( $status, 'wc-' ) ? $status : 'wc-' . $status;
 		}
-		return apply_filters( 'ciwp_analytics_paid_statuses', $out );
+		return apply_filters( 'myrvento_analytics_paid_statuses', $out );
 	}
 
 	/**

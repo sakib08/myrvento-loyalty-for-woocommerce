@@ -2,7 +2,7 @@
 /**
  * REST API bootstrap.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * REST registrar.
  */
-class Ciwp_REST {
+class Myrvento_REST {
 
-	const NAMESPACE = 'ciwp/v1';
+	const NAMESPACE = 'myrvento/v1';
 
 	/**
 	 * Constructor.
@@ -27,18 +27,18 @@ class Ciwp_REST {
 	 * @return void
 	 */
 	public function register_routes() {
-		Ciwp_REST_Settings::register();
-		Ciwp_REST_Points::register();
-		Ciwp_REST_Customers::register();
-		Ciwp_REST_Tiers::register();
-		Ciwp_REST_Rewards::register();
-		Ciwp_REST_Gamification::register();
-		Ciwp_REST_Referrals::register();
-		Ciwp_REST_Account::register();
-		Ciwp_REST_Catalog::register();
-		Ciwp_REST_Analytics::register();
-		Ciwp_REST_AI::register();
-		Ciwp_REST_Growth::register();
+		Myrvento_REST_Settings::register();
+		Myrvento_REST_Points::register();
+		Myrvento_REST_Customers::register();
+		Myrvento_REST_Tiers::register();
+		Myrvento_REST_Rewards::register();
+		Myrvento_REST_Gamification::register();
+		Myrvento_REST_Referrals::register();
+		Myrvento_REST_Account::register();
+		Myrvento_REST_Catalog::register();
+		Myrvento_REST_Analytics::register();
+		Myrvento_REST_AI::register();
+		Myrvento_REST_Growth::register();
 	}
 
 	/**

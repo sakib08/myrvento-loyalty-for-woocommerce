@@ -2,7 +2,7 @@
 /**
  * Plugin settings.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Settings option helper.
  */
-class Ciwp_Settings {
+class Myrvento_Settings {
 
-	const OPTION = 'ciwp_settings';
+	const OPTION = 'myrvento_settings';
 
 	/**
 	 * Default settings.
@@ -30,7 +30,7 @@ class Ciwp_Settings {
 			'myaccount_loyalty_label'    => __( 'Loyalty', 'myrvento-loyalty-for-woocommerce' ),
 			'myaccount_referrals_label'  => __( 'Referrals', 'myrvento-loyalty-for-woocommerce' ),
 			'social_once'                => true,
-			'referral_param'             => 'gp_ref',
+			'referral_param'             => 'myrvento_ref',
 			'ai_enabled'                 => true,
 			'ai_llm_enabled'             => false,
 		);

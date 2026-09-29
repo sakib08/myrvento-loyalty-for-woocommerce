@@ -2,7 +2,7 @@
 /**
  * Award points from WooCommerce, reviews, signup, birthday, social.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Points earner.
  */
-class Ciwp_Points_Earner {
+class Myrvento_Points_Earner {
 
 	/**
 	 * Hook into WooCommerce and WordPress.
@@ -41,12 +41,12 @@ class Ciwp_Points_Earner {
 			return;
 		}
 
-		$earn_status = Ciwp_Settings::get_value( 'earn_order_status', 'completed' );
+		$earn_status = Myrvento_Settings::get_value( 'earn_order_status', 'completed' );
 
 		if ( $to === $earn_status ) {
 			$this->award_order( $order );
-			Ciwp_Referral_Rewards::on_order( $order );
-			Ciwp_VIP_Tiers::evaluate( (int) $order->get_customer_id() );
+			Myrvento_Referral_Rewards::on_order( $order );
+			Myrvento_VIP_Tiers::evaluate( (int) $order->get_customer_id() );
 			return;
 		}
 
@@ -68,15 +68,15 @@ class Ciwp_Points_Earner {
 			return;
 		}
 
-		if ( $order->get_meta( '_gp_points_awarded' ) ) {
+		if ( $order->get_meta( '_myrvento_points_awarded' ) ) {
 			return;
 		}
 
-		$calc   = Ciwp_Points_Rules::calculate_for_order( $order );
+		$calc   = Myrvento_Points_Rules::calculate_for_order( $order );
 		$points = (int) $calc['points'];
 
 		if ( $points > 0 ) {
-			$result = Ciwp_Points_Ledger::credit(
+			$result = Myrvento_Points_Ledger::credit(
 				$customer_id,
 				$points,
 				'purchase',
@@ -93,8 +93,8 @@ class Ciwp_Points_Earner {
 			);
 
 			if ( ! is_wp_error( $result ) ) {
-				$order->update_meta_data( '_gp_points_awarded', $result );
-				$order->update_meta_data( '_gp_points_amount', $points );
+				$order->update_meta_data( '_myrvento_points_awarded', $result );
+				$order->update_meta_data( '_myrvento_points_amount', $points );
 				$order->save();
 			}
 		}
@@ -111,12 +111,12 @@ class Ciwp_Points_Earner {
 	 * @return void
 	 */
 	private function maybe_first_purchase( $order, $customer_id ) {
-		$rule = Ciwp_Points_Rules::get_global( 'first_purchase' );
+		$rule = Myrvento_Points_Rules::get_global( 'first_purchase' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
 
-		if ( get_user_meta( $customer_id, '_gp_first_purchase_bonus', true ) ) {
+		if ( get_user_meta( $customer_id, '_myrvento_first_purchase_bonus', true ) ) {
 			return;
 		}
 
@@ -134,7 +134,7 @@ class Ciwp_Points_Earner {
 			return;
 		}
 
-		$result = Ciwp_Points_Ledger::credit(
+		$result = Myrvento_Points_Ledger::credit(
 			$customer_id,
 			(int) $rule->points,
 			'first_purchase',
@@ -146,7 +146,7 @@ class Ciwp_Points_Earner {
 		);
 
 		if ( ! is_wp_error( $result ) ) {
-			update_user_meta( $customer_id, '_gp_first_purchase_bonus', $result );
+			update_user_meta( $customer_id, '_myrvento_first_purchase_bonus', $result );
 		}
 	}
 
@@ -162,16 +162,16 @@ class Ciwp_Points_Earner {
 			return;
 		}
 
-		$awarded = (int) $order->get_meta( '_gp_points_amount' );
-		if ( $awarded <= 0 || $order->get_meta( '_gp_points_revoked' ) ) {
+		$awarded = (int) $order->get_meta( '_myrvento_points_amount' );
+		if ( $awarded <= 0 || $order->get_meta( '_myrvento_points_revoked' ) ) {
 			return;
 		}
 
-		$available = Ciwp_Points_Ledger::available( $customer_id );
+		$available = Myrvento_Points_Ledger::available( $customer_id );
 		$revoke    = min( $awarded, $available );
 
 		if ( $revoke > 0 ) {
-			$result = Ciwp_Points_Ledger::debit(
+			$result = Myrvento_Points_Ledger::debit(
 				$customer_id,
 				$revoke,
 				'purchase',
@@ -188,7 +188,7 @@ class Ciwp_Points_Earner {
 			);
 
 			if ( ! is_wp_error( $result ) ) {
-				$order->update_meta_data( '_gp_points_revoked', $result );
+				$order->update_meta_data( '_myrvento_points_revoked', $result );
 				$order->save();
 			}
 		}
@@ -221,16 +221,16 @@ class Ciwp_Points_Earner {
 	 * @return void
 	 */
 	public function award_signup( $user_id ) {
-		if ( $user_id <= 0 || get_user_meta( $user_id, '_gp_signup_points', true ) ) {
+		if ( $user_id <= 0 || get_user_meta( $user_id, '_myrvento_signup_points', true ) ) {
 			return;
 		}
 
-		$rule = Ciwp_Points_Rules::get_global( 'signup' );
+		$rule = Myrvento_Points_Rules::get_global( 'signup' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
 
-		$result = Ciwp_Points_Ledger::credit(
+		$result = Myrvento_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'signup',
@@ -241,7 +241,7 @@ class Ciwp_Points_Earner {
 		);
 
 		if ( ! is_wp_error( $result ) ) {
-			update_user_meta( $user_id, '_gp_signup_points', $result );
+			update_user_meta( $user_id, '_myrvento_signup_points', $result );
 		}
 	}
 
@@ -290,16 +290,16 @@ class Ciwp_Points_Earner {
 			return;
 		}
 
-		if ( get_comment_meta( $comment->comment_ID, '_gp_review_points', true ) ) {
+		if ( get_comment_meta( $comment->comment_ID, '_myrvento_review_points', true ) ) {
 			return;
 		}
 
-		$rule = Ciwp_Points_Rules::get_global( 'review' );
+		$rule = Myrvento_Points_Rules::get_global( 'review' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
 
-		$result = Ciwp_Points_Ledger::credit(
+		$result = Myrvento_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'review',
@@ -310,7 +310,7 @@ class Ciwp_Points_Earner {
 		);
 
 		if ( ! is_wp_error( $result ) ) {
-			update_comment_meta( $comment->comment_ID, '_gp_review_points', $result );
+			update_comment_meta( $comment->comment_ID, '_myrvento_review_points', $result );
 		}
 	}
 
@@ -320,7 +320,7 @@ class Ciwp_Points_Earner {
 	 * @return int Awarded count.
 	 */
 	public static function award_birthdays() {
-		$rule = Ciwp_Points_Rules::get_global( 'birthday' );
+		$rule = Myrvento_Points_Rules::get_global( 'birthday' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return 0;
 		}
@@ -329,7 +329,7 @@ class Ciwp_Points_Earner {
 		$year  = wp_date( 'Y' );
 		$users = get_users(
 			array(
-				'meta_key'   => 'gp_birthday', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'   => 'myrvento_birthday', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value' => $today, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'fields'     => 'ID',
 				'number'     => 500,
@@ -338,12 +338,12 @@ class Ciwp_Points_Earner {
 
 		$count = 0;
 		foreach ( $users as $user_id ) {
-			$key = '_gp_birthday_' . $year;
+			$key = '_myrvento_birthday_' . $year;
 			if ( get_user_meta( $user_id, $key, true ) ) {
 				continue;
 			}
 
-			$result = Ciwp_Points_Ledger::credit(
+			$result = Myrvento_Points_Ledger::credit(
 				(int) $user_id,
 				(int) $rule->points,
 				'birthday',
@@ -370,23 +370,23 @@ class Ciwp_Points_Earner {
 	 * @return int|WP_Error
 	 */
 	public static function award_social( $user_id, $channel ) {
-		$rule = Ciwp_Points_Rules::get_global( 'social' );
+		$rule = Myrvento_Points_Rules::get_global( 'social' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
-			return new WP_Error( 'gp_social_disabled', __( 'Social sharing rewards are disabled.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_social_disabled', __( 'Social sharing rewards are disabled.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
-		$once = (bool) Ciwp_Settings::get_value( 'social_once', true );
+		$once = (bool) Myrvento_Settings::get_value( 'social_once', true );
 
-		if ( $once && get_user_meta( $user_id, '_gp_social_share', true ) ) {
-			return new WP_Error( 'gp_social_once', __( 'Social sharing points were already awarded.', 'myrvento-loyalty-for-woocommerce' ) );
+		if ( $once && get_user_meta( $user_id, '_myrvento_social_share', true ) ) {
+			return new WP_Error( 'myrvento_social_once', __( 'Social sharing points were already awarded.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
-		$meta_key = '_gp_social_share_' . sanitize_key( $channel );
+		$meta_key = '_myrvento_social_share_' . sanitize_key( $channel );
 		if ( ! $once && get_user_meta( $user_id, $meta_key, true ) ) {
-			return new WP_Error( 'gp_social_channel', __( 'This channel was already rewarded.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_social_channel', __( 'This channel was already rewarded.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
-		$result = Ciwp_Points_Ledger::credit(
+		$result = Myrvento_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'social',
@@ -401,7 +401,7 @@ class Ciwp_Points_Earner {
 		);
 
 		if ( ! is_wp_error( $result ) ) {
-			update_user_meta( $user_id, '_gp_social_share', $result );
+			update_user_meta( $user_id, '_myrvento_social_share', $result );
 			update_user_meta( $user_id, $meta_key, $result );
 		}
 
@@ -417,8 +417,8 @@ class Ciwp_Points_Earner {
 	 */
 	private function update_streak( $customer_id, $order ) {
 		$today      = wp_date( 'Y-m-d', $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time() );
-		$last       = get_user_meta( $customer_id, 'gp_streak_last_date', true );
-		$count      = (int) get_user_meta( $customer_id, 'gp_streak_count', true );
+		$last       = get_user_meta( $customer_id, 'myrvento_streak_last_date', true );
+		$count      = (int) get_user_meta( $customer_id, 'myrvento_streak_count', true );
 
 		if ( $last === $today ) {
 			return;
@@ -431,7 +431,7 @@ class Ciwp_Points_Earner {
 			$count = 1;
 		}
 
-		update_user_meta( $customer_id, 'gp_streak_count', $count );
-		update_user_meta( $customer_id, 'gp_streak_last_date', $today );
+		update_user_meta( $customer_id, 'myrvento_streak_count', $count );
+		update_user_meta( $customer_id, 'myrvento_streak_last_date', $today );
 	}
 }

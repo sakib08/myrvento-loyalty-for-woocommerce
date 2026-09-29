@@ -1,8 +1,8 @@
 import "./styles.css";
 import QRCode from "qrcode";
 
-const config = window.ciwpFrontend ?? {
-  apiUrl: "/wp-json/ciwp/v1/",
+const config = window.myrventoFrontend ?? {
+  apiUrl: "/wp-json/myrvento/v1/",
   nonce: "",
   i18n: {},
 };
@@ -19,10 +19,10 @@ async function request(path, options = {}) {
   return res.json().catch(() => ({}));
 }
 
-document.querySelectorAll("[data-ciwp-copy]").forEach((button) => {
+document.querySelectorAll("[data-myrvento-copy]").forEach((button) => {
   button.addEventListener("click", async () => {
-    const wrap = button.closest("[data-ciwp-share]");
-    const input = wrap?.querySelector("[data-ciwp-copy-target]");
+    const wrap = button.closest("[data-myrvento-share]");
+    const input = wrap?.querySelector("[data-myrvento-copy-target]");
     if (!input) return;
     try {
       await navigator.clipboard.writeText(input.value);
@@ -41,9 +41,9 @@ document.querySelectorAll("[data-ciwp-copy]").forEach((button) => {
   });
 });
 
-document.querySelectorAll("[data-ciwp-share-channel]").forEach((link) => {
+document.querySelectorAll("[data-myrvento-share-channel]").forEach((link) => {
   link.addEventListener("click", () => {
-    const channel = link.getAttribute("data-ciwp-share-channel") || "social";
+    const channel = link.getAttribute("data-myrvento-share-channel") || "social";
     request("account/share", {
       method: "POST",
       body: JSON.stringify({ channel }),
@@ -51,8 +51,8 @@ document.querySelectorAll("[data-ciwp-share-channel]").forEach((link) => {
   });
 });
 
-document.querySelectorAll("[data-ciwp-qr]").forEach(async (canvas) => {
-  const url = canvas.getAttribute("data-ciwp-qr");
+document.querySelectorAll("[data-myrvento-qr]").forEach(async (canvas) => {
+  const url = canvas.getAttribute("data-myrvento-qr");
   if (!url) return;
   try {
     await QRCode.toCanvas(canvas, url, { width: 160, margin: 1 });
@@ -61,12 +61,12 @@ document.querySelectorAll("[data-ciwp-qr]").forEach(async (canvas) => {
   }
 });
 
-document.querySelectorAll("[data-ciwp-redeem]").forEach((button) => {
+document.querySelectorAll("[data-myrvento-redeem]").forEach((button) => {
   button.addEventListener("click", async () => {
     button.disabled = true;
     const data = await request("account/redeem", {
       method: "POST",
-      body: JSON.stringify({ reward_id: Number(button.getAttribute("data-ciwp-redeem")) }),
+      body: JSON.stringify({ reward_id: Number(button.getAttribute("data-myrvento-redeem")) }),
     });
     if (data.coupon_code) {
       window.alert(`Coupon: ${data.coupon_code}`);
@@ -78,7 +78,7 @@ document.querySelectorAll("[data-ciwp-redeem]").forEach((button) => {
   });
 });
 
-document.querySelectorAll("[data-ciwp-birthday]").forEach((form) => {
+document.querySelectorAll("[data-myrvento-birthday]").forEach((form) => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const input = form.querySelector('input[name="birthday"]');

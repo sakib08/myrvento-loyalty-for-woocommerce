@@ -3,32 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-#ciwp-admin-root {
+#myrvento-admin-root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1e293b;
 }
 
-#ciwp-admin-root *,
-#ciwp-admin-root *::before,
-#ciwp-admin-root *::after {
+#myrvento-admin-root *,
+#myrvento-admin-root *::before,
+#myrvento-admin-root *::after {
   box-sizing: border-box;
 }
 
-.ciwp-app__header h1,
-.ciwp-app__header p {
+.myrvento-app__header h1,
+.myrvento-app__header p {
   margin: 0;
   padding: 0;
 }
 
-#ciwp-admin-root input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
-#ciwp-admin-root select,
-#ciwp-admin-root textarea {
+#myrvento-admin-root input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
+#myrvento-admin-root select,
+#myrvento-admin-root textarea {
   border-style: solid;
 }
 
-#ciwp-admin-root input.ciwp-color-input {
+#myrvento-admin-root input.myrvento-color-input {
   -webkit-appearance: none;
   appearance: none;
   height: 2.5rem;
@@ -37,16 +37,16 @@
   cursor: pointer;
 }
 
-#ciwp-admin-root input.ciwp-color-input::-webkit-color-swatch-wrapper {
+#myrvento-admin-root input.myrvento-color-input::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-#ciwp-admin-root input.ciwp-color-input::-webkit-color-swatch {
+#myrvento-admin-root input.myrvento-color-input::-webkit-color-swatch {
   border: 0;
   border-radius: 0.25rem;
 }
 
-#ciwp-admin-root button.ciwp-switch {
+#myrvento-admin-root button.myrvento-switch {
   appearance: none;
   -webkit-appearance: none;
   display: inline-block;
@@ -60,20 +60,20 @@
   cursor: pointer;
 }
 
-#ciwp-admin-root table {
+#myrvento-admin-root table {
   width: 100%;
   border-collapse: collapse;
 }
 
-#ciwp-admin-root th,
-#ciwp-admin-root td {
+#myrvento-admin-root th,
+#myrvento-admin-root td {
   text-align: left;
   padding: 0.7rem 0.5rem;
   border-bottom: 1px solid #e2e8f0;
   font-size: 0.875rem;
 }
 
-#ciwp-admin-root th {
+#myrvento-admin-root th {
   color: #64748b;
   font-weight: 600;
 }

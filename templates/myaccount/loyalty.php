@@ -2,33 +2,33 @@
 /**
  * My Account — Loyalty.
  *
- * @package Ciwp
+ * @package Myrvento
  *
  * @var int $user_id
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// Included from Ciwp_Frontend::load_template(), so these assignments stay in that method.
+// Included from Myrvento_Frontend::load_template(), so these assignments stay in that method.
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 $user_id   = get_current_user_id();
-$balance   = Ciwp_Points_Ledger::get_balance( $user_id );
-$history   = Ciwp_Points_Ledger::get_history( $user_id, array( 'per_page' => 15 ) );
-$tier      = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : Ciwp_VIP_Tiers::get_default();
-$rewards   = Ciwp_Rewards::all( true );
-$badges    = Ciwp_Gamification::customer_badges( $user_id );
-$challenges = Ciwp_Gamification::customer_challenges( $user_id );
-$points_name = Ciwp_Settings::get_value( 'points_name', __( 'Points', 'myrvento-loyalty-for-woocommerce' ) );
-$birthday    = get_user_meta( $user_id, 'gp_birthday', true );
-$redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per_page' => 10 ) );
+$balance   = Myrvento_Points_Ledger::get_balance( $user_id );
+$history   = Myrvento_Points_Ledger::get_history( $user_id, array( 'per_page' => 15 ) );
+$tier      = $balance->tier_id ? Myrvento_VIP_Tiers::get( (int) $balance->tier_id ) : Myrvento_VIP_Tiers::get_default();
+$rewards   = Myrvento_Rewards::all( true );
+$badges    = Myrvento_Gamification::customer_badges( $user_id );
+$challenges = Myrvento_Gamification::customer_challenges( $user_id );
+$points_name = Myrvento_Settings::get_value( 'points_name', __( 'Points', 'myrvento-loyalty-for-woocommerce' ) );
+$birthday    = get_user_meta( $user_id, 'myrvento_birthday', true );
+$redemptions = Myrvento_Rewards::redemptions( array( 'customer_id' => $user_id, 'per_page' => 10 ) );
 ?>
-<div class="ciwp-account ciwp-loyalty">
-	<div class="ciwp-account__hero">
+<div class="myrvento-account myrvento-loyalty">
+	<div class="myrvento-account__hero">
 		<div>
-			<p class="ciwp-account__kicker"><?php echo esc_html( $points_name ); ?></p>
-			<p class="ciwp-account__balance"><?php echo esc_html( number_format_i18n( (int) $balance->available ) ); ?></p>
-			<p class="ciwp-account__muted">
+			<p class="myrvento-account__kicker"><?php echo esc_html( $points_name ); ?></p>
+			<p class="myrvento-account__balance"><?php echo esc_html( number_format_i18n( (int) $balance->available ) ); ?></p>
+			<p class="myrvento-account__muted">
 				<?php
 				printf(
 					/* translators: 1: lifetime earned, 2: points name */
@@ -40,10 +40,10 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 			</p>
 		</div>
 		<?php if ( $tier ) : ?>
-			<div class="ciwp-account__tier" style="--ciwp-tier: <?php echo esc_attr( $tier->color ); ?>">
+			<div class="myrvento-account__tier" style="--myrvento-tier: <?php echo esc_attr( $tier->color ); ?>">
 				<span><?php echo esc_html( $tier->name ); ?></span>
 				<?php
-				$benefits = Ciwp::decode( $tier->benefits );
+				$benefits = Myrvento::decode( $tier->benefits );
 				if ( $benefits ) :
 					?>
 					<ul>
@@ -56,7 +56,7 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 		<?php endif; ?>
 	</div>
 
-	<form class="ciwp-account__birthday" data-ciwp-birthday>
+	<form class="myrvento-account__birthday" data-myrvento-birthday>
 		<label>
 			<?php esc_html_e( 'Birthday', 'myrvento-loyalty-for-woocommerce' ); ?>
 			<input type="date" name="birthday" value="<?php echo $birthday ? esc_attr( wp_date( 'Y' ) . '-' . $birthday ) : ''; ?>">
@@ -65,15 +65,15 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 	</form>
 
 	<h3><?php esc_html_e( 'Rewards', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
-	<div class="ciwp-account__grid">
+	<div class="myrvento-account__grid">
 		<?php foreach ( $rewards as $reward ) : ?>
-			<div class="ciwp-account__card">
+			<div class="myrvento-account__card">
 				<strong><?php echo esc_html( $reward->name ); ?></strong>
 				<p><?php echo esc_html( number_format_i18n( (int) $reward->points_cost ) . ' ' . $points_name ); ?></p>
 				<button
 					type="button"
 					class="button"
-					data-ciwp-redeem="<?php echo esc_attr( (string) $reward->id ); ?>"
+					data-myrvento-redeem="<?php echo esc_attr( (string) $reward->id ); ?>"
 					<?php disabled( (int) $balance->available < (int) $reward->points_cost ); ?>
 				>
 					<?php esc_html_e( 'Redeem', 'myrvento-loyalty-for-woocommerce' ); ?>
@@ -90,19 +90,19 @@ $redemptions = Ciwp_Rewards::redemptions( array( 'customer_id' => $user_id, 'per
 				? min( 100, round( ( $challenge['progress'] / $challenge['target_value'] ) * 100 ) )
 				: 0;
 			?>
-			<div class="ciwp-account__challenge">
-				<div class="ciwp-account__challenge-head">
+			<div class="myrvento-account__challenge">
+				<div class="myrvento-account__challenge-head">
 					<strong><?php echo esc_html( $challenge['name'] ); ?></strong>
 					<span><?php echo esc_html( $challenge['progress'] . ' / ' . $challenge['target_value'] ); ?></span>
 				</div>
-				<div class="ciwp-progress"><span style="width: <?php echo esc_attr( (string) $pct ); ?>%"></span></div>
+				<div class="myrvento-progress"><span style="width: <?php echo esc_attr( (string) $pct ); ?>%"></span></div>
 			</div>
 		<?php endforeach; ?>
 	<?php endif; ?>
 
 	<?php if ( $badges ) : ?>
 		<h3><?php esc_html_e( 'Badges', 'myrvento-loyalty-for-woocommerce' ); ?></h3>
-		<ul class="ciwp-account__badges">
+		<ul class="myrvento-account__badges">
 			<?php foreach ( $badges as $badge ) : ?>
 				<li><?php echo esc_html( $badge->name ); ?></li>
 			<?php endforeach; ?>

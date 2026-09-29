@@ -2,7 +2,7 @@
 /**
  * Storefront event + UTM tracker for funnel and attribution.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Analytics tracker.
  */
-class Ciwp_Analytics_Tracker {
+class Myrvento_Analytics_Tracker {
 
 	/**
 	 * Hooks.
@@ -50,7 +50,7 @@ class Ciwp_Analytics_Tracker {
 		$source   = isset( $_GET['utm_source'] ) ? sanitize_text_field( wp_unslash( $_GET['utm_source'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$medium   = isset( $_GET['utm_medium'] ) ? sanitize_text_field( wp_unslash( $_GET['utm_medium'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$campaign = isset( $_GET['utm_campaign'] ) ? sanitize_text_field( wp_unslash( $_GET['utm_campaign'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$ref      = isset( $_GET['gp_ref'] ) ? sanitize_text_field( wp_unslash( $_GET['gp_ref'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$ref      = isset( $_GET['myrvento_ref'] ) ? sanitize_text_field( wp_unslash( $_GET['myrvento_ref'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( '' === $source && '' !== $ref ) {
 			$source   = 'referral';
@@ -74,7 +74,7 @@ class Ciwp_Analytics_Tracker {
 			$existing['first'] = $touch;
 		}
 		$existing['last'] = $touch;
-		self::set_cookie( 'gp_utm', wp_json_encode( $existing ) );
+		self::set_cookie( 'myrvento_utm', wp_json_encode( $existing ) );
 	}
 
 	/**
@@ -83,13 +83,13 @@ class Ciwp_Analytics_Tracker {
 	 * @return string
 	 */
 	public static function session_id() {
-		if ( ! empty( $_COOKIE['gp_sid'] ) ) {
-			return sanitize_text_field( wp_unslash( $_COOKIE['gp_sid'] ) );
+		if ( ! empty( $_COOKIE['myrvento_sid'] ) ) {
+			return sanitize_text_field( wp_unslash( $_COOKIE['myrvento_sid'] ) );
 		}
 
 		$sid = wp_generate_password( 16, false, false );
-		self::set_cookie( 'gp_sid', $sid );
-		$_COOKIE['gp_sid'] = $sid;
+		self::set_cookie( 'myrvento_sid', $sid );
+		$_COOKIE['myrvento_sid'] = $sid;
 		return $sid;
 	}
 
@@ -99,11 +99,11 @@ class Ciwp_Analytics_Tracker {
 	 * @return array<string, mixed>
 	 */
 	public static function utm() {
-		if ( empty( $_COOKIE['gp_utm'] ) ) {
+		if ( empty( $_COOKIE['myrvento_utm'] ) ) {
 			return array();
 		}
 
-		$raw = json_decode( sanitize_text_field( wp_unslash( $_COOKIE['gp_utm'] ) ), true );
+		$raw = json_decode( sanitize_text_field( wp_unslash( $_COOKIE['myrvento_utm'] ) ), true );
 		return is_array( $raw ) ? $raw : array();
 	}
 
@@ -131,7 +131,7 @@ class Ciwp_Analytics_Tracker {
 		$use     = ( 'first' === $touch ) ? $first : $last;
 
 		$wpdb->insert(
-			esc_sql( Ciwp::table( 'analytics_events' ) ),
+			esc_sql( Myrvento::table( 'analytics_events' ) ),
 			array(
 				'session_id'   => $session,
 				'customer_id'  => isset( $args['customer_id'] ) ? (int) $args['customer_id'] : ( is_user_logged_in() ? get_current_user_id() : null ),
@@ -171,10 +171,10 @@ class Ciwp_Analytics_Tracker {
 	 */
 	public function on_template() {
 		if ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) {
-			if ( empty( WC()->session ) || ! WC()->session->get( 'gp_checkout_tracked' ) ) {
+			if ( empty( WC()->session ) || ! WC()->session->get( 'myrvento_checkout_tracked' ) ) {
 				self::record( 'checkout', array( 'channel' => 'store' ) );
 				if ( WC()->session ) {
-					WC()->session->set( 'gp_checkout_tracked', 1 );
+					WC()->session->set( 'myrvento_checkout_tracked', 1 );
 				}
 			}
 		}
@@ -214,7 +214,7 @@ class Ciwp_Analytics_Tracker {
 			return;
 		}
 
-		if ( $order->get_meta( '_gp_purchase_tracked' ) ) {
+		if ( $order->get_meta( '_myrvento_purchase_tracked' ) ) {
 			return;
 		}
 
@@ -223,18 +223,18 @@ class Ciwp_Analytics_Tracker {
 		$last  = isset( $utm['last'] ) && is_array( $utm['last'] ) ? $utm['last'] : array();
 
 		if ( $first ) {
-			$order->update_meta_data( '_gp_first_source', sanitize_text_field( $first['source'] ?? '' ) );
-			$order->update_meta_data( '_gp_first_medium', sanitize_text_field( $first['medium'] ?? '' ) );
-			$order->update_meta_data( '_gp_first_campaign', sanitize_text_field( $first['campaign'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_first_source', sanitize_text_field( $first['source'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_first_medium', sanitize_text_field( $first['medium'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_first_campaign', sanitize_text_field( $first['campaign'] ?? '' ) );
 		}
 		if ( $last ) {
-			$order->update_meta_data( '_gp_last_source', sanitize_text_field( $last['source'] ?? '' ) );
-			$order->update_meta_data( '_gp_last_medium', sanitize_text_field( $last['medium'] ?? '' ) );
-			$order->update_meta_data( '_gp_last_campaign', sanitize_text_field( $last['campaign'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_last_source', sanitize_text_field( $last['source'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_last_medium', sanitize_text_field( $last['medium'] ?? '' ) );
+			$order->update_meta_data( '_myrvento_last_campaign', sanitize_text_field( $last['campaign'] ?? '' ) );
 		}
 
-		$order->update_meta_data( '_gp_session_id', self::session_id() );
-		$order->update_meta_data( '_gp_purchase_tracked', 1 );
+		$order->update_meta_data( '_myrvento_session_id', self::session_id() );
+		$order->update_meta_data( '_myrvento_purchase_tracked', 1 );
 		$order->save();
 
 		self::record(
@@ -307,7 +307,7 @@ class Ciwp_Analytics_Tracker {
 		$url = add_query_arg(
 			'email_key',
 			rawurlencode( $this->current_email_key ),
-			rest_url( 'ciwp/v1/track/pixel' )
+			rest_url( 'myrvento/v1/track/pixel' )
 		);
 
 		echo '<img src="' . esc_url( $url ) . '" width="1" height="1" alt="" style="display:block;height:1px;width:1px;border:0;" />';
@@ -323,21 +323,21 @@ class Ciwp_Analytics_Tracker {
 			return;
 		}
 
-		wp_register_script( 'ciwp-track', false, array(), CIWP_VERSION, true );
-		wp_enqueue_script( 'ciwp-track' );
+		wp_register_script( 'myrvento-track', false, array(), MYRVENTO_VERSION, true );
+		wp_enqueue_script( 'myrvento-track' );
 		wp_localize_script(
-			'ciwp-track',
-			'ciwpTrack',
+			'myrvento-track',
+			'myrventoTrack',
 			array(
-				'apiUrl'    => rest_url( 'ciwp/v1/' ),
+				'apiUrl'    => rest_url( 'myrvento/v1/' ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
 				'productId' => ( function_exists( 'is_product' ) && is_product() ) ? (int) get_queried_object_id() : 0,
 			)
 		);
 
 		wp_add_inline_script(
-			'ciwp-track',
-			'(function(){var c=window.ciwpTrack||{};function send(t,e){e=e||{};e.type=t;try{var k="ciwp_"+t+"_"+(e.product_id||0);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");}catch(err){}if(!c.apiUrl)return;fetch(c.apiUrl+"track",{method:"POST",headers:{"Content-Type":"application/json","X-WP-Nonce":c.nonce||""},credentials:"same-origin",body:JSON.stringify(e)}); }send("visit",{channel:"store"});if(c.productId)send("product_view",{product_id:c.productId,channel:"store"});})();'
+			'myrvento-track',
+			'(function(){var c=window.myrventoTrack||{};function send(t,e){e=e||{};e.type=t;try{var k="myrvento_"+t+"_"+(e.product_id||0);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");}catch(err){}if(!c.apiUrl)return;fetch(c.apiUrl+"track",{method:"POST",headers:{"Content-Type":"application/json","X-WP-Nonce":c.nonce||""},credentials:"same-origin",body:JSON.stringify(e)}); }send("visit",{channel:"store"});if(c.productId)send("product_view",{product_id:c.productId,channel:"store"});})();'
 		);
 	}
 
@@ -353,7 +353,7 @@ class Ciwp_Analytics_Tracker {
 	public static function bump_email_stat( $key, $title, $col, $revenue = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'email_stats' ) );
+		$table = esc_sql( Myrvento::table( 'email_stats' ) );
 		$day   = current_time( 'Y-m-d' );
 		$cols = array( 'sent', 'opened', 'clicked', 'converted' );
 		if ( ! in_array( $col, $cols, true ) ) {
@@ -402,7 +402,7 @@ class Ciwp_Analytics_Tracker {
 	 * @return void
 	 */
 	private static function set_cookie( $name, $value ) {
-		$days = (int) Ciwp_Settings::get_value( 'cookie_days', 30 );
+		$days = (int) Myrvento_Settings::get_value( 'cookie_days', 30 );
 		if ( headers_sent() ) {
 			return;
 		}

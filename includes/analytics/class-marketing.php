@@ -2,7 +2,7 @@
 /**
  * Campaign ROI, email, funnel, attribution.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Marketing intelligence.
  */
-class Ciwp_Analytics_Marketing {
+class Myrvento_Analytics_Marketing {
 
 	/**
 	 * Marketing report.
@@ -39,7 +39,7 @@ class Ciwp_Analytics_Marketing {
 	public static function funnel( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
+		$table = esc_sql( Myrvento::table( 'analytics_events' ) );
 		$steps = array(
 			'visit'        => __( 'Visitors', 'myrvento-loyalty-for-woocommerce' ),
 			'product_view' => __( 'Product views', 'myrvento-loyalty-for-woocommerce' ),
@@ -106,8 +106,8 @@ class Ciwp_Analytics_Marketing {
 		global $wpdb;
 
 		$build = static function ( $touch ) use ( $wpdb, $range ) {
-			$table = esc_sql( Ciwp::table( 'analytics_events' ) );
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
+			$table = esc_sql( Myrvento::table( 'analytics_events' ) );
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Myrvento::table() ).
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -134,9 +134,9 @@ class Ciwp_Analytics_Marketing {
 			return $out;
 		};
 
-		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
+		$table = esc_sql( Myrvento::table( 'analytics_events' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Myrvento::table() ).
 		$multi = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -162,7 +162,7 @@ class Ciwp_Analytics_Marketing {
 
 		$referral_orders = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( Myrvento::table( 'referrals' ) ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$range['from_sql'],
 				$range['to_sql']
 			)
@@ -185,17 +185,17 @@ class Ciwp_Analytics_Marketing {
 	public static function campaigns( $range ) {
 		global $wpdb;
 
-		$campaigns = Ciwp_Referral_Program::campaigns();
-		$ledger    = esc_sql( Ciwp::table( 'points_ledger' ) );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$campaigns = Myrvento_Referral_Program::campaigns();
+		$ledger    = esc_sql( Myrvento::table( 'points_ledger' ) );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$out       = array();
 
 		foreach ( $campaigns as $campaign ) {
 			$referrals = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT attributed_order_id FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT attributed_order_id FROM ' . esc_sql( Myrvento::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id
 				)
 			);
@@ -234,7 +234,7 @@ class Ciwp_Analytics_Marketing {
 
 			$signups = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( Myrvento::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -244,7 +244,7 @@ class Ciwp_Analytics_Marketing {
 
 			$clicks = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referral_clicks' ) ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( Myrvento::table( 'referral_clicks' ) ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -275,7 +275,7 @@ class Ciwp_Analytics_Marketing {
 	public static function coupons( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp_Analytics_Query::coupons_table() );
+		$table = esc_sql( Myrvento_Analytics_Query::coupons_table() );
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Coupon lookup table name is trusted.
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
@@ -314,8 +314,8 @@ class Ciwp_Analytics_Marketing {
 	public static function email( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'email_stats' ) );
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
+		$table = esc_sql( Myrvento::table( 'email_stats' ) );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Myrvento::table() ).
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT email_key, email_title,

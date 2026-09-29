@@ -2,7 +2,7 @@
 /**
  * Customer balances REST.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Customers routes.
  */
-class Ciwp_REST_Customers {
+class Myrvento_REST_Customers {
 
 	/**
 	 * Register routes.
@@ -19,7 +19,7 @@ class Ciwp_REST_Customers {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,7 +27,7 @@ class Ciwp_REST_Customers {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'list_customers' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 
@@ -37,7 +37,7 @@ class Ciwp_REST_Customers {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'get_customer' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -55,8 +55,8 @@ class Ciwp_REST_Customers {
 		$per_page = min( 100, max( 1, (int) $request->get_param( 'per_page' ) ?: 20 ) );
 		$search   = sanitize_text_field( (string) $request->get_param( 'search' ) );
 		$offset   = ( $page - 1 ) * $per_page;
-		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
-		$tiers    = esc_sql( Ciwp::table( 'vip_tiers' ) );
+		$balances = esc_sql( Myrvento::table( 'points_balances' ) );
+		$tiers    = esc_sql( Myrvento::table( 'vip_tiers' ) );
 		$users    = $wpdb->users;
 
 		$like = $search ? '%' . $wpdb->esc_like( $search ) . '%' : '';
@@ -127,10 +127,10 @@ class Ciwp_REST_Customers {
 			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'myrvento-loyalty-for-woocommerce' ) ), 404 );
 		}
 
-		$balance  = Ciwp_Points_Ledger::get_balance( $id );
-		$history  = Ciwp_Points_Ledger::get_history( $id, array( 'page' => 1, 'per_page' => 50 ) );
-		$tier     = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : null;
-		$stats    = Ciwp_Referral_Program::stats_for( $id );
+		$balance  = Myrvento_Points_Ledger::get_balance( $id );
+		$history  = Myrvento_Points_Ledger::get_history( $id, array( 'page' => 1, 'per_page' => 50 ) );
+		$tier     = $balance->tier_id ? Myrvento_VIP_Tiers::get( (int) $balance->tier_id ) : null;
+		$stats    = Myrvento_Referral_Program::stats_for( $id );
 
 		return rest_ensure_response(
 			array(
@@ -142,14 +142,14 @@ class Ciwp_REST_Customers {
 				'lifetime_earned' => (int) $balance->lifetime_earned,
 				'lifetime_redeemed' => (int) $balance->lifetime_redeemed,
 				'lifetime_expired'  => (int) $balance->lifetime_expired,
-				'tier'            => Ciwp_VIP_Tiers::to_array( $tier ),
+				'tier'            => Myrvento_VIP_Tiers::to_array( $tier ),
 				'history'         => $history['items'],
 				'referral'        => array(
-					'code'  => Ciwp_Referral_Program::get_or_create_code( $id ),
+					'code'  => Myrvento_Referral_Program::get_or_create_code( $id ),
 					'stats' => $stats,
 				),
-				'birthday'        => get_user_meta( $id, 'gp_birthday', true ),
-				'streak'          => (int) get_user_meta( $id, 'gp_streak_count', true ),
+				'birthday'        => get_user_meta( $id, 'myrvento_birthday', true ),
+				'streak'          => (int) get_user_meta( $id, 'myrvento_streak_count', true ),
 			)
 		);
 	}

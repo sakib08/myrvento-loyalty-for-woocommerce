@@ -2,7 +2,7 @@
 /**
  * Home dashboard: revenue, sales, orders, and forecast.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Dashboard summary.
  */
-class Ciwp_Dashboard {
+class Myrvento_Dashboard {
 
 	/**
 	 * Dashboard payload for the last 30 days.
@@ -19,10 +19,10 @@ class Ciwp_Dashboard {
 	 * @return array<string, mixed>
 	 */
 	public static function report() {
-		$range    = Ciwp_Analytics_Query::range( gmdate( 'Y-m-d', time() - ( 29 * DAY_IN_SECONDS ) ), gmdate( 'Y-m-d' ) );
-		$overview = Ciwp_Analytics_Revenue::overview( $range );
-		$churn    = Ciwp_Analytics_Customers::churn();
-		$forecast = Ciwp_AI_Engine::enabled() ? Ciwp_AI_Forecast::report() : array();
+		$range    = Myrvento_Analytics_Query::range( gmdate( 'Y-m-d', time() - ( 29 * DAY_IN_SECONDS ) ), gmdate( 'Y-m-d' ) );
+		$overview = Myrvento_Analytics_Revenue::overview( $range );
+		$churn    = Myrvento_Analytics_Customers::churn();
+		$forecast = Myrvento_AI_Engine::enabled() ? Myrvento_AI_Forecast::report() : array();
 		$store    = isset( $forecast['store'] ) ? $forecast['store'] : array();
 
 		return array(
@@ -30,10 +30,10 @@ class Ciwp_Dashboard {
 			'kpis'     => $overview['kpis'],
 			'trend'    => $overview['trend'],
 			'sales'    => array(
-				'abandoned' => Ciwp_Sales::abandoned()['count'],
-				'recovery'  => Ciwp_Sales::recovery()['count'],
+				'abandoned' => Myrvento_Sales::abandoned()['count'],
+				'recovery'  => Myrvento_Sales::recovery()['count'],
 			),
-			'orders'   => Ciwp_Operations::orders(),
+			'orders'   => Myrvento_Operations::orders(),
 			'churn'    => array(
 				'active'     => $churn['active'],
 				'at_risk'    => $churn['at_risk'],
@@ -57,9 +57,9 @@ class Ciwp_Dashboard {
 	private static function top_products( $range ) {
 		global $wpdb;
 
-		$table     = esc_sql( Ciwp_Analytics_Query::products_table() );
-		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
-		$statuses  = Ciwp_Analytics_Query::paid_statuses();
+		$table     = esc_sql( Myrvento_Analytics_Query::products_table() );
+		$stats     = esc_sql( Myrvento_Analytics_Query::stats_table() );
+		$statuses  = Myrvento_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.

@@ -2,7 +2,7 @@
 /**
  * Uninstall Myrvento Loyalty for WooCommerce. Drops this plugin's tables and options.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -13,40 +13,40 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$ciwp_tables = array(
-	'gp_points_ledger',
-	'gp_points_balances',
-	'gp_point_rules',
-	'gp_vip_tiers',
-	'gp_customer_tiers',
-	'gp_rewards',
-	'gp_redemptions',
-	'gp_badges',
-	'gp_customer_badges',
-	'gp_challenges',
-	'gp_challenge_progress',
-	'gp_referral_campaigns',
-	'gp_referrals',
-	'gp_referral_clicks',
-	'gp_analytics_events',
-	'gp_email_stats',
-	'gp_ai_predictions',
+$myrvento_tables = array(
+	'myrvento_points_ledger',
+	'myrvento_points_balances',
+	'myrvento_point_rules',
+	'myrvento_vip_tiers',
+	'myrvento_customer_tiers',
+	'myrvento_rewards',
+	'myrvento_redemptions',
+	'myrvento_badges',
+	'myrvento_customer_badges',
+	'myrvento_challenges',
+	'myrvento_challenge_progress',
+	'myrvento_referral_campaigns',
+	'myrvento_referrals',
+	'myrvento_referral_clicks',
+	'myrvento_analytics_events',
+	'myrvento_email_stats',
+	'myrvento_ai_predictions',
 );
 
-foreach ( $ciwp_tables as $ciwp_table ) {
+foreach ( $myrvento_tables as $myrvento_table ) {
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$ciwp_table}" );
+	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$myrvento_table}" );
 }
 
-delete_option( 'ciwp_settings' );
-delete_option( 'ciwp_db_version' );
-delete_option( 'ciwp_ai_last_run' );
-delete_option( 'ciwp_hash_secret' );
-delete_option( 'ciwp_demo_seed' );
-delete_transient( 'ciwp_ai_predict' );
-delete_transient( 'ciwp_ai_pricing' );
-delete_transient( 'ciwp_ai_forecast' );
-delete_transient( 'ciwp_ai_brain' );
-delete_transient( 'ciwp_ai_brain_llm' );
+delete_option( 'myrvento_settings' );
+delete_option( 'myrvento_db_version' );
+delete_option( 'myrvento_ai_last_run' );
+delete_option( 'myrvento_hash_secret' );
+delete_option( 'myrvento_demo_seed' );
+delete_transient( 'myrvento_ai_predict' );
+delete_transient( 'myrvento_ai_pricing' );
+delete_transient( 'myrvento_ai_forecast' );
+delete_transient( 'myrvento_ai_brain' );
+delete_transient( 'myrvento_ai_brain_llm' );
 
-$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'gp\\_%'" );
+$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'myrvento\\_%' OR meta_key LIKE '\\_myrvento\\_%'" );

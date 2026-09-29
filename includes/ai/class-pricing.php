@@ -2,7 +2,7 @@
 /**
  * Dynamic pricing and discount optimization.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Pricing AI.
  */
-class Ciwp_AI_Pricing {
+class Myrvento_AI_Pricing {
 
 	/**
 	 * Pricing report.
@@ -19,8 +19,8 @@ class Ciwp_AI_Pricing {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return Ciwp_AI_Engine::remember(
-			'ciwp_ai_pricing',
+		return Myrvento_AI_Engine::remember(
+			'myrvento_ai_pricing',
 			static function () {
 				return self::compute();
 			},
@@ -34,8 +34,8 @@ class Ciwp_AI_Pricing {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$sales   = Ciwp_AI_Engine::product_sales();
-		$monthly = Ciwp_AI_Engine::product_monthly();
+		$sales   = Myrvento_AI_Engine::product_sales();
+		$monthly = Myrvento_AI_Engine::product_monthly();
 		$days    = 365;
 		$out     = array();
 		$persist = array();
@@ -54,7 +54,7 @@ class Ciwp_AI_Pricing {
 			$sale      = $product->get_sale_price();
 			$sale      = ( '' === $sale || false === $sale ) ? null : (float) $sale;
 			$current   = (float) $product->get_price();
-			$cost      = Ciwp_AI_Engine::unit_cost( $product );
+			$cost      = Myrvento_AI_Engine::unit_cost( $product );
 			$stock     = $product->managing_stock() ? (float) $product->get_stock_quantity() : null;
 			$cover     = ( null !== $stock && $daily > 0 ) ? $stock / $daily : null;
 			$disc_rate = ( $revenue + $discounts ) > 0 ? ( $discounts / ( $revenue + $discounts ) ) * 100 : 0;
@@ -138,7 +138,7 @@ class Ciwp_AI_Pricing {
 			}
 		);
 
-		Ciwp_AI_Engine::persist( 'price', $persist );
+		Myrvento_AI_Engine::persist( 'price', $persist );
 
 		$counts = array( 'raise' => 0, 'discount' => 0, 'tighten_discount' => 0, 'hold' => 0 );
 		foreach ( $out as $row ) {

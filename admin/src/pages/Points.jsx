@@ -114,7 +114,7 @@ export default function Points() {
   }
 
   if (loading) {
-    return <p className="ciwp-text-slate-500">Loading points rules…</p>;
+    return <p className="myrvento-text-slate-500">Loading points rules…</p>;
   }
 
   const globals = GLOBAL_SOURCES.map((meta) => ({
@@ -125,13 +125,13 @@ export default function Points() {
   const campaigns = rules.filter((row) => row.source === "campaign");
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
+    <div className="myrvento-grid myrvento-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card title="Earn rules" description="Every source writes to the same points ledger — including referrals.">
-        <div className="ciwp-grid ciwp-gap-4">
+        <div className="myrvento-grid myrvento-gap-4">
           {globals.map(({ source, hint, rule }) => (
-            <div key={source} className="ciwp-grid ciwp-gap-3 ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4 md:ciwp-grid-cols-4 md:ciwp-items-end">
+            <div key={source} className="myrvento-grid myrvento-gap-3 myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-p-4 md:myrvento-grid-cols-4 md:myrvento-items-end">
               <Toggle
                 label={rule?.name || source.replace("_", " ")}
                 description={hint}
@@ -173,7 +173,7 @@ export default function Points() {
       <Card title="Points expiration" description="0 means points never expire. FIFO consumes the oldest lots first.">
         <Field label="Expire unused points after (days)">
           <input
-            className={`${inputClass} ciwp-max-w-xs`}
+            className={`${inputClass} myrvento-max-w-xs`}
             type="number"
             min="0"
             value={settings?.expiration_days ?? 0}
@@ -184,7 +184,7 @@ export default function Points() {
       </Card>
 
       <Card title="Product & category points" description="Bonus points stacked on top of the global purchase rate.">
-        <div className="ciwp-mb-4 ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-5 md:ciwp-items-end">
+        <div className="myrvento-mb-4 myrvento-grid myrvento-gap-3 md:myrvento-grid-cols-5 md:myrvento-items-end">
           <Field label="Name">
             <input className={inputClass} value={newObject.name} onChange={(e) => setNewObject({ ...newObject, name: e.target.value })} />
           </Field>
@@ -201,12 +201,12 @@ export default function Points() {
           <Field label="Search">
             <input className={inputClass} value={productSearch} onChange={(e) => searchCatalog(e.target.value)} placeholder="Type to search" />
             {(products.length > 0 || categories.length > 0) && (
-              <div className="ciwp-mt-1 ciwp-max-h-40 ciwp-overflow-auto ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-bg-white">
+              <div className="myrvento-mt-1 myrvento-max-h-40 myrvento-overflow-auto myrvento-rounded-lg myrvento-border myrvento-border-slate-200 myrvento-bg-white">
                 {(newObject.object_type === "product" ? products : categories).map((item) => (
                   <button
                     key={item.id}
                     type="button"
-                    className="ciwp-block ciwp-w-full ciwp-border-0 ciwp-bg-transparent ciwp-px-3 ciwp-py-2 ciwp-text-left ciwp-text-sm hover:ciwp-bg-slate-50"
+                    className="myrvento-block myrvento-w-full myrvento-border-0 myrvento-bg-transparent myrvento-px-3 myrvento-py-2 myrvento-text-left myrvento-text-sm hover:myrvento-bg-slate-50"
                     onClick={() => {
                       setNewObject({ ...newObject, object_id: item.id, name: newObject.name || `${item.name} bonus` });
                       setProductSearch(item.name);
@@ -252,7 +252,7 @@ export default function Points() {
               </tr>
             ))}
             {objectRules.length === 0 && (
-              <tr><td colSpan="5" className="ciwp-text-slate-500">No product or category bonuses yet.</td></tr>
+              <tr><td colSpan="5" className="myrvento-text-slate-500">No product or category bonuses yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -272,9 +272,9 @@ export default function Points() {
           })}>Add campaign bonus</Button>
         }
       >
-        <div className="ciwp-grid ciwp-gap-3">
+        <div className="myrvento-grid myrvento-gap-3">
           {campaigns.map((rule) => (
-            <div key={rule.id} className="ciwp-grid ciwp-gap-3 ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4 md:ciwp-grid-cols-5 md:ciwp-items-end">
+            <div key={rule.id} className="myrvento-grid myrvento-gap-3 myrvento-rounded-xl myrvento-border myrvento-border-slate-100 myrvento-p-4 md:myrvento-grid-cols-5 md:myrvento-items-end">
               <Field label="Name">
                 <input className={inputClass} value={rule.name} onChange={(e) => setRules((c) => c.map((r) => r.id === rule.id ? { ...r, name: e.target.value } : r))} onBlur={() => saveRule(rule)} />
               </Field>
@@ -299,7 +299,7 @@ export default function Points() {
               }}>Delete</Button>
             </div>
           ))}
-          {campaigns.length === 0 && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No campaign bonuses.</p>}
+          {campaigns.length === 0 && <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">No campaign bonuses.</p>}
         </div>
       </Card>
     </div>

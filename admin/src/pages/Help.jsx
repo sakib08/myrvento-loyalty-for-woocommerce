@@ -116,7 +116,7 @@ function topics(urls) {
       tab: "sales",
       title: "Referrals",
       paragraphs: [
-        "A campaign sets the points for the referrer and the friend they invite. The share link uses the query parameter in Settings. The default is gp_ref. A visitor cookie remembers the code for the cookie length in Settings. The default is 30 days.",
+        "A campaign sets the points for the referrer and the friend they invite. The share link uses the query parameter in Settings. The default is myrvento_ref. A visitor cookie remembers the code for the cookie length in Settings. The default is 30 days.",
         "When the referred customer pays, both rewards credit the same points ledger. Referral reporting is under Referrals and under Analytics → Marketing.",
       ],
       links: [{ href: urls.referrals, label: "Referrals" }],
@@ -198,8 +198,8 @@ function topics(urls) {
       tab: "account",
       title: "Shortcodes",
       items: [
-        "[ciwp_loyalty] prints the loyalty account. Guests are asked to log in.",
-        "[ciwp_referral] prints the share code and history. Guests are asked to log in.",
+        "[myrvento_loyalty] prints the loyalty account. Guests are asked to log in.",
+        "[myrvento_referral] prints the share code and history. Guests are asked to log in.",
       ],
     },
     {
@@ -229,12 +229,12 @@ function Topic({ topic }) {
       title={topic.title}
       actions={
         topic.links?.length ? (
-          <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-2">
+          <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-2">
             {topic.links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="ciwp-rounded-lg ciwp-bg-brand-50 ciwp-px-3 ciwp-py-1.5 ciwp-text-sm ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline hover:ciwp-bg-brand-100"
+                className="myrvento-rounded-lg myrvento-bg-brand-50 myrvento-px-3 myrvento-py-1.5 myrvento-text-sm myrvento-font-semibold myrvento-text-brand-700 myrvento-no-underline hover:myrvento-bg-brand-100"
               >
                 {link.label}
               </a>
@@ -243,14 +243,14 @@ function Topic({ topic }) {
         ) : null
       }
     >
-      <div className="ciwp-grid ciwp-gap-3">
+      <div className="myrvento-grid myrvento-gap-3">
         {(topic.paragraphs || []).map((paragraph) => (
-          <p key={paragraph} className="ciwp-m-0 ciwp-text-sm ciwp-leading-6 ciwp-text-slate-600">
+          <p key={paragraph} className="myrvento-m-0 myrvento-text-sm myrvento-leading-6 myrvento-text-slate-600">
             {paragraph}
           </p>
         ))}
         {topic.items?.length ? (
-          <ul className="ciwp-m-0 ciwp-list-disc ciwp-space-y-1 ciwp-pl-5 ciwp-text-sm ciwp-leading-6 ciwp-text-slate-600">
+          <ul className="myrvento-m-0 myrvento-list-disc myrvento-space-y-1 myrvento-pl-5 myrvento-text-sm myrvento-leading-6 myrvento-text-slate-600">
             {topic.items.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -271,19 +271,19 @@ export default function Help() {
   const visible = all.filter((topic) => (needle ? matches(topic, needle) : topic.tab === tab));
 
   return (
-    <div className="ciwp-grid ciwp-gap-5">
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-justify-between ciwp-gap-4">
+    <div className="myrvento-grid myrvento-gap-5">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-items-end myrvento-justify-between myrvento-gap-4">
         <div>
-          <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Help</h2>
-          <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">
+          <h2 className="myrvento-m-0 myrvento-text-xl myrvento-font-bold myrvento-text-slate-900">Help</h2>
+          <p className="myrvento-m-0 myrvento-mt-1 myrvento-text-sm myrvento-text-slate-500">
             How loyalty, sales, analytics, and the customer account fit together
             {version ? ` · Myrvento Loyalty for WooCommerce ${version}` : ""}.
           </p>
         </div>
-        <label className="ciwp-block ciwp-min-w-[16rem] ciwp-flex-1 md:ciwp-max-w-sm">
-          <span className="ciwp-sr-only">Search help</span>
+        <label className="myrvento-block myrvento-min-w-[16rem] myrvento-flex-1 md:myrvento-max-w-sm">
+          <span className="myrvento-sr-only">Search help</span>
           <input
-            className="ciwp-w-full ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-bg-white ciwp-px-3 ciwp-py-2 ciwp-text-sm focus:ciwp-border-brand-400 focus:ciwp-outline-none focus:ciwp-ring-2 focus:ciwp-ring-brand-100"
+            className="myrvento-w-full myrvento-rounded-lg myrvento-border myrvento-border-slate-200 myrvento-bg-white myrvento-px-3 myrvento-py-2 myrvento-text-sm focus:myrvento-border-brand-400 focus:myrvento-outline-none focus:myrvento-ring-2 focus:myrvento-ring-brand-100"
             type="search"
             value={query}
             placeholder="Search help"
@@ -292,7 +292,7 @@ export default function Help() {
         </label>
       </div>
 
-      <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
+      <div className="myrvento-flex myrvento-flex-wrap myrvento-gap-1 myrvento-rounded-xl myrvento-bg-slate-100 myrvento-p-1">
         {TABS.map((item) => (
           <button
             key={item.id}
@@ -301,10 +301,10 @@ export default function Help() {
               setTab(item.id);
               setQuery("");
             }}
-            className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ciwp-transition ${
+            className={`myrvento-rounded-lg myrvento-border-0 myrvento-px-3 myrvento-py-2 myrvento-text-sm myrvento-font-semibold myrvento-transition ${
               !needle && tab === item.id
-                ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm"
-                : "ciwp-bg-transparent ciwp-text-slate-600 hover:ciwp-text-slate-900"
+                ? "myrvento-bg-white myrvento-text-brand-700 myrvento-shadow-sm"
+                : "myrvento-bg-transparent myrvento-text-slate-600 hover:myrvento-text-slate-900"
             }`}
           >
             {item.label}
@@ -313,14 +313,14 @@ export default function Help() {
       </div>
 
       {visible.length ? (
-        <div className="ciwp-grid ciwp-gap-4">
+        <div className="myrvento-grid myrvento-gap-4">
           {visible.map((topic) => (
             <Topic key={topic.id} topic={topic} />
           ))}
         </div>
       ) : (
         <Card title="No matching topics">
-          <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">
+          <p className="myrvento-m-0 myrvento-text-sm myrvento-text-slate-500">
             Try points, referral, churn, or shortcode.
           </p>
         </Card>

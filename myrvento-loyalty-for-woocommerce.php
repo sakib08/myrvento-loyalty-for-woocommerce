@@ -13,26 +13,26 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       myrvento-loyalty-for-woocommerce
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CIWP_VERSION', '0.1.1' );
-define( 'CIWP_DB_VERSION', '3' );
-define( 'CIWP_FILE', __FILE__ );
-define( 'CIWP_PATH', plugin_dir_path( __FILE__ ) );
-define( 'CIWP_URL', plugin_dir_url( __FILE__ ) );
+define( 'MYRVENTO_VERSION', '0.1.1' );
+define( 'MYRVENTO_DB_VERSION', '4' );
+define( 'MYRVENTO_FILE', __FILE__ );
+define( 'MYRVENTO_PATH', plugin_dir_path( __FILE__ ) );
+define( 'MYRVENTO_URL', plugin_dir_url( __FILE__ ) );
 
-require_once CIWP_PATH . 'includes/class-ciwp.php';
+require_once MYRVENTO_PATH . 'includes/class-myrvento.php';
 
 /**
  * Bootstrap Myrvento Loyalty for WooCommerce.
  *
- * @return Ciwp
+ * @return Myrvento
  */
-function ciwp() {
-	return Ciwp::instance();
+function myrvento() {
+	return Myrvento::instance();
 }
 
-ciwp();
+myrvento();

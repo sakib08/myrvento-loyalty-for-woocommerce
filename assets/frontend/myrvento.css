@@ -1,11 +1,11 @@
 
 
-.ciwp-account {
+.myrvento-account {
   display: grid;
   gap: 1.5rem;
 }
 
-.ciwp-account__hero {
+.myrvento-account__hero {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -16,7 +16,7 @@
   background: #f8fafc;
 }
 
-.ciwp-account__kicker {
+.myrvento-account__kicker {
   margin: 0;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -24,84 +24,84 @@
   color: #64748b;
 }
 
-.ciwp-account__balance {
+.myrvento-account__balance {
   margin: 0.25rem 0;
   font-size: 2rem;
   font-weight: 700;
   color: #0f766e;
 }
 
-.ciwp-account__muted {
+.myrvento-account__muted {
   margin: 0;
   color: #64748b;
 }
 
-.ciwp-account__tier {
+.myrvento-account__tier {
   min-width: 10rem;
   padding: 0.85rem 1rem;
   border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--ciwp-tier, #0f766e) 12%, white);
+  background: color-mix(in srgb, var(--myrvento-tier, #0f766e) 12%, white);
   color: #0f172a;
 }
 
-.ciwp-account__tier ul {
+.myrvento-account__tier ul {
   margin: 0.5rem 0 0;
   padding-left: 1.1rem;
 }
 
-.ciwp-account__stats {
+.myrvento-account__stats {
   display: flex;
   gap: 1.25rem;
 }
 
-.ciwp-account__stats strong {
+.myrvento-account__stats strong {
   display: block;
   font-size: 1.25rem;
 }
 
-.ciwp-account__stats span {
+.myrvento-account__stats span {
   color: #64748b;
   font-size: 0.8rem;
 }
 
-.ciwp-account__grid {
+.myrvento-account__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.85rem;
 }
 
-.ciwp-account__card {
+.myrvento-account__card {
   padding: 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.85rem;
 }
 
-.ciwp-account__card p {
+.myrvento-account__card p {
   margin: 0.35rem 0 0.75rem;
   color: #64748b;
 }
 
-.ciwp-progress {
+.myrvento-progress {
   height: 0.5rem;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
 
-.ciwp-progress span {
+.myrvento-progress span {
   display: block;
   height: 100%;
   background: #0d9488;
 }
 
-.ciwp-account__challenge-head {
+.myrvento-account__challenge-head {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.4rem;
 }
 
-.ciwp-account__badges {
+.myrvento-account__badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -110,7 +110,7 @@
   margin: 0;
 }
 
-.ciwp-account__badges li {
+.myrvento-account__badges li {
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
   background: #ccfbf1;
@@ -118,27 +118,27 @@
   font-size: 0.85rem;
 }
 
-.ciwp-share {
+.myrvento-share {
   display: grid;
   gap: 0.75rem;
 }
 
-.ciwp-share label {
+.myrvento-share label {
   display: grid;
   gap: 0.35rem;
 }
 
-.ciwp-share input {
+.myrvento-share input {
   width: 100%;
 }
 
-.ciwp-share__channels {
+.myrvento-share__channels {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.ciwp-account__birthday {
+.myrvento-account__birthday {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;

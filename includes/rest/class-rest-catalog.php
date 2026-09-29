@@ -2,7 +2,7 @@
 /**
  * Catalog search for product/category point rules.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Catalog routes.
  */
-class Ciwp_REST_Catalog {
+class Myrvento_REST_Catalog {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class Ciwp_REST_Catalog {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = Ciwp_REST::NAMESPACE;
+		$ns = Myrvento_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -26,7 +26,7 @@ class Ciwp_REST_Catalog {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'products' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 
@@ -36,7 +36,7 @@ class Ciwp_REST_Catalog {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'categories' ),
-				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
+				'permission_callback' => array( 'Myrvento_REST', 'can_manage' ),
 			)
 		);
 	}

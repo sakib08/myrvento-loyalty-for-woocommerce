@@ -2,7 +2,7 @@
 /**
  * Referral codes and customer referral records.
  *
- * @package Ciwp
+ * @package Myrvento
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral program.
  */
-class Ciwp_Referral_Program {
+class Myrvento_Referral_Program {
 
 	/**
 	 * Get or create a unique referral code for a customer.
@@ -20,12 +20,12 @@ class Ciwp_Referral_Program {
 	 * @return string
 	 */
 	public static function get_or_create_code( $user_id ) {
-		$code = get_user_meta( $user_id, 'gp_referral_code', true );
+		$code = get_user_meta( $user_id, 'myrvento_referral_code', true );
 		if ( is_string( $code ) && '' !== $code ) {
 			return $code;
 		}
 
-		$secret = Ciwp::hash_secret();
+		$secret = Myrvento::hash_secret();
 		$base   = strtoupper( substr( hash( 'sha256', $user_id . '|' . $secret ), 0, 8 ) );
 		$code   = $base;
 		$i      = 0;
@@ -35,7 +35,7 @@ class Ciwp_Referral_Program {
 			$code = strtoupper( substr( hash( 'sha256', $user_id . '|' . $i . '|' . $secret ), 0, 8 ) );
 		}
 
-		update_user_meta( $user_id, 'gp_referral_code', $code );
+		update_user_meta( $user_id, 'myrvento_referral_code', $code );
 		return $code;
 	}
 
@@ -53,7 +53,7 @@ class Ciwp_Referral_Program {
 
 		$users = get_users(
 			array(
-				'meta_key'   => 'gp_referral_code', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'   => 'myrvento_referral_code', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value' => $code, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'number'     => 1,
 				'fields'     => 'ID',
@@ -71,7 +71,7 @@ class Ciwp_Referral_Program {
 	 */
 	public static function share_url( $user_id ) {
 		$code     = self::get_or_create_code( $user_id );
-		$param    = Ciwp_Settings::get_value( 'referral_param', 'gp_ref' );
+		$param    = Myrvento_Settings::get_value( 'referral_param', 'myrvento_ref' );
 		$campaign = self::active_campaign();
 		$base     = home_url( '/' );
 
@@ -95,7 +95,7 @@ class Ciwp_Referral_Program {
 	public static function active_campaign() {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
+		$table = esc_sql( Myrvento::table( 'referral_campaigns' ) );
 		$now   = current_time( 'mysql' );
 
 		$row = $wpdb->get_row(
@@ -117,7 +117,7 @@ class Ciwp_Referral_Program {
 	public static function campaigns() {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
+		$table = esc_sql( Myrvento::table( 'referral_campaigns' ) );
 		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $rows ? $rows : array();
 	}
@@ -131,7 +131,7 @@ class Ciwp_Referral_Program {
 	public static function get_campaign( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
+		$table = esc_sql( Myrvento::table( 'referral_campaigns' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -150,10 +150,10 @@ class Ciwp_Referral_Program {
 	public static function save_campaign( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
+		$table = esc_sql( Myrvento::table( 'referral_campaigns' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'myrvento-loyalty-for-woocommerce' ) );
+			return new WP_Error( 'myrvento_campaign_name', __( 'Campaign name is required.', 'myrvento-loyalty-for-woocommerce' ) );
 		}
 
 		$row = array(
@@ -185,7 +185,7 @@ class Ciwp_Referral_Program {
 	 */
 	public static function delete_campaign( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'referral_campaigns' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Myrvento::table( 'referral_campaigns' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Ciwp_Referral_Program {
 	public static function get_for_referee( $referee_id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referrals' ) );
+		$table = esc_sql( Myrvento::table( 'referrals' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE referee_id = %d ORDER BY id DESC LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -218,7 +218,7 @@ class Ciwp_Referral_Program {
 	public static function upsert( $referrer_id, $code, $referee_id = 0, $status = 'clicked' ) {
 		global $wpdb;
 
-		$table     = esc_sql( Ciwp::table( 'referrals' ) );
+		$table     = esc_sql( Myrvento::table( 'referrals' ) );
 		$campaign  = self::active_campaign();
 		$code      = strtoupper( sanitize_text_field( $code ) );
 		$existing  = null;
@@ -262,7 +262,7 @@ class Ciwp_Referral_Program {
 	public static function list( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( Ciwp::table( 'referrals' ) );
+		$table    = esc_sql( Myrvento::table( 'referrals' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -307,7 +307,7 @@ class Ciwp_Referral_Program {
 	public static function clicks( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( Ciwp::table( 'referral_clicks' ) );
+		$table    = esc_sql( Myrvento::table( 'referral_clicks' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -336,12 +336,12 @@ class Ciwp_Referral_Program {
 	public static function stats_for( $user_id ) {
 		global $wpdb;
 
-		$table = esc_sql( Ciwp::table( 'referrals' ) );
+		$table = esc_sql( Myrvento::table( 'referrals' ) );
 		$code  = self::get_or_create_code( $user_id );
 
 		$clicks = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referral_clicks' ) ) . ' WHERE code = %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( Myrvento::table( 'referral_clicks' ) ) . ' WHERE code = %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$code
 			)
 		);
