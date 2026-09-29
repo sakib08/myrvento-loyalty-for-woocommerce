@@ -2,7 +2,7 @@
 /**
  * Point rules and manual adjustments REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Points routes.
  */
-class GrowthPilot_REST_Points {
+class Ciwp_REST_Points {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class GrowthPilot_REST_Points {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,12 +27,12 @@ class GrowthPilot_REST_Points {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_rules' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create_rule' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -44,12 +44,12 @@ class GrowthPilot_REST_Points {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update_rule' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete_rule' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class GrowthPilot_REST_Points {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'adjust' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -71,7 +71,7 @@ class GrowthPilot_REST_Points {
 	 * @return WP_REST_Response
 	 */
 	public static function list_rules() {
-		$rules = GrowthPilot_Points_Rules::all();
+		$rules = Ciwp_Points_Rules::all();
 		$out   = array();
 
 		foreach ( $rules as $rule ) {
@@ -88,12 +88,12 @@ class GrowthPilot_REST_Points {
 	 * @return WP_REST_Response
 	 */
 	public static function create_rule( $request ) {
-		$id = GrowthPilot_Points_Rules::save( self::payload( $request ) );
+		$id = Ciwp_Points_Rules::save( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 
-		return rest_ensure_response( self::format_rule( GrowthPilot_Points_Rules::get( $id ) ) );
+		return rest_ensure_response( self::format_rule( Ciwp_Points_Rules::get( $id ) ) );
 	}
 
 	/**
@@ -103,12 +103,12 @@ class GrowthPilot_REST_Points {
 	 * @return WP_REST_Response
 	 */
 	public static function update_rule( $request ) {
-		$id = GrowthPilot_Points_Rules::save( self::payload( $request ), (int) $request['id'] );
+		$id = Ciwp_Points_Rules::save( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 
-		return rest_ensure_response( self::format_rule( GrowthPilot_Points_Rules::get( $id ) ) );
+		return rest_ensure_response( self::format_rule( Ciwp_Points_Rules::get( $id ) ) );
 	}
 
 	/**
@@ -118,7 +118,7 @@ class GrowthPilot_REST_Points {
 	 * @return WP_REST_Response
 	 */
 	public static function delete_rule( $request ) {
-		GrowthPilot_Points_Rules::delete( (int) $request['id'] );
+		Ciwp_Points_Rules::delete( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 
@@ -134,29 +134,29 @@ class GrowthPilot_REST_Points {
 		$description = sanitize_text_field( (string) $request->get_param( 'description' ) );
 
 		if ( $customer_id <= 0 || 0 === $amount ) {
-			return GrowthPilot_REST::error( new WP_Error( 'gp_adjust', __( 'Customer and non-zero amount are required.', 'gp-ppros' ) ) );
+			return Ciwp_REST::error( new WP_Error( 'gp_adjust', __( 'Customer and non-zero amount are required.', 'commerce-insights-woocommerce-by-ppros' ) ) );
 		}
 
 		$args = array(
 			'type'        => 'adjust',
-			'description' => $description ? $description : __( 'Manual adjustment', 'gp-ppros' ),
+			'description' => $description ? $description : __( 'Manual adjustment', 'commerce-insights-woocommerce-by-ppros' ),
 			'created_by'  => get_current_user_id(),
 		);
 
 		if ( $amount > 0 ) {
-			$result = GrowthPilot_Points_Ledger::credit( $customer_id, $amount, 'manual', $args );
+			$result = Ciwp_Points_Ledger::credit( $customer_id, $amount, 'manual', $args );
 		} else {
-			$result = GrowthPilot_Points_Ledger::debit( $customer_id, abs( $amount ), 'manual', $args );
+			$result = Ciwp_Points_Ledger::debit( $customer_id, abs( $amount ), 'manual', $args );
 		}
 
 		if ( is_wp_error( $result ) ) {
-			return GrowthPilot_REST::error( $result );
+			return Ciwp_REST::error( $result );
 		}
 
 		return rest_ensure_response(
 			array(
 				'ledger_id' => $result,
-				'balance'   => GrowthPilot_Points_Ledger::get_balance( $customer_id ),
+				'balance'   => Ciwp_Points_Ledger::get_balance( $customer_id ),
 			)
 		);
 	}
@@ -202,7 +202,7 @@ class GrowthPilot_REST_Points {
 			'object_id'   => $rule->object_id ? (int) $rule->object_id : null,
 			'object_type' => $rule->object_type,
 			'object_label'=> $label,
-			'config'      => GrowthPilot::decode( $rule->config ),
+			'config'      => Ciwp::decode( $rule->config ),
 			'sort_order'  => (int) $rule->sort_order,
 		);
 	}

@@ -2,7 +2,7 @@
 /**
  * Seasonal demand and inventory forecasting.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Demand forecasting.
  */
-class GrowthPilot_AI_Forecast {
+class Ciwp_AI_Forecast {
 
 	/**
 	 * Forecast report.
@@ -19,8 +19,8 @@ class GrowthPilot_AI_Forecast {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return GrowthPilot_AI_Engine::remember(
-			'growthpilot_ai_forecast',
+		return Ciwp_AI_Engine::remember(
+			'ciwp_ai_forecast',
 			static function () {
 				return self::compute();
 			},
@@ -34,9 +34,9 @@ class GrowthPilot_AI_Forecast {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$monthly = GrowthPilot_AI_Engine::store_monthly();
-		$sales   = GrowthPilot_AI_Engine::product_sales();
-		$by_sku  = GrowthPilot_AI_Engine::product_monthly();
+		$monthly = Ciwp_AI_Engine::store_monthly();
+		$sales   = Ciwp_AI_Engine::product_sales();
+		$by_sku  = Ciwp_AI_Engine::product_monthly();
 
 		$seasonal = self::seasonal_curve( $monthly );
 		$next_m   = gmdate( 'n' ) % 12 + 1;
@@ -122,7 +122,7 @@ class GrowthPilot_AI_Forecast {
 			}
 		);
 
-		GrowthPilot_AI_Engine::persist( 'demand', $persist );
+		Ciwp_AI_Engine::persist( 'demand', $persist );
 
 		$peak = array();
 		if ( $monthly ) {
@@ -149,8 +149,8 @@ class GrowthPilot_AI_Forecast {
 				'curve'   => $peak,
 				'history' => $monthly,
 				'note'    => count( $monthly ) < 6
-					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'gp-ppros' )
-					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'gp-ppros' ),
+					? __( 'Fewer than 6 months of sales — treat seasonality as directional.', 'commerce-insights-woocommerce-by-ppros' )
+					: __( 'Index 1.0 is an average month. Peaks above 1.2 usually need extra stock.', 'commerce-insights-woocommerce-by-ppros' ),
 			),
 			'summary'      => array(
 				'stockout_risk' => $stockout,

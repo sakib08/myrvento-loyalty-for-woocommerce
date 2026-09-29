@@ -2,7 +2,7 @@
 /**
  * REST API bootstrap.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * REST registrar.
  */
-class GrowthPilot_REST {
+class Ciwp_REST {
 
-	const NAMESPACE = 'growthpilot/v1';
+	const NAMESPACE = 'ciwp/v1';
 
 	/**
 	 * Constructor.
@@ -27,18 +27,18 @@ class GrowthPilot_REST {
 	 * @return void
 	 */
 	public function register_routes() {
-		GrowthPilot_REST_Settings::register();
-		GrowthPilot_REST_Points::register();
-		GrowthPilot_REST_Customers::register();
-		GrowthPilot_REST_Tiers::register();
-		GrowthPilot_REST_Rewards::register();
-		GrowthPilot_REST_Gamification::register();
-		GrowthPilot_REST_Referrals::register();
-		GrowthPilot_REST_Account::register();
-		GrowthPilot_REST_Catalog::register();
-		GrowthPilot_REST_Analytics::register();
-		GrowthPilot_REST_AI::register();
-		GrowthPilot_REST_Growth::register();
+		Ciwp_REST_Settings::register();
+		Ciwp_REST_Points::register();
+		Ciwp_REST_Customers::register();
+		Ciwp_REST_Tiers::register();
+		Ciwp_REST_Rewards::register();
+		Ciwp_REST_Gamification::register();
+		Ciwp_REST_Referrals::register();
+		Ciwp_REST_Account::register();
+		Ciwp_REST_Catalog::register();
+		Ciwp_REST_Analytics::register();
+		Ciwp_REST_AI::register();
+		Ciwp_REST_Growth::register();
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  * Storefront event + UTM tracker for funnel and attribution.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Analytics tracker.
  */
-class GrowthPilot_Analytics_Tracker {
+class Ciwp_Analytics_Tracker {
 
 	/**
 	 * Hooks.
@@ -131,7 +131,7 @@ class GrowthPilot_Analytics_Tracker {
 		$use     = ( 'first' === $touch ) ? $first : $last;
 
 		$wpdb->insert(
-			esc_sql( GrowthPilot::table( 'analytics_events' ) ),
+			esc_sql( Ciwp::table( 'analytics_events' ) ),
 			array(
 				'session_id'   => $session,
 				'customer_id'  => isset( $args['customer_id'] ) ? (int) $args['customer_id'] : ( is_user_logged_in() ? get_current_user_id() : null ),
@@ -307,7 +307,7 @@ class GrowthPilot_Analytics_Tracker {
 		$url = add_query_arg(
 			'email_key',
 			rawurlencode( $this->current_email_key ),
-			rest_url( 'growthpilot/v1/track/pixel' )
+			rest_url( 'ciwp/v1/track/pixel' )
 		);
 
 		echo '<img src="' . esc_url( $url ) . '" width="1" height="1" alt="" style="display:block;height:1px;width:1px;border:0;" />';
@@ -323,21 +323,21 @@ class GrowthPilot_Analytics_Tracker {
 			return;
 		}
 
-		wp_register_script( 'growthpilot-track', false, array(), GROWTHPILOT_VERSION, true );
-		wp_enqueue_script( 'growthpilot-track' );
+		wp_register_script( 'ciwp-track', false, array(), CIWP_VERSION, true );
+		wp_enqueue_script( 'ciwp-track' );
 		wp_localize_script(
-			'growthpilot-track',
-			'growthPilotTrack',
+			'ciwp-track',
+			'ciwpTrack',
 			array(
-				'apiUrl'    => rest_url( 'growthpilot/v1/' ),
+				'apiUrl'    => rest_url( 'ciwp/v1/' ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
 				'productId' => ( function_exists( 'is_product' ) && is_product() ) ? (int) get_queried_object_id() : 0,
 			)
 		);
 
 		wp_add_inline_script(
-			'growthpilot-track',
-			'(function(){var c=window.growthPilotTrack||{};function send(t,e){e=e||{};e.type=t;try{var k="gp_"+t+"_"+(e.product_id||0);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");}catch(err){}if(!c.apiUrl)return;fetch(c.apiUrl+"track",{method:"POST",headers:{"Content-Type":"application/json","X-WP-Nonce":c.nonce||""},credentials:"same-origin",body:JSON.stringify(e)}); }send("visit",{channel:"store"});if(c.productId)send("product_view",{product_id:c.productId,channel:"store"});})();'
+			'ciwp-track',
+			'(function(){var c=window.ciwpTrack||{};function send(t,e){e=e||{};e.type=t;try{var k="ciwp_"+t+"_"+(e.product_id||0);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");}catch(err){}if(!c.apiUrl)return;fetch(c.apiUrl+"track",{method:"POST",headers:{"Content-Type":"application/json","X-WP-Nonce":c.nonce||""},credentials:"same-origin",body:JSON.stringify(e)}); }send("visit",{channel:"store"});if(c.productId)send("product_view",{product_id:c.productId,channel:"store"});})();'
 		);
 	}
 
@@ -353,7 +353,7 @@ class GrowthPilot_Analytics_Tracker {
 	public static function bump_email_stat( $key, $title, $col, $revenue = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'email_stats' ) );
+		$table = esc_sql( Ciwp::table( 'email_stats' ) );
 		$day   = current_time( 'Y-m-d' );
 		$cols = array( 'sent', 'opened', 'clicked', 'converted' );
 		if ( ! in_array( $col, $cols, true ) ) {
@@ -402,7 +402,7 @@ class GrowthPilot_Analytics_Tracker {
 	 * @return void
 	 */
 	private static function set_cookie( $name, $value ) {
-		$days = (int) GrowthPilot_Settings::get_value( 'cookie_days', 30 );
+		$days = (int) Ciwp_Settings::get_value( 'cookie_days', 30 );
 		if ( headers_sent() ) {
 			return;
 		}

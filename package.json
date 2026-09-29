@@ -1,7 +1,7 @@
 {
-  "name": "growthpilot",
+  "name": "ciwp",
   "version": "0.1.0",
-  "description": "GrowthPilot — WooCommerce loyalty, VIP tiers, rewards, and referrals",
+  "description": "Commerce Insights for WooCommerce by Ppros — WooCommerce loyalty, VIP tiers, rewards, and referrals",
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.cjs",

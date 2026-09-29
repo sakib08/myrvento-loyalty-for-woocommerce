@@ -2,7 +2,7 @@
 /**
  * Abandoned carts, upsell, cross-sell, and win-back recovery.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Sales and conversion.
  */
-class GrowthPilot_Sales {
+class Ciwp_Sales {
 
 	/**
 	 * Full sales report.
@@ -37,10 +37,10 @@ class GrowthPilot_Sales {
 	public static function abandoned() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
+		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
 		$since = gmdate( 'Y-m-d H:i:s', time() - ( 30 * DAY_IN_SECONDS ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT session_id,
@@ -74,14 +74,14 @@ class GrowthPilot_Sales {
 				'session_id' => $row->session_id,
 				'stage'      => (int) $row->checkouts > 0 ? 'checkout' : 'cart',
 				'last_at'    => $row->last_at,
-				'customer'   => $user ? $user->display_name : __( 'Guest', 'gp-ppros' ),
+				'customer'   => $user ? $user->display_name : __( 'Guest', 'commerce-insights-woocommerce-by-ppros' ),
 				'email'      => $user ? $user->user_email : '',
-				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'gp-ppros' ),
+				'product'    => $product ? $product->get_name() : __( 'Unknown product', 'commerce-insights-woocommerce-by-ppros' ),
 				'value'      => round( $price, 2 ),
 			);
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM (
@@ -112,9 +112,9 @@ class GrowthPilot_Sales {
 	private static function pairs() {
 		global $wpdb;
 
-		$products  = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$products  = esc_sql( Ciwp_Analytics_Query::products_table() );
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$from      = gmdate( 'Y-m-d 00:00:00', time() - ( 365 * DAY_IN_SECONDS ) );
 
@@ -228,8 +228,8 @@ class GrowthPilot_Sales {
 	public static function recovery() {
 		global $wpdb;
 
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$now       = current_time( 'mysql' );
 
@@ -252,7 +252,7 @@ class GrowthPilot_Sales {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
-		$labels = GrowthPilot_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
+		$labels = Ciwp_AI_Engine::customer_labels( wp_list_pluck( $rows ? $rows : array(), 'customer_id' ) );
 		$items  = array();
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
 		$total  = (int) $wpdb->get_var(
@@ -280,7 +280,7 @@ class GrowthPilot_Sales {
 				'orders'      => (int) $row->orders,
 				'last_order'  => $row->last_order,
 				'days_since'  => (int) $row->days_since,
-				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'gp-ppros' ) : __( 'Loyalty reminder', 'gp-ppros' ),
+				'action'      => (int) $row->days_since > 180 ? __( 'Win-back offer', 'commerce-insights-woocommerce-by-ppros' ) : __( 'Loyalty reminder', 'commerce-insights-woocommerce-by-ppros' ),
 			);
 		}
 

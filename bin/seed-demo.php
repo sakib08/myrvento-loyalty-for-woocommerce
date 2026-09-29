@@ -1,14 +1,14 @@
 <?php
 // phpcs:ignoreFile -- CLI demo seeder. Not loaded on normal requests.
 /**
- * Local demo data for GrowthPilot (customers, orders, loyalty, referrals, analytics, AI).
+ * Local demo data for Commerce Insights for WooCommerce by Ppros (customers, orders, loyalty, referrals, analytics, AI).
  *
  * Usage (from the WordPress root):
- *   wp eval-file wp-content/plugins/GrowthPilot/bin/seed-demo.php
- *   wp eval-file wp-content/plugins/GrowthPilot/bin/seed-demo.php rename
- *   wp eval-file wp-content/plugins/GrowthPilot/bin/seed-demo.php reset
+ *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php
+ *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php rename
+ *   wp eval-file wp-content/plugins/gp-ppros/bin/seed-demo.php reset
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,8 +22,8 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
  *
  * @return string
  */
-function growthpilot_demo_option() {
-	return 'growthpilot_demo_seed';
+function ciwp_demo_option() {
+	return 'ciwp_demo_seed';
 }
 
 /**
@@ -33,7 +33,7 @@ function growthpilot_demo_option() {
  * @param float $max Max.
  * @return float
  */
-function growthpilot_demo_rand( $min, $max ) {
+function ciwp_demo_rand( $min, $max ) {
 	return $min + ( mt_rand() / mt_getrandmax() ) * ( $max - $min );
 }
 
@@ -43,9 +43,9 @@ function growthpilot_demo_rand( $min, $max ) {
  * @param array<int|string, float> $weights Weights.
  * @return int|string
  */
-function growthpilot_demo_pick( $weights ) {
+function ciwp_demo_pick( $weights ) {
 	$total = array_sum( $weights );
-	$roll  = growthpilot_demo_rand( 0, $total );
+	$roll  = ciwp_demo_rand( 0, $total );
 	foreach ( $weights as $key => $weight ) {
 		$roll -= $weight;
 		if ( $roll <= 0 ) {
@@ -60,7 +60,7 @@ function growthpilot_demo_pick( $weights ) {
  *
  * @return array<int, array<string, string>>
  */
-function growthpilot_demo_identities() {
+function ciwp_demo_identities() {
 	$first  = array( 'Emma', 'Luca', 'Sophie', 'Matteo', 'Anna', 'Lukas', 'Elena', 'Hugo', 'Marie', 'Oliver', 'Chiara', 'Noah', 'Isla', 'Felix', 'Amelie', 'Jonas', 'Clara', 'Marco', 'Freya', 'Henrik', 'Sofia', 'Thomas', 'Ingrid', 'Pierre', 'Lena', 'Andreas', 'Giulia', 'Erik', 'Hannah', 'Jan', 'Camille', 'Nils', 'Rosa', 'David', 'Elise', 'Karl', 'Nina', 'Oscar', 'Laura', 'Martin' );
 	$last   = array( 'Muller', 'Rossi', 'Dubois', 'Nielsen', 'Garcia', 'Kowalski', 'Novak', 'Andersson', 'Silva', 'Berg', 'Moreau', 'Costa', 'Keller', 'Bianchi', 'Hansen', 'Lindberg', 'Fischer', 'Romano', 'Bernard', 'Kovacs' );
 	$places = array(
@@ -120,7 +120,7 @@ function growthpilot_demo_identities() {
  * @param int $ts Timestamp.
  * @return float
  */
-function growthpilot_demo_season( $ts ) {
+function ciwp_demo_season( $ts ) {
 	$curve = array( 1 => 0.85, 0.8, 1.35, 1.1, 1.25, 1.15, 0.8, 0.85, 0.95, 1.05, 1.5, 1.65 );
 	return $curve[ (int) wp_date( 'n', $ts ) ];
 }
@@ -134,11 +134,11 @@ function growthpilot_demo_season( $ts ) {
  * @param int $ts Event timestamp.
  * @return void
  */
-function growthpilot_demo_sweep( $ts ) {
+function ciwp_demo_sweep( $ts ) {
 	global $wpdb;
 
 	$when    = wp_date( 'Y-m-d H:i:s', $ts );
-	$since   = $GLOBALS['growthpilot_demo_since'];
+	$since   = $GLOBALS['ciwp_demo_since'];
 	$columns = array(
 		'points_ledger'      => array( 'created_at' ),
 		'points_balances'    => array( 'updated_at', 'tier_evaluated_at' ),
@@ -153,7 +153,7 @@ function growthpilot_demo_sweep( $ts ) {
 		foreach ( $cols as $col ) {
 			$wpdb->query(
 				$wpdb->prepare(
-					'UPDATE ' . esc_sql( GrowthPilot::table( $table ) ) . " SET {$col} = %s WHERE {$col} >= %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					'UPDATE ' . esc_sql( Ciwp::table( $table ) ) . " SET {$col} = %s WHERE {$col} >= %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$when,
 					$since
 				)
@@ -169,9 +169,9 @@ function growthpilot_demo_sweep( $ts ) {
  * @param callable $callback Callback.
  * @return mixed
  */
-function growthpilot_demo_at( $ts, $callback ) {
+function ciwp_demo_at( $ts, $callback ) {
 	$result = $callback();
-	growthpilot_demo_sweep( $ts );
+	ciwp_demo_sweep( $ts );
 	return $result;
 }
 
@@ -183,7 +183,7 @@ function growthpilot_demo_at( $ts, $callback ) {
  * @param array<int, array<string, mixed>> $rows    Rows.
  * @return void
  */
-function growthpilot_demo_bulk_insert( $table, $formats, $rows ) {
+function ciwp_demo_bulk_insert( $table, $formats, $rows ) {
 	global $wpdb;
 
 	$columns = implode( ', ', array_keys( $formats ) );
@@ -210,7 +210,7 @@ function growthpilot_demo_bulk_insert( $table, $formats, $rows ) {
  * @param array<int, int> $ids    IDs.
  * @return void
  */
-function growthpilot_demo_delete_in( $table, $column, $ids ) {
+function ciwp_demo_delete_in( $table, $column, $ids ) {
 	global $wpdb;
 
 	$ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
@@ -225,7 +225,7 @@ function growthpilot_demo_delete_in( $table, $column, $ids ) {
  *
  * @return void
  */
-function growthpilot_demo_quiet() {
+function ciwp_demo_quiet() {
 	add_filter( 'pre_wp_mail', '__return_false' );
 	add_filter( 'woocommerce_can_reduce_order_stock', '__return_false' );
 	remove_all_actions( 'woocommerce_email_sent' );
@@ -237,17 +237,17 @@ function growthpilot_demo_quiet() {
  *
  * @return void
  */
-function growthpilot_demo_seed() {
+function ciwp_demo_seed() {
 	global $wpdb;
 
-	if ( get_option( growthpilot_demo_option() ) ) {
+	if ( get_option( ciwp_demo_option() ) ) {
 		WP_CLI::error( 'Demo data already exists. Run with "reset" first.' );
 	}
 
-	growthpilot_demo_quiet();
+	ciwp_demo_quiet();
 	mt_srand( 20260923 );
 
-	$GLOBALS['growthpilot_demo_since'] = current_time( 'mysql' );
+	$GLOBALS['ciwp_demo_since'] = current_time( 'mysql' );
 
 	$now  = time();
 	$cap  = $now - ( 3 * HOUR_IN_SECONDS );
@@ -261,7 +261,7 @@ function growthpilot_demo_seed() {
 		'comments'    => array(),
 		'email_stats' => array(),
 		'products'    => array(),
-		'seeded_at'   => $GLOBALS['growthpilot_demo_since'],
+		'seeded_at'   => $GLOBALS['ciwp_demo_since'],
 	);
 
 	// Catalog: popularity, seasonal lines, and unit cost.
@@ -294,7 +294,7 @@ function growthpilot_demo_seed() {
 		);
 
 		if ( mt_rand( 1, 100 ) <= 85 ) {
-			update_post_meta( $pid, '_cogs', round( (float) $product->get_price() * growthpilot_demo_rand( 0.42, 0.72 ), 2 ) );
+			update_post_meta( $pid, '_cogs', round( (float) $product->get_price() * ciwp_demo_rand( 0.42, 0.72 ), 2 ) );
 		}
 	}
 
@@ -338,7 +338,7 @@ function growthpilot_demo_seed() {
 		array( 'Bring 2 friends', 'Refer 2 friends who buy.', 'referrals', 2, 300 ),
 	);
 	foreach ( $challenges as $c ) {
-		$seed['challenges'][] = GrowthPilot_Gamification::save_challenge(
+		$seed['challenges'][] = Ciwp_Gamification::save_challenge(
 			array(
 				'name'          => $c[0],
 				'description'   => $c[1],
@@ -351,7 +351,7 @@ function growthpilot_demo_seed() {
 	}
 
 	// Customers.
-	$people = growthpilot_demo_identities();
+	$people = ciwp_demo_identities();
 
 	$segments = array_merge(
 		array_fill( 0, 6, 'vip' ),
@@ -384,7 +384,7 @@ function growthpilot_demo_seed() {
 			'street'   => $person['street'],
 			'postcode' => $person['postcode'],
 			'phone'    => $person['phone'],
-			'reg'      => $now - (int) ( growthpilot_demo_rand( $reg_window[ $segment ][0], $reg_window[ $segment ][1] ) * $day ),
+			'reg'      => $now - (int) ( ciwp_demo_rand( $reg_window[ $segment ][0], $reg_window[ $segment ][1] ) * $day ),
 		);
 	}
 	usort(
@@ -394,7 +394,7 @@ function growthpilot_demo_seed() {
 		}
 	);
 
-	$campaign  = GrowthPilot_Referral_Program::active_campaign();
+	$campaign  = Ciwp_Referral_Program::active_campaign();
 	$customers = array();
 	$referrers = array();
 	$clicks    = array();
@@ -409,7 +409,7 @@ function growthpilot_demo_seed() {
 		$referrer = 0;
 		if ( 'referred' === $spec['segment'] && $referrers ) {
 			$referrer = $referrers[ array_rand( $referrers ) ];
-			$code     = GrowthPilot_Referral_Program::get_or_create_code( $referrer );
+			$code     = Ciwp_Referral_Program::get_or_create_code( $referrer );
 			$clicks[] = array(
 				'code'         => $code,
 				'campaign_id'  => $campaign ? (int) $campaign->id : 0,
@@ -419,7 +419,7 @@ function growthpilot_demo_seed() {
 			);
 		}
 
-		$user_id = growthpilot_demo_at(
+		$user_id = ciwp_demo_at(
 			$spec['reg'],
 			static function () use ( $spec, $referrer ) {
 				$user_id = wp_insert_user(
@@ -440,10 +440,10 @@ function growthpilot_demo_seed() {
 				}
 
 				if ( $referrer ) {
-					$code = GrowthPilot_Referral_Program::get_or_create_code( $referrer );
+					$code = Ciwp_Referral_Program::get_or_create_code( $referrer );
 					update_user_meta( $user_id, 'gp_referred_code', $code );
-					GrowthPilot_Referral_Program::upsert( $referrer, $code, $user_id, 'signed_up' );
-					GrowthPilot_Referral_Rewards::on_signup( $user_id, $referrer );
+					Ciwp_Referral_Program::upsert( $referrer, $code, $user_id, 'signed_up' );
+					Ciwp_Referral_Rewards::on_signup( $user_id, $referrer );
 				}
 
 				return $user_id;
@@ -475,7 +475,7 @@ function growthpilot_demo_seed() {
 
 	// Clicks on shared links that never converted.
 	foreach ( $referrers as $referrer ) {
-		$code = GrowthPilot_Referral_Program::get_or_create_code( $referrer );
+		$code = Ciwp_Referral_Program::get_or_create_code( $referrer );
 		for ( $i = 0, $n = mt_rand( 3, 14 ); $i < $n; $i++ ) {
 			$clicks[] = array(
 				'code'         => $code,
@@ -486,8 +486,8 @@ function growthpilot_demo_seed() {
 			);
 		}
 	}
-	growthpilot_demo_bulk_insert(
-		esc_sql( GrowthPilot::table( 'referral_clicks' ) ),
+	ciwp_demo_bulk_insert(
+		esc_sql( Ciwp::table( 'referral_clicks' ) ),
 		array(
 			'code'         => '%s',
 			'campaign_id'  => '%d',
@@ -528,7 +528,7 @@ function growthpilot_demo_seed() {
 			$ts   = $reg + mt_rand( 0, 7 ) * $day;
 			while ( $ts < $stop && count( $times ) < $max[ $segment ] ) {
 				$times[] = $ts;
-				$ts     += (int) ( growthpilot_demo_rand( $gaps[ $segment ][0], $gaps[ $segment ][1] ) * $day / growthpilot_demo_season( $ts ) );
+				$ts     += (int) ( ciwp_demo_rand( $gaps[ $segment ][0], $gaps[ $segment ][1] ) * $day / ciwp_demo_season( $ts ) );
 			}
 		}
 
@@ -549,7 +549,7 @@ function growthpilot_demo_seed() {
 	for ( $guests = 0; $guests < 70; ) {
 		$ts     = mt_rand( $start, $cap );
 		$growth = 0.65 + 0.55 * ( ( $ts - $start ) / ( $cap - $start ) );
-		if ( growthpilot_demo_rand( 0, 2 ) > growthpilot_demo_season( $ts ) * $growth ) {
+		if ( ciwp_demo_rand( 0, 2 ) > ciwp_demo_season( $ts ) * $growth ) {
 			continue;
 		}
 		$plans[] = array(
@@ -615,11 +615,11 @@ function growthpilot_demo_seed() {
 		$postcode = $person['postcode'];
 		$phone    = $person['phone'];
 
-		$source = $plan['referred'] ? 'referral' : growthpilot_demo_pick( $channel_weights );
-		$first_source = mt_rand( 1, 100 ) <= 60 || $plan['referred'] ? $source : growthpilot_demo_pick( $channel_weights );
+		$source = $plan['referred'] ? 'referral' : ciwp_demo_pick( $channel_weights );
+		$first_source = mt_rand( 1, 100 ) <= 60 || $plan['referred'] ? $source : ciwp_demo_pick( $channel_weights );
 		$touch  = static function ( $key ) use ( $channels, $customer ) {
 			if ( 'referral' === $key ) {
-				return array( 'referral', 'referral', $customer ? GrowthPilot_Referral_Program::get_or_create_code( $customer['referrer'] ) : '' );
+				return array( 'referral', 'referral', $customer ? Ciwp_Referral_Program::get_or_create_code( $customer['referrer'] ) : '' );
 			}
 			return array( $key, $channels[ $key ][1], $channels[ $key ][2] );
 		};
@@ -645,13 +645,13 @@ function growthpilot_demo_seed() {
 			)
 		);
 
-		$lines    = (int) growthpilot_demo_pick( array( 1 => 55, 2 => 30, 3 => 15 ) );
+		$lines    = (int) ciwp_demo_pick( array( 1 => 55, 2 => 30, 3 => 15 ) );
 		$lines   += 'vip' === $plan['segment'] && mt_rand( 1, 100 ) <= 40 ? 1 : 0;
 		$picked   = array();
 		$pweights = $product_weight( $ts );
 		for ( $i = 0; $i < $lines; $i++ ) {
-			$pid = (int) growthpilot_demo_pick( array_diff_key( $pweights, $picked ) );
-			$qty = (int) growthpilot_demo_pick( array( 1 => 75, 2 => 20, 3 => 5 ) );
+			$pid = (int) ciwp_demo_pick( array_diff_key( $pweights, $picked ) );
+			$qty = (int) ciwp_demo_pick( array( 1 => 75, 2 => 20, 3 => 5 ) );
 			if ( 'vip' === $plan['segment'] ) {
 				$qty += mt_rand( 0, 2 );
 			}
@@ -715,7 +715,7 @@ function growthpilot_demo_seed() {
 		$order->update_meta_data( '_gp_purchase_tracked', 1 );
 		$order->save();
 
-		growthpilot_demo_at(
+		ciwp_demo_at(
 			$ts,
 			static function () use ( $order, $status, $ts, $cap, $day ) {
 				if ( 'cancelled' !== $status ) {
@@ -781,7 +781,7 @@ function growthpilot_demo_seed() {
 
 	foreach ( $refunds as $refund ) {
 		list( $order_id, $ts ) = $refund;
-		growthpilot_demo_at(
+		ciwp_demo_at(
 			$ts,
 			static function () use ( $order_id, $ts ) {
 				$order = wc_get_order( $order_id );
@@ -802,10 +802,10 @@ function growthpilot_demo_seed() {
 	WP_CLI::log( 'Writing funnel events…' );
 	for ( $i = 0; $i < 4200; $i++ ) {
 		$ts = mt_rand( $now - 400 * $day, $cap );
-		if ( growthpilot_demo_rand( 0, 1.7 ) > growthpilot_demo_season( $ts ) ) {
+		if ( ciwp_demo_rand( 0, 1.7 ) > ciwp_demo_season( $ts ) ) {
 			continue;
 		}
-		$key  = (string) growthpilot_demo_pick( $channel_weights );
+		$key  = (string) ciwp_demo_pick( $channel_weights );
 		$base = array(
 			'session_id'   => 'demo-' . wp_generate_password( 12, false, false ),
 			'customer_id'  => null,
@@ -822,7 +822,7 @@ function growthpilot_demo_seed() {
 		if ( mt_rand( 1, 100 ) > 58 ) {
 			continue;
 		}
-		$pid      = (int) growthpilot_demo_pick( $weights );
+		$pid      = (int) ciwp_demo_pick( $weights );
 		$events[] = array_merge( $base, array( 'product_id' => $pid ) ) + array( 'event_type' => 'product_view', 'created_at' => wp_date( 'Y-m-d H:i:s', $ts + 90 ) );
 		if ( mt_rand( 1, 100 ) > 24 ) {
 			continue;
@@ -834,8 +834,8 @@ function growthpilot_demo_seed() {
 		$events[] = $base + array( 'event_type' => 'checkout', 'created_at' => wp_date( 'Y-m-d H:i:s', $ts + 420 ) );
 	}
 
-	growthpilot_demo_bulk_insert(
-		esc_sql( GrowthPilot::table( 'analytics_events' ) ),
+	ciwp_demo_bulk_insert(
+		esc_sql( Ciwp::table( 'analytics_events' ) ),
 		array(
 			'session_id'   => '%s',
 			'customer_id'  => '%d',
@@ -853,19 +853,19 @@ function growthpilot_demo_seed() {
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET customer_id = NULL WHERE customer_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' SET customer_id = NULL WHERE customer_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET product_id = NULL WHERE product_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' SET product_id = NULL WHERE product_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
 	$wpdb->query(
 		$wpdb->prepare(
-			'UPDATE ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' SET order_id = NULL WHERE order_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'UPDATE ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' SET order_id = NULL WHERE order_id = 0 AND session_id LIKE %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$wpdb->esc_like( 'demo-' ) . '%'
 		)
 	);
@@ -893,10 +893,10 @@ function growthpilot_demo_seed() {
 		$reviewed[ $key ] = $pid;
 
 		$ts     = min( $order->get_date_created()->getTimestamp() + mt_rand( 3, 12 ) * $day, $cap );
-		$rating = (int) growthpilot_demo_pick( array( 5 => 60, 4 => 30, 3 => 10 ) );
+		$rating = (int) ciwp_demo_pick( array( 5 => 60, 4 => 30, 3 => 10 ) );
 		$user   = get_userdata( $order->get_customer_id() );
 
-		$seed['comments'][] = growthpilot_demo_at(
+		$seed['comments'][] = ciwp_demo_at(
 			$ts,
 			static function () use ( $pid, $user, $rating, $review_texts, $ts ) {
 				$data = array(
@@ -927,19 +927,19 @@ function growthpilot_demo_seed() {
 	shuffle( $ids );
 	foreach ( array_slice( $ids, 0, 18 ) as $user_id ) {
 		$ts = mt_rand( $customers[ $user_id ]['reg'], $cap );
-		growthpilot_demo_at(
+		ciwp_demo_at(
 			$ts,
 			static function () use ( $user_id ) {
 				$channels = array( 'facebook', 'whatsapp', 'x', 'email' );
-				GrowthPilot_Points_Earner::award_social( $user_id, $channels[ array_rand( $channels ) ] );
+				Ciwp_Points_Earner::award_social( $user_id, $channels[ array_rand( $channels ) ] );
 			}
 		);
 	}
 	foreach ( array_slice( $ids, 18, 5 ) as $user_id ) {
-		growthpilot_demo_at(
+		ciwp_demo_at(
 			mt_rand( max( $customers[ $user_id ]['reg'], $now - 120 * $day ), $cap ),
 			static function () use ( $user_id ) {
-				GrowthPilot_Points_Ledger::credit(
+				Ciwp_Points_Ledger::credit(
 					$user_id,
 					100,
 					'manual',
@@ -954,12 +954,12 @@ function growthpilot_demo_seed() {
 	}
 
 	// Redemptions from customers with enough points.
-	$rewards = GrowthPilot_Rewards::all( true );
+	$rewards = Ciwp_Rewards::all( true );
 	foreach ( $ids as $user_id ) {
 		if ( mt_rand( 1, 100 ) > 45 ) {
 			continue;
 		}
-		$available  = GrowthPilot_Points_Ledger::available( $user_id );
+		$available  = Ciwp_Points_Ledger::available( $user_id );
 		$affordable = array_values(
 			array_filter(
 				$rewards,
@@ -972,10 +972,10 @@ function growthpilot_demo_seed() {
 			continue;
 		}
 		$reward = $affordable[ array_rand( $affordable ) ];
-		growthpilot_demo_at(
+		ciwp_demo_at(
 			mt_rand( max( $customers[ $user_id ]['reg'], $now - 90 * $day ), $cap ),
 			static function () use ( $user_id, $reward ) {
-				return GrowthPilot_Rewards::redeem( $user_id, (int) $reward->id );
+				return Ciwp_Rewards::redeem( $user_id, (int) $reward->id );
 			}
 		);
 	}
@@ -997,14 +997,14 @@ function growthpilot_demo_seed() {
 			if ( in_array( $key, array( 'gp_points_reminder', 'gp_winback' ), true ) ) {
 				$sent = ( 'gp_points_reminder' === $key ? 2 : 4 ) === $dow ? mt_rand( 40, 90 ) : 0;
 			} else {
-				$sent = (int) round( growthpilot_demo_rand( 0, 3 ) * growthpilot_demo_season( $ts ) );
+				$sent = (int) round( ciwp_demo_rand( 0, 3 ) * ciwp_demo_season( $ts ) );
 			}
 			if ( $sent <= 0 ) {
 				continue;
 			}
-			$opened    = (int) round( $sent * growthpilot_demo_rand( $conf[1] * 0.8, $conf[1] * 1.2 ) );
-			$clicked   = (int) round( $opened * growthpilot_demo_rand( $conf[2] * 2, $conf[2] * 4 ) );
-			$converted = (int) round( $sent * $conf[3] * growthpilot_demo_rand( 0.5, 1.5 ) );
+			$opened    = (int) round( $sent * ciwp_demo_rand( $conf[1] * 0.8, $conf[1] * 1.2 ) );
+			$clicked   = (int) round( $opened * ciwp_demo_rand( $conf[2] * 2, $conf[2] * 4 ) );
+			$converted = (int) round( $sent * $conf[3] * ciwp_demo_rand( 0.5, 1.5 ) );
 			$email_rows[] = array(
 				'email_key'   => $key,
 				'email_title' => $conf[0],
@@ -1013,13 +1013,13 @@ function growthpilot_demo_seed() {
 				'opened'      => $opened,
 				'clicked'     => min( $clicked, $opened ),
 				'converted'   => $converted,
-				'revenue'     => round( $converted * growthpilot_demo_rand( 60, 180 ), 2 ),
+				'revenue'     => round( $converted * ciwp_demo_rand( 60, 180 ), 2 ),
 			);
 		}
 	}
-	$email_table = esc_sql( GrowthPilot::table( 'email_stats' ) );
+	$email_table = esc_sql( Ciwp::table( 'email_stats' ) );
 	$before      = (int) $wpdb->get_var( "SELECT COALESCE(MAX(id), 0) FROM {$email_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	growthpilot_demo_bulk_insert(
+	ciwp_demo_bulk_insert(
 		$email_table,
 		array(
 			'email_key'   => '%s',
@@ -1059,7 +1059,7 @@ function growthpilot_demo_seed() {
 		} elseif ( $rank >= count( $ranked ) - 6 ) {
 			$stock = mt_rand( 220, 400 );
 		} else {
-			$stock = (int) round( $monthly * growthpilot_demo_rand( 1.5, 3.5 ) ) + 5;
+			$stock = (int) round( $monthly * ciwp_demo_rand( 1.5, 3.5 ) ) + 5;
 		}
 
 		$product = wc_get_product( $pid );
@@ -1068,12 +1068,12 @@ function growthpilot_demo_seed() {
 		$product->save();
 	}
 
-	update_option( growthpilot_demo_option(), $seed, false );
+	update_option( ciwp_demo_option(), $seed, false );
 
 	// Live actions last so the sweep never touches them.
-	GrowthPilot_Points_Earner::award_birthdays();
-	GrowthPilot_VIP_Tiers::evaluate_all();
-	GrowthPilot_AI_Engine::refresh_all();
+	Ciwp_Points_Earner::award_birthdays();
+	Ciwp_VIP_Tiers::evaluate_all();
+	Ciwp_AI_Engine::refresh_all();
 
 	WP_CLI::success(
 		sprintf(
@@ -1093,16 +1093,16 @@ function growthpilot_demo_seed() {
  *
  * @return void
  */
-function growthpilot_demo_reset() {
+function ciwp_demo_reset() {
 	global $wpdb;
 
-	$seed = get_option( growthpilot_demo_option() );
+	$seed = get_option( ciwp_demo_option() );
 	if ( ! $seed ) {
 		WP_CLI::warning( 'No demo data recorded.' );
 		return;
 	}
 
-	growthpilot_demo_quiet();
+	ciwp_demo_quiet();
 	require_once ABSPATH . 'wp-admin/includes/user.php';
 
 	$users  = array_map( 'intval', $seed['users'] );
@@ -1113,7 +1113,7 @@ function growthpilot_demo_reset() {
 		$placeholders = implode( ',', array_fill( 0, count( $users ), '%d' ) );
 		$coupon_ids   = $wpdb->get_col(
 			$wpdb->prepare(
-				'SELECT coupon_id FROM ' . esc_sql( GrowthPilot::table( 'redemptions' ) ) . " WHERE coupon_id IS NOT NULL AND customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT coupon_id FROM ' . esc_sql( Ciwp::table( 'redemptions' ) ) . " WHERE coupon_id IS NOT NULL AND customer_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$users
 			)
 		);
@@ -1130,27 +1130,27 @@ function growthpilot_demo_reset() {
 		$order->delete( true );
 	}
 	foreach ( array( 'wc_order_stats', 'wc_order_product_lookup', 'wc_order_coupon_lookup', 'wc_order_tax_lookup' ) as $lookup ) {
-		growthpilot_demo_delete_in( $wpdb->prefix . $lookup, 'order_id', $orders );
+		ciwp_demo_delete_in( $wpdb->prefix . $lookup, 'order_id', $orders );
 	}
-	growthpilot_demo_delete_in( $wpdb->prefix . 'wc_order_stats', 'parent_id', $orders );
-	growthpilot_demo_delete_in( $wpdb->prefix . 'wc_customer_lookup', 'user_id', $users );
+	ciwp_demo_delete_in( $wpdb->prefix . 'wc_order_stats', 'parent_id', $orders );
+	ciwp_demo_delete_in( $wpdb->prefix . 'wc_customer_lookup', 'user_id', $users );
 	foreach ( array_chunk( $seed['guests'], 300 ) as $chunk ) {
 		$placeholders = implode( ',', array_fill( 0, count( $chunk ), '%s' ) );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_customer_lookup WHERE user_id IS NULL AND email IN ({$placeholders})", $chunk ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	foreach ( array( 'points_ledger', 'points_balances', 'customer_tiers', 'customer_badges', 'challenge_progress', 'redemptions' ) as $table ) {
-		growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( $table ) ), 'customer_id', $users );
+		ciwp_demo_delete_in( esc_sql( Ciwp::table( $table ) ), 'customer_id', $users );
 	}
-	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'referrals' ) ), 'referrer_id', $users );
-	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'referrals' ) ), 'referee_id', $users );
-	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'challenge_progress' ) ), 'challenge_id', $seed['challenges'] );
-	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'challenges' ) ), 'id', $seed['challenges'] );
-	growthpilot_demo_delete_in( esc_sql( GrowthPilot::table( 'email_stats' ) ), 'id', $seed['email_stats'] );
+	ciwp_demo_delete_in( esc_sql( Ciwp::table( 'referrals' ) ), 'referrer_id', $users );
+	ciwp_demo_delete_in( esc_sql( Ciwp::table( 'referrals' ) ), 'referee_id', $users );
+	ciwp_demo_delete_in( esc_sql( Ciwp::table( 'challenge_progress' ) ), 'challenge_id', $seed['challenges'] );
+	ciwp_demo_delete_in( esc_sql( Ciwp::table( 'challenges' ) ), 'id', $seed['challenges'] );
+	ciwp_demo_delete_in( esc_sql( Ciwp::table( 'email_stats' ) ), 'id', $seed['email_stats'] );
 
 	$like = $wpdb->esc_like( 'demo-' ) . '%';
-	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' WHERE session_id LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'referral_clicks' ) ) . ' WHERE visitor_hash LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' WHERE session_id LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( Ciwp::table( 'referral_clicks' ) ) . ' WHERE visitor_hash LIKE %s', $like ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 	foreach ( array_merge( $seed['coupons'], array_map( 'intval', $coupon_ids ) ) as $coupon_id ) {
 		wp_delete_post( (int) $coupon_id, true );
@@ -1189,9 +1189,9 @@ function growthpilot_demo_reset() {
 		}
 	}
 
-	$wpdb->query( 'DELETE FROM ' . esc_sql( GrowthPilot::table( 'ai_predictions' ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-	delete_option( growthpilot_demo_option() );
-	GrowthPilot_AI_Engine::flush();
+	$wpdb->query( 'DELETE FROM ' . esc_sql( Ciwp::table( 'ai_predictions' ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	delete_option( ciwp_demo_option() );
+	Ciwp_AI_Engine::flush();
 	\Automattic\WooCommerce\Admin\API\Reports\Cache::invalidate();
 
 	WP_CLI::success( sprintf( 'Removed %d demo customers and %d demo orders.', count( $users ), count( $orders ) ) );
@@ -1202,15 +1202,15 @@ function growthpilot_demo_reset() {
  *
  * @return void
  */
-function growthpilot_demo_rename() {
+function ciwp_demo_rename() {
 	global $wpdb;
 
-	$seed = get_option( growthpilot_demo_option() );
+	$seed = get_option( ciwp_demo_option() );
 	if ( ! $seed ) {
 		WP_CLI::error( 'No demo data recorded.' );
 	}
 
-	$people = growthpilot_demo_identities();
+	$people = ciwp_demo_identities();
 	$users  = array_map( 'intval', $seed['users'] );
 	sort( $users );
 
@@ -1359,16 +1359,16 @@ function growthpilot_demo_rename() {
 	}
 
 	$seed['guests'] = $guests;
-	update_option( growthpilot_demo_option(), $seed, false );
-	GrowthPilot_AI_Engine::refresh_all();
+	update_option( ciwp_demo_option(), $seed, false );
+	Ciwp_AI_Engine::refresh_all();
 
 	WP_CLI::success( sprintf( 'Renamed %d customers and %d guests.', count( $users ), count( $guests ) ) );
 }
 
 if ( isset( $args[0] ) && 'reset' === $args[0] ) {
-	growthpilot_demo_reset();
+	ciwp_demo_reset();
 } elseif ( isset( $args[0] ) && 'rename' === $args[0] ) {
-	growthpilot_demo_rename();
+	ciwp_demo_rename();
 } else {
-	growthpilot_demo_seed();
+	ciwp_demo_seed();
 }

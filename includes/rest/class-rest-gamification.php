@@ -2,7 +2,7 @@
 /**
  * Gamification REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Gamification routes.
  */
-class GrowthPilot_REST_Gamification {
+class Ciwp_REST_Gamification {
 
 	/**
 	 * Register routes.
@@ -19,7 +19,7 @@ class GrowthPilot_REST_Gamification {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -28,12 +28,12 @@ class GrowthPilot_REST_Gamification {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_badges' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create_badge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -45,12 +45,12 @@ class GrowthPilot_REST_Gamification {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update_badge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete_badge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -62,12 +62,12 @@ class GrowthPilot_REST_Gamification {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_challenges' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create_challenge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -79,12 +79,12 @@ class GrowthPilot_REST_Gamification {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update_challenge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete_challenge' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -95,7 +95,7 @@ class GrowthPilot_REST_Gamification {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'leaderboard' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -107,7 +107,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	public static function list_badges() {
 		$out = array();
-		foreach ( GrowthPilot_Gamification::badges() as $badge ) {
+		foreach ( Ciwp_Gamification::badges() as $badge ) {
 			$out[] = self::format_badge( $badge );
 		}
 		return rest_ensure_response( $out );
@@ -120,9 +120,9 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function create_badge( $request ) {
-		$id = GrowthPilot_Gamification::save_badge( self::payload( $request ) );
+		$id = Ciwp_Gamification::save_badge( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 		return rest_ensure_response( self::format_badge( self::get_badge( $id ) ) );
 	}
@@ -134,9 +134,9 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function update_badge( $request ) {
-		$id = GrowthPilot_Gamification::save_badge( self::payload( $request ), (int) $request['id'] );
+		$id = Ciwp_Gamification::save_badge( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 		return rest_ensure_response( self::format_badge( self::get_badge( $id ) ) );
 	}
@@ -148,7 +148,7 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function delete_badge( $request ) {
-		GrowthPilot_Gamification::delete_badge( (int) $request['id'] );
+		Ciwp_Gamification::delete_badge( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 
@@ -159,7 +159,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	public static function list_challenges() {
 		$out = array();
-		foreach ( GrowthPilot_Gamification::challenges() as $row ) {
+		foreach ( Ciwp_Gamification::challenges() as $row ) {
 			$out[] = self::format_challenge( $row );
 		}
 		return rest_ensure_response( $out );
@@ -172,9 +172,9 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function create_challenge( $request ) {
-		$id = GrowthPilot_Gamification::save_challenge( self::payload( $request ) );
+		$id = Ciwp_Gamification::save_challenge( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 		return rest_ensure_response( self::format_challenge( self::get_challenge( $id ) ) );
 	}
@@ -186,9 +186,9 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function update_challenge( $request ) {
-		$id = GrowthPilot_Gamification::save_challenge( self::payload( $request ), (int) $request['id'] );
+		$id = Ciwp_Gamification::save_challenge( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
 		return rest_ensure_response( self::format_challenge( self::get_challenge( $id ) ) );
 	}
@@ -200,7 +200,7 @@ class GrowthPilot_REST_Gamification {
 	 * @return WP_REST_Response
 	 */
 	public static function delete_challenge( $request ) {
-		GrowthPilot_Gamification::delete_challenge( (int) $request['id'] );
+		Ciwp_Gamification::delete_challenge( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 
@@ -212,7 +212,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	public static function leaderboard( $request ) {
 		$limit = (int) $request->get_param( 'limit' );
-		return rest_ensure_response( GrowthPilot_Gamification::leaderboard( $limit ? $limit : 20 ) );
+		return rest_ensure_response( Ciwp_Gamification::leaderboard( $limit ? $limit : 20 ) );
 	}
 
 	/**
@@ -234,7 +234,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	private static function get_badge( $id ) {
 		global $wpdb;
-		$table = esc_sql( GrowthPilot::table( 'badges' ) );
+		$table = esc_sql( Ciwp::table( 'badges' ) );
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
@@ -246,7 +246,7 @@ class GrowthPilot_REST_Gamification {
 	 */
 	private static function get_challenge( $id ) {
 		global $wpdb;
-		$table = esc_sql( GrowthPilot::table( 'challenges' ) );
+		$table = esc_sql( Ciwp::table( 'challenges' ) );
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 

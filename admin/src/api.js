@@ -1,5 +1,5 @@
-const config = window.growthPilotAdmin ?? {
-  apiUrl: "/wp-json/growthpilot/v1/",
+const config = window.ciwpAdmin ?? {
+  apiUrl: "/wp-json/ciwp/v1/",
   nonce: "",
   urls: {},
   i18n: {},

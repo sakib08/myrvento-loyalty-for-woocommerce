@@ -54,7 +54,7 @@ export default function Customers() {
   }
 
   return (
-    <div className="gp-ppros-grid gp-ppros-gap-5 lg:gp-ppros-grid-cols-[1.2fr_1fr]">
+    <div className="ciwp-grid ciwp-gap-5 lg:ciwp-grid-cols-[1.2fr_1fr]">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="Customer points" description="Balances and VIP tiers from the shared ledger.">
         <Field label="Search">
@@ -68,7 +68,7 @@ export default function Customers() {
             placeholder="Name or email"
           />
         </Field>
-        <table className="gp-ppros-mt-4">
+        <table className="ciwp-mt-4">
           <thead>
             <tr>
               <th>Customer</th>
@@ -79,10 +79,10 @@ export default function Customers() {
           </thead>
           <tbody>
             {data.items.map((row) => (
-              <tr key={row.id} className="gp-ppros-cursor-pointer hover:gp-ppros-bg-slate-50" onClick={() => openCustomer(row.id)}>
+              <tr key={row.id} className="ciwp-cursor-pointer hover:ciwp-bg-slate-50" onClick={() => openCustomer(row.id)}>
                 <td>
                   <strong>{row.name}</strong>
-                  <div className="gp-ppros-text-xs gp-ppros-text-slate-500">{row.email}</div>
+                  <div className="ciwp-text-xs ciwp-text-slate-500">{row.email}</div>
                 </td>
                 <td>{row.available}</td>
                 <td>{row.lifetime_earned}</td>
@@ -92,32 +92,32 @@ export default function Customers() {
               </tr>
             ))}
             {data.items.length === 0 && (
-              <tr><td colSpan="4" className="gp-ppros-text-slate-500">No customers with points yet.</td></tr>
+              <tr><td colSpan="4" className="ciwp-text-slate-500">No customers with points yet.</td></tr>
             )}
           </tbody>
         </table>
       </Card>
 
       <Card title={selected ? selected.name : "Customer detail"} description={selected ? selected.email : "Select a customer to view history and adjust points."}>
-        {!selected && <p className="gp-ppros-m-0 gp-ppros-text-sm gp-ppros-text-slate-500">Nothing selected.</p>}
+        {!selected && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">Nothing selected.</p>}
         {selected && (
-          <div className="gp-ppros-grid gp-ppros-gap-4">
-            <div className="gp-ppros-grid gp-ppros-grid-cols-3 gp-ppros-gap-3">
-              <div className="gp-ppros-rounded-xl gp-ppros-bg-brand-50 gp-ppros-p-3">
-                <div className="gp-ppros-text-xs gp-ppros-text-slate-500">Available</div>
-                <div className="gp-ppros-text-xl gp-ppros-font-bold">{selected.available}</div>
+          <div className="ciwp-grid ciwp-gap-4">
+            <div className="ciwp-grid ciwp-grid-cols-3 ciwp-gap-3">
+              <div className="ciwp-rounded-xl ciwp-bg-brand-50 ciwp-p-3">
+                <div className="ciwp-text-xs ciwp-text-slate-500">Available</div>
+                <div className="ciwp-text-xl ciwp-font-bold">{selected.available}</div>
               </div>
-              <div className="gp-ppros-rounded-xl gp-ppros-bg-slate-50 gp-ppros-p-3">
-                <div className="gp-ppros-text-xs gp-ppros-text-slate-500">Lifetime</div>
-                <div className="gp-ppros-text-xl gp-ppros-font-bold">{selected.lifetime_earned}</div>
+              <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
+                <div className="ciwp-text-xs ciwp-text-slate-500">Lifetime</div>
+                <div className="ciwp-text-xl ciwp-font-bold">{selected.lifetime_earned}</div>
               </div>
-              <div className="gp-ppros-rounded-xl gp-ppros-bg-slate-50 gp-ppros-p-3">
-                <div className="gp-ppros-text-xs gp-ppros-text-slate-500">Tier</div>
-                <div className="gp-ppros-text-xl gp-ppros-font-bold" style={{ color: selected.tier?.color }}>{selected.tier?.name || "—"}</div>
+              <div className="ciwp-rounded-xl ciwp-bg-slate-50 ciwp-p-3">
+                <div className="ciwp-text-xs ciwp-text-slate-500">Tier</div>
+                <div className="ciwp-text-xl ciwp-font-bold" style={{ color: selected.tier?.color }}>{selected.tier?.name || "—"}</div>
               </div>
             </div>
 
-            <div className="gp-ppros-grid gp-ppros-gap-2 md:gp-ppros-grid-cols-[1fr_2fr_auto] md:gp-ppros-items-end">
+            <div className="ciwp-grid ciwp-gap-2 md:ciwp-grid-cols-[1fr_2fr_auto] md:ciwp-items-end">
               <Field label="Adjust (+/−)">
                 <input className={inputClass} type="number" value={adjust.amount} onChange={(e) => setAdjust({ ...adjust, amount: e.target.value })} />
               </Field>
@@ -128,7 +128,7 @@ export default function Customers() {
             </div>
 
             <div>
-              <h3 className="gp-ppros-mb-2 gp-ppros-mt-0 gp-ppros-text-sm gp-ppros-font-bold">Transaction history</h3>
+              <h3 className="ciwp-mb-2 ciwp-mt-0 ciwp-text-sm ciwp-font-bold">Transaction history</h3>
               <table>
                 <thead>
                   <tr>
@@ -142,7 +142,7 @@ export default function Customers() {
                     <tr key={row.id}>
                       <td>{row.created_at}</td>
                       <td>{row.description || row.source}</td>
-                      <td className={Number(row.amount) < 0 ? "gp-ppros-text-red-600" : "gp-ppros-text-brand-700"}>
+                      <td className={Number(row.amount) < 0 ? "ciwp-text-red-600" : "ciwp-text-brand-700"}>
                         {Number(row.amount) > 0 ? `+${row.amount}` : row.amount}
                       </td>
                     </tr>

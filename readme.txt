@@ -1,4 +1,4 @@
-=== GrowthPilot by Ppros ===
+=== Commerce Insights for WooCommerce by Ppros ===
 Contributors: sakibbd08
 Tags: woocommerce, loyalty, points, referrals, analytics
 Requires at least: 6.0
@@ -11,7 +11,7 @@ WooCommerce loyalty, sales, operations, analytics, revenue intelligence, and an 
 
 == Description ==
 
-GrowthPilot by Ppros awards purchase, review, signup, birthday, social, campaign, and referral points to the same customer wallet. Referral bonuses never use a separate balance.
+Commerce Insights for WooCommerce by Ppros awards purchase, review, signup, birthday, social, campaign, and referral points to the same customer wallet. Referral bonuses never use a separate balance.
 
 Analytics covers revenue trends, AOV, LTV, repeat purchase, cohorts, retention, churn, product profitability, campaign ROI, email performance, funnel conversion, and attribution.
 
@@ -20,14 +20,14 @@ The AI Commerce Brain scores churn, next purchase, and high-value customers, sug
 == Installation ==
 
 1. Install and activate WooCommerce.
-2. Upload GrowthPilot by Ppros through Plugins → Add New → Upload Plugin, or copy the plugin folder into `wp-content/plugins/`.
-3. Activate GrowthPilot by Ppros. WooCommerce must already be active.
-4. Open GrowthPilot by Ppros in wp-admin. The dashboard is the home screen. Points, sales, operations, analytics, revenue, AI, and Help are separate menus.
+2. Upload Commerce Insights for WooCommerce by Ppros through Plugins → Add New → Upload Plugin, or copy the plugin folder into `wp-content/plugins/`.
+3. Activate Commerce Insights for WooCommerce by Ppros. WooCommerce must already be active.
+4. Open Commerce Insights for WooCommerce by Ppros in wp-admin. The dashboard is the home screen. Points, sales, operations, analytics, revenue, AI, and Help are separate menus.
 5. Customers use My Account → Loyalty and Referrals.
 
 == Frequently Asked Questions ==
 
-= Does GrowthPilot by Ppros require WooCommerce? =
+= Does Commerce Insights for WooCommerce by Ppros require WooCommerce? =
 
 Yes. WooCommerce must be active. The plugin follows High-Performance Order Storage. WordPress 6.0+ and PHP 7.4+ are required. Shop managers need the `manage_woocommerce` capability.
 
@@ -79,7 +79,7 @@ From this plugin directory, after Node.js and npm are installed:
 1. `npm install`
 2. `npm run build`
 
-`npm run build` writes the admin files to `assets/admin/` (`growthpilot-admin.js`, `growthpilot-admin.css`) and the storefront files to `assets/frontend/` (`growthpilot.js`, `growthpilot.css`). `npm run build:admin` and `npm run build:frontend` rebuild one of those bundles.
+`npm run build` writes the admin files to `assets/admin/` (`ciwp-admin.js`, `ciwp-admin.css`) and the storefront files to `assets/frontend/` (`ciwp.js`, `ciwp.css`). `npm run build:admin` and `npm run build:frontend` rebuild one of those bundles.
 
 == Third-party licenses ==
 
@@ -94,7 +94,7 @@ Webpack, Babel, Tailwind CSS, PostCSS, and Autoprefixer are build tools only. Th
 
 This plugin does not call an external service unless a store admin turns on optional AI narration.
 
-**OpenAI-compatible chat API (optional).** Off by default. When an administrator enables LLM narration and saves an API key, GrowthPilot sends Commerce Brain insight text to `{API base}/chat/completions`. The default base is `https://api.openai.com/v1` and the default model is `gpt-4o-mini`. The request includes store metrics and insight copy, which can include a customer display name, plus the saved API key as a Bearer token. No request is sent when narration is off or the key is empty. A custom API base uses that provider instead of OpenAI.
+**OpenAI-compatible chat API (optional).** Off by default. When an administrator enables LLM narration and saves an API key, Commerce Insights for WooCommerce by Ppros sends Commerce Brain insight text to `{API base}/chat/completions`. The default base is `https://api.openai.com/v1` and the default model is `gpt-4o-mini`. The request includes store metrics and insight copy, which can include a customer display name, plus the saved API key as a Bearer token. No request is sent when narration is off or the key is empty. A custom API base uses that provider instead of OpenAI.
 
 * OpenAI terms: https://openai.com/policies/terms-of-use
 * OpenAI privacy: https://openai.com/policies/privacy-policy
@@ -116,4 +116,4 @@ This plugin does not call an external service unless a store admin turns on opti
 * AI Commerce Brain: predictive churn / next purchase / high-value, pricing suggestions, seasonal and inventory forecasts.
 * Dashboard plus Sales & conversion (abandoned cart, upsell, cross-sell, recovery), WooCommerce operations, and a Revenue intelligence screen for LTV, retention, churn, attribution, profitability, and forecasting.
 * Help screen with guides for loyalty, referrals, sales, analytics, AI, and the customer account.
-* Display name is GrowthPilot by Ppros. Styles use the gp-ppros- prefix. Text domain is gp-ppros.
+* Display name is Commerce Insights for WooCommerce by Ppros. Styles use the ciwp- prefix. Text domain is commerce-insights-woocommerce-by-ppros.

@@ -10,17 +10,17 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const header = fs.readFileSync(path.join(root, "growthpilot.php"), "utf8");
+const header = fs.readFileSync(path.join(root, "commerce-insights-woocommerce-by-ppros.php"), "utf8");
 const versionMatch = header.match(/^\s*\*\s*Version:\s*(.+)$/m);
 const version = versionMatch ? versionMatch[1].trim() : "0.0.0";
-const folder = "gp-ppros";
+const folder = "commerce-insights-woocommerce-by-ppros";
 // Outside the plugin so Plugin Check does not scan the zip or a second copy of the code.
-const dist = path.resolve(root, "..", "..", "growthpilot-dist");
+const dist = path.resolve(root, "..", "..", "ciwp-dist");
 const stage = path.join(dist, folder);
-const zipName = `growthpilot-${version}.zip`;
+const zipName = `ciwp-${version}.zip`;
 
 const include = [
-  "growthpilot.php",
+  "commerce-insights-woocommerce-by-ppros.php",
   "uninstall.php",
   "readme.txt",
   "includes",

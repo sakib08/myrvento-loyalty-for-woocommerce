@@ -2,7 +2,7 @@
 /**
  * Activation, schema, and seed data.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Installer.
  */
-class GrowthPilot_Installer {
+class Ciwp_Installer {
 
 	/**
 	 * Activate plugin.
@@ -19,19 +19,20 @@ class GrowthPilot_Installer {
 	 * @return void
 	 */
 	public static function activate() {
+		self::migrate_legacy_keys();
 		self::create_tables();
 		self::seed();
-		update_option( 'growthpilot_db_version', GROWTHPILOT_DB_VERSION, false );
+		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
 
-		if ( false === get_option( GrowthPilot_Settings::OPTION, false ) ) {
-			update_option( GrowthPilot_Settings::OPTION, GrowthPilot_Settings::defaults(), false );
+		if ( false === get_option( Ciwp_Settings::OPTION, false ) ) {
+			update_option( Ciwp_Settings::OPTION, Ciwp_Settings::defaults(), false );
 		}
 
 		self::register_endpoints();
 		flush_rewrite_rules();
 
-		if ( ! wp_next_scheduled( 'growthpilot_daily' ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'growthpilot_daily' );
+		if ( ! wp_next_scheduled( 'ciwp_daily' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'ciwp_daily' );
 		}
 	}
 
@@ -41,9 +42,9 @@ class GrowthPilot_Installer {
 	 * @return void
 	 */
 	public static function deactivate() {
-		$timestamp = wp_next_scheduled( 'growthpilot_daily' );
+		$timestamp = wp_next_scheduled( 'ciwp_daily' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'growthpilot_daily' );
+			wp_unschedule_event( $timestamp, 'ciwp_daily' );
 		}
 
 		flush_rewrite_rules();
@@ -55,15 +56,49 @@ class GrowthPilot_Installer {
 	 * @return void
 	 */
 	public static function maybe_upgrade() {
-		$installed = get_option( 'growthpilot_db_version', '' );
+		self::migrate_legacy_keys();
 
-		if ( (string) $installed === (string) GROWTHPILOT_DB_VERSION ) {
+		$installed = get_option( 'ciwp_db_version', '' );
+
+		if ( (string) $installed === (string) CIWP_DB_VERSION ) {
 			return;
 		}
 
 		self::create_tables();
 		self::seed();
-		update_option( 'growthpilot_db_version', GROWTHPILOT_DB_VERSION, false );
+		update_option( 'ciwp_db_version', CIWP_DB_VERSION, false );
+	}
+
+	/**
+	 * Copy options and cron saved under the previous prefix.
+	 *
+	 * @return void
+	 */
+	private static function migrate_legacy_keys() {
+		$map = array(
+			'growthpilot_settings'    => 'ciwp_settings',
+			'growthpilot_db_version'  => 'ciwp_db_version',
+			'growthpilot_ai_last_run' => 'ciwp_ai_last_run',
+			'growthpilot_demo_seed'   => 'ciwp_demo_seed',
+		);
+
+		foreach ( $map as $old => $new ) {
+			$legacy = get_option( $old, null );
+			if ( null === $legacy ) {
+				continue;
+			}
+
+			if ( false === get_option( $new, false ) ) {
+				update_option( $new, $legacy, false );
+			}
+
+			delete_option( $old );
+		}
+
+		$timestamp = wp_next_scheduled( 'growthpilot_daily' );
+		if ( $timestamp ) {
+			wp_unschedule_event( $timestamp, 'growthpilot_daily' );
+		}
 	}
 
 	/**
@@ -351,7 +386,7 @@ class GrowthPilot_Installer {
 	public static function seed() {
 		global $wpdb;
 
-		$rules_table = esc_sql( GrowthPilot::table( 'point_rules' ) );
+		$rules_table = esc_sql( Ciwp::table( 'point_rules' ) );
 		$count       = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $count ) {
@@ -380,7 +415,7 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$tiers_table = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
+		$tiers_table = esc_sql( Ciwp::table( 'vip_tiers' ) );
 		$tier_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$tiers_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $tier_count ) {
@@ -408,7 +443,7 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$badges_table = esc_sql( GrowthPilot::table( 'badges' ) );
+		$badges_table = esc_sql( Ciwp::table( 'badges' ) );
 		$badge_count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$badges_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $badge_count ) {
@@ -437,14 +472,14 @@ class GrowthPilot_Installer {
 			}
 		}
 
-		$campaigns = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
+		$campaigns = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		$camp_n    = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$campaigns}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $camp_n ) {
 			$wpdb->insert(
 				$campaigns,
 				array(
-					'name'                  => __( 'Refer a friend', 'gp-ppros' ),
+					'name'                  => __( 'Refer a friend', 'commerce-insights-woocommerce-by-ppros' ),
 					'enabled'               => 1,
 					'first_order_points'    => 200,
 					'referee_signup_points' => 50,
@@ -454,7 +489,7 @@ class GrowthPilot_Installer {
 			);
 		}
 
-		$rewards = esc_sql( GrowthPilot::table( 'rewards' ) );
+		$rewards = esc_sql( Ciwp::table( 'rewards' ) );
 		$rew_n   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rewards}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === $rew_n ) {

@@ -21,35 +21,35 @@ export default function AdminLayout({ page, children }) {
   ];
 
   return (
-    <div className="growthpilot-app gp-ppros-relative gp-ppros-min-h-screen gp-ppros-bg-slate-50">
-      <header className="growthpilot-app__header gp-ppros-border-b gp-ppros-border-slate-200 gp-ppros-bg-white">
-        <div className="gp-ppros-mx-auto gp-ppros-flex gp-ppros-max-w-7xl gp-ppros-flex-wrap gp-ppros-items-center gp-ppros-justify-between gp-ppros-gap-4 gp-ppros-px-6 gp-ppros-py-4">
-          <div className="gp-ppros-flex gp-ppros-items-center gp-ppros-gap-3">
-            <span className="gp-ppros-flex gp-ppros-h-10 gp-ppros-w-10 gp-ppros-items-center gp-ppros-justify-center gp-ppros-rounded-xl gp-ppros-bg-gradient-to-br gp-ppros-from-brand-500 gp-ppros-to-brand-700 gp-ppros-text-white gp-ppros-shadow-md">
+    <div className="ciwp-app ciwp-relative ciwp-min-h-screen ciwp-bg-slate-50">
+      <header className="ciwp-app__header ciwp-border-b ciwp-border-slate-200 ciwp-bg-white">
+        <div className="ciwp-mx-auto ciwp-flex ciwp-max-w-7xl ciwp-flex-wrap ciwp-items-center ciwp-justify-between ciwp-gap-4 ciwp-px-6 ciwp-py-4">
+          <div className="ciwp-flex ciwp-items-center ciwp-gap-3">
+            <span className="ciwp-flex ciwp-h-10 ciwp-w-10 ciwp-items-center ciwp-justify-center ciwp-rounded-xl ciwp-bg-gradient-to-br ciwp-from-brand-500 ciwp-to-brand-700 ciwp-text-white ciwp-shadow-md">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                 <path d="M3 17l6-6 4 4 8-8" />
                 <path d="M14 7h7v7" />
               </svg>
             </span>
             <div>
-              <h1 className="gp-ppros-m-0 gp-ppros-text-lg gp-ppros-font-bold gp-ppros-text-slate-900">
-                {i18n.pluginName || "GrowthPilot by Ppros"}
+              <h1 className="ciwp-m-0 ciwp-text-lg ciwp-font-bold ciwp-text-slate-900">
+                {i18n.pluginName || "Commerce Insights for WooCommerce by Ppros"}
               </h1>
-              <p className="gp-ppros-m-0 gp-ppros-mt-0.5 gp-ppros-text-xs gp-ppros-text-slate-500">
+              <p className="ciwp-m-0 ciwp-mt-0.5 ciwp-text-xs ciwp-text-slate-500">
                 {i18n.tagline || "Loyalty & Referrals"}
               </p>
             </div>
           </div>
 
-          <nav className="gp-ppros-flex gp-ppros-flex-wrap gp-ppros-gap-1 gp-ppros-rounded-xl gp-ppros-bg-slate-100 gp-ppros-p-1">
+          <nav className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
             {tabs.map((tab) => (
               <a
                 key={tab.id}
                 href={tab.href}
-                className={`gp-ppros-rounded-lg gp-ppros-px-3 gp-ppros-py-2 gp-ppros-text-sm gp-ppros-font-semibold gp-ppros-no-underline gp-ppros-transition ${
+                className={`ciwp-rounded-lg ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ciwp-no-underline ciwp-transition ${
                   page === tab.id
-                    ? "gp-ppros-bg-white gp-ppros-text-brand-700 gp-ppros-shadow-sm"
-                    : "gp-ppros-text-slate-600 hover:gp-ppros-text-slate-900"
+                    ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm"
+                    : "ciwp-text-slate-600 hover:ciwp-text-slate-900"
                 }`}
               >
                 {tab.label}
@@ -59,7 +59,7 @@ export default function AdminLayout({ page, children }) {
         </div>
       </header>
 
-      <main className="gp-ppros-mx-auto gp-ppros-max-w-7xl gp-ppros-px-6 gp-ppros-py-6">{children}</main>
+      <main className="ciwp-mx-auto ciwp-max-w-7xl ciwp-px-6 ciwp-py-6">{children}</main>
     </div>
   );
 }

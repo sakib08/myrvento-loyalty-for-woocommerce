@@ -114,7 +114,7 @@ export default function Points() {
   }
 
   if (loading) {
-    return <p className="gp-ppros-text-slate-500">Loading points rules…</p>;
+    return <p className="ciwp-text-slate-500">Loading points rules…</p>;
   }
 
   const globals = GLOBAL_SOURCES.map((meta) => ({
@@ -125,13 +125,13 @@ export default function Points() {
   const campaigns = rules.filter((row) => row.source === "campaign");
 
   return (
-    <div className="gp-ppros-grid gp-ppros-gap-5">
+    <div className="ciwp-grid ciwp-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
 
       <Card title="Earn rules" description="Every source writes to the same points ledger — including referrals.">
-        <div className="gp-ppros-grid gp-ppros-gap-4">
+        <div className="ciwp-grid ciwp-gap-4">
           {globals.map(({ source, hint, rule }) => (
-            <div key={source} className="gp-ppros-grid gp-ppros-gap-3 gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4 md:gp-ppros-grid-cols-4 md:gp-ppros-items-end">
+            <div key={source} className="ciwp-grid ciwp-gap-3 ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4 md:ciwp-grid-cols-4 md:ciwp-items-end">
               <Toggle
                 label={rule?.name || source.replace("_", " ")}
                 description={hint}
@@ -173,7 +173,7 @@ export default function Points() {
       <Card title="Points expiration" description="0 means points never expire. FIFO consumes the oldest lots first.">
         <Field label="Expire unused points after (days)">
           <input
-            className={`${inputClass} gp-ppros-max-w-xs`}
+            className={`${inputClass} ciwp-max-w-xs`}
             type="number"
             min="0"
             value={settings?.expiration_days ?? 0}
@@ -184,7 +184,7 @@ export default function Points() {
       </Card>
 
       <Card title="Product & category points" description="Bonus points stacked on top of the global purchase rate.">
-        <div className="gp-ppros-mb-4 gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
+        <div className="ciwp-mb-4 ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-5 md:ciwp-items-end">
           <Field label="Name">
             <input className={inputClass} value={newObject.name} onChange={(e) => setNewObject({ ...newObject, name: e.target.value })} />
           </Field>
@@ -201,12 +201,12 @@ export default function Points() {
           <Field label="Search">
             <input className={inputClass} value={productSearch} onChange={(e) => searchCatalog(e.target.value)} placeholder="Type to search" />
             {(products.length > 0 || categories.length > 0) && (
-              <div className="gp-ppros-mt-1 gp-ppros-max-h-40 gp-ppros-overflow-auto gp-ppros-rounded-lg gp-ppros-border gp-ppros-border-slate-200 gp-ppros-bg-white">
+              <div className="ciwp-mt-1 ciwp-max-h-40 ciwp-overflow-auto ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-bg-white">
                 {(newObject.object_type === "product" ? products : categories).map((item) => (
                   <button
                     key={item.id}
                     type="button"
-                    className="gp-ppros-block gp-ppros-w-full gp-ppros-border-0 gp-ppros-bg-transparent gp-ppros-px-3 gp-ppros-py-2 gp-ppros-text-left gp-ppros-text-sm hover:gp-ppros-bg-slate-50"
+                    className="ciwp-block ciwp-w-full ciwp-border-0 ciwp-bg-transparent ciwp-px-3 ciwp-py-2 ciwp-text-left ciwp-text-sm hover:ciwp-bg-slate-50"
                     onClick={() => {
                       setNewObject({ ...newObject, object_id: item.id, name: newObject.name || `${item.name} bonus` });
                       setProductSearch(item.name);
@@ -252,7 +252,7 @@ export default function Points() {
               </tr>
             ))}
             {objectRules.length === 0 && (
-              <tr><td colSpan="5" className="gp-ppros-text-slate-500">No product or category bonuses yet.</td></tr>
+              <tr><td colSpan="5" className="ciwp-text-slate-500">No product or category bonuses yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -272,9 +272,9 @@ export default function Points() {
           })}>Add campaign bonus</Button>
         }
       >
-        <div className="gp-ppros-grid gp-ppros-gap-3">
+        <div className="ciwp-grid ciwp-gap-3">
           {campaigns.map((rule) => (
-            <div key={rule.id} className="gp-ppros-grid gp-ppros-gap-3 gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4 md:gp-ppros-grid-cols-5 md:gp-ppros-items-end">
+            <div key={rule.id} className="ciwp-grid ciwp-gap-3 ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4 md:ciwp-grid-cols-5 md:ciwp-items-end">
               <Field label="Name">
                 <input className={inputClass} value={rule.name} onChange={(e) => setRules((c) => c.map((r) => r.id === rule.id ? { ...r, name: e.target.value } : r))} onBlur={() => saveRule(rule)} />
               </Field>
@@ -299,7 +299,7 @@ export default function Points() {
               }}>Delete</Button>
             </div>
           ))}
-          {campaigns.length === 0 && <p className="gp-ppros-m-0 gp-ppros-text-sm gp-ppros-text-slate-500">No campaign bonuses.</p>}
+          {campaigns.length === 0 && <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">No campaign bonuses.</p>}
         </div>
       </Card>
     </div>

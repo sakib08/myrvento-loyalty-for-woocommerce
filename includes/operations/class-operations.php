@@ -2,7 +2,7 @@
 /**
  * Orders, subscriptions, coupons, and customer activity.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce operations.
  */
-class GrowthPilot_Operations {
+class Ciwp_Operations {
 
 	/**
 	 * Operations report.
@@ -56,7 +56,7 @@ class GrowthPilot_Operations {
 				'number'   => $order->get_order_number(),
 				'status'   => wc_get_order_status_name( $order->get_status() ),
 				'total'    => (float) $order->get_total(),
-				'customer' => $order->get_formatted_billing_full_name() ? $order->get_formatted_billing_full_name() : __( 'Guest', 'gp-ppros' ),
+				'customer' => $order->get_formatted_billing_full_name() ? $order->get_formatted_billing_full_name() : __( 'Guest', 'commerce-insights-woocommerce-by-ppros' ),
 				'date'     => $order->get_date_created() ? $order->get_date_created()->date( 'Y-m-d H:i' ) : '',
 			);
 		}
@@ -76,7 +76,7 @@ class GrowthPilot_Operations {
 		if ( ! function_exists( 'wcs_get_subscriptions' ) ) {
 			return array(
 				'available' => false,
-				'note'      => __( 'WooCommerce Subscriptions is not active. Recurring orders will show here when it is.', 'gp-ppros' ),
+				'note'      => __( 'WooCommerce Subscriptions is not active. Recurring orders will show here when it is.', 'commerce-insights-woocommerce-by-ppros' ),
 				'items'     => array(),
 			);
 		}
@@ -147,7 +147,7 @@ class GrowthPilot_Operations {
 		global $wpdb;
 
 		$events = $wpdb->get_results(
-			'SELECT event_type, customer_id, product_id, channel, created_at FROM ' . esc_sql( GrowthPilot::table( 'analytics_events' ) ) . ' ORDER BY id DESC LIMIT 20' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'SELECT event_type, customer_id, product_id, channel, created_at FROM ' . esc_sql( Ciwp::table( 'analytics_events' ) ) . ' ORDER BY id DESC LIMIT 20' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
 
 		$items = array();
@@ -157,13 +157,13 @@ class GrowthPilot_Operations {
 				'at'    => $event->created_at,
 				'kind'  => 'event',
 				'label' => ucwords( str_replace( '_', ' ', $event->event_type ) ),
-				'who'   => $user ? $user->display_name : __( 'Guest', 'gp-ppros' ),
+				'who'   => $user ? $user->display_name : __( 'Guest', 'commerce-insights-woocommerce-by-ppros' ),
 				'extra' => $event->channel ? $event->channel : '',
 			);
 		}
 
 		$ledger = $wpdb->get_results(
-			'SELECT customer_id, amount, source, description, created_at FROM ' . esc_sql( GrowthPilot::table( 'points_ledger' ) ) . ' ORDER BY id DESC LIMIT 15' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'SELECT customer_id, amount, source, description, created_at FROM ' . esc_sql( Ciwp::table( 'points_ledger' ) ) . ' ORDER BY id DESC LIMIT 15' // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
 
 		foreach ( $ledger ? $ledger : array() as $row ) {

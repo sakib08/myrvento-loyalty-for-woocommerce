@@ -2,7 +2,7 @@
 /**
  * Storefront — My Account endpoints, shortcodes, assets.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,20 +10,20 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Frontend.
  */
-class GrowthPilot_Frontend {
+class Ciwp_Frontend {
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( 'GrowthPilot_Installer', 'register_endpoints' ) );
+		add_action( 'init', array( 'Ciwp_Installer', 'register_endpoints' ) );
 		add_filter( 'woocommerce_account_menu_items', array( $this, 'menu_items' ) );
 		add_action( 'woocommerce_account_loyalty_endpoint', array( $this, 'render_loyalty' ) );
 		add_action( 'woocommerce_account_referrals_endpoint', array( $this, 'render_referrals' ) );
 		add_filter( 'the_title', array( $this, 'endpoint_title' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
-		add_shortcode( 'growthpilot_loyalty', array( $this, 'shortcode_loyalty' ) );
-		add_shortcode( 'growthpilot_referral', array( $this, 'shortcode_referral' ) );
+		add_shortcode( 'ciwp_loyalty', array( $this, 'shortcode_loyalty' ) );
+		add_shortcode( 'ciwp_referral', array( $this, 'shortcode_referral' ) );
 	}
 
 	/**
@@ -33,7 +33,7 @@ class GrowthPilot_Frontend {
 	 * @return array<string, string>
 	 */
 	public function menu_items( $items ) {
-		$settings = GrowthPilot_Settings::get();
+		$settings = Ciwp_Settings::get();
 		$new      = array();
 
 		foreach ( $items as $key => $label ) {
@@ -65,7 +65,7 @@ class GrowthPilot_Frontend {
 		}
 
 		global $wp;
-		$settings = GrowthPilot_Settings::get();
+		$settings = Ciwp_Settings::get();
 
 		if ( isset( $wp->query_vars['loyalty'] ) ) {
 			return $settings['myaccount_loyalty_label'];
@@ -88,13 +88,13 @@ class GrowthPilot_Frontend {
 			return;
 		}
 
-		$js  = GROWTHPILOT_PATH . 'assets/frontend/growthpilot.js';
-		$css = GROWTHPILOT_PATH . 'assets/frontend/growthpilot.css';
+		$js  = CIWP_PATH . 'assets/frontend/ciwp.js';
+		$css = CIWP_PATH . 'assets/frontend/ciwp.css';
 
 		if ( file_exists( $css ) ) {
 			wp_enqueue_style(
-				'growthpilot',
-				GROWTHPILOT_URL . 'assets/frontend/growthpilot.css',
+				'ciwp',
+				CIWP_URL . 'assets/frontend/ciwp.css',
 				array(),
 				filemtime( $css )
 			);
@@ -102,22 +102,22 @@ class GrowthPilot_Frontend {
 
 		if ( file_exists( $js ) ) {
 			wp_enqueue_script(
-				'growthpilot',
-				GROWTHPILOT_URL . 'assets/frontend/growthpilot.js',
+				'ciwp',
+				CIWP_URL . 'assets/frontend/ciwp.js',
 				array(),
 				filemtime( $js ),
 				true
 			);
 
 			wp_localize_script(
-				'growthpilot',
-				'growthPilotFrontend',
+				'ciwp',
+				'ciwpFrontend',
 				array(
-					'apiUrl' => rest_url( 'growthpilot/v1/' ),
+					'apiUrl' => rest_url( 'ciwp/v1/' ),
 					'nonce'  => wp_create_nonce( 'wp_rest' ),
 					'i18n'   => array(
-						'copied' => __( 'Copied!', 'gp-ppros' ),
-						'copy'   => __( 'Copy link', 'gp-ppros' ),
+						'copied' => __( 'Copied!', 'commerce-insights-woocommerce-by-ppros' ),
+						'copy'   => __( 'Copy link', 'commerce-insights-woocommerce-by-ppros' ),
 					),
 				)
 			);
@@ -135,7 +135,7 @@ class GrowthPilot_Frontend {
 		}
 
 		global $post;
-		if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'growthpilot_loyalty' ) || has_shortcode( $post->post_content, 'growthpilot_referral' ) ) ) {
+		if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'ciwp_loyalty' ) || has_shortcode( $post->post_content, 'ciwp_referral' ) ) ) {
 			return true;
 		}
 
@@ -167,7 +167,7 @@ class GrowthPilot_Frontend {
 	 */
 	public function shortcode_loyalty() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'gp-ppros' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your loyalty account.', 'commerce-insights-woocommerce-by-ppros' ) . '</p>';
 		}
 
 		ob_start();
@@ -182,7 +182,7 @@ class GrowthPilot_Frontend {
 	 */
 	public function shortcode_referral() {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'gp-ppros' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your referral link.', 'commerce-insights-woocommerce-by-ppros' ) . '</p>';
 		}
 
 		ob_start();
@@ -197,7 +197,7 @@ class GrowthPilot_Frontend {
 	 * @return void
 	 */
 	private function load_template( $file ) {
-		$path = GROWTHPILOT_PATH . 'templates/myaccount/' . $file;
+		$path = CIWP_PATH . 'templates/myaccount/' . $file;
 		if ( file_exists( $path ) ) {
 			include $path;
 		}

@@ -2,7 +2,7 @@
 /**
  * WordPress admin — React mount.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Admin menus and assets.
  */
-class GrowthPilot_Admin {
+class Ciwp_Admin {
 
-	const MENU_SLUG = 'growthpilot';
+	const MENU_SLUG = 'ciwp';
 
 	/**
 	 * Constructor.
@@ -31,25 +31,25 @@ class GrowthPilot_Admin {
 	 */
 	public function register_menus() {
 		$pages = array(
-			''              => __( 'Dashboard', 'gp-ppros' ),
-			'-points'       => __( 'Points', 'gp-ppros' ),
-			'-customers'    => __( 'Customers', 'gp-ppros' ),
-			'-tiers'        => __( 'VIP Tiers', 'gp-ppros' ),
-			'-rewards'      => __( 'Rewards', 'gp-ppros' ),
-			'-gamification' => __( 'Gamification', 'gp-ppros' ),
-			'-referrals'    => __( 'Referrals', 'gp-ppros' ),
-			'-sales'        => __( 'Sales', 'gp-ppros' ),
-			'-operations'   => __( 'Operations', 'gp-ppros' ),
-			'-analytics'    => __( 'Analytics', 'gp-ppros' ),
-			'-revenue'      => __( 'Revenue', 'gp-ppros' ),
-			'-ai'           => __( 'AI', 'gp-ppros' ),
-			'-settings'     => __( 'Settings', 'gp-ppros' ),
-			'-help'         => __( 'Help', 'gp-ppros' ),
+			''              => __( 'Dashboard', 'commerce-insights-woocommerce-by-ppros' ),
+			'-points'       => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
+			'-customers'    => __( 'Customers', 'commerce-insights-woocommerce-by-ppros' ),
+			'-tiers'        => __( 'VIP Tiers', 'commerce-insights-woocommerce-by-ppros' ),
+			'-rewards'      => __( 'Rewards', 'commerce-insights-woocommerce-by-ppros' ),
+			'-gamification' => __( 'Gamification', 'commerce-insights-woocommerce-by-ppros' ),
+			'-referrals'    => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
+			'-sales'        => __( 'Sales', 'commerce-insights-woocommerce-by-ppros' ),
+			'-operations'   => __( 'Operations', 'commerce-insights-woocommerce-by-ppros' ),
+			'-analytics'    => __( 'Analytics', 'commerce-insights-woocommerce-by-ppros' ),
+			'-revenue'      => __( 'Revenue', 'commerce-insights-woocommerce-by-ppros' ),
+			'-ai'           => __( 'AI', 'commerce-insights-woocommerce-by-ppros' ),
+			'-settings'     => __( 'Settings', 'commerce-insights-woocommerce-by-ppros' ),
+			'-help'         => __( 'Help', 'commerce-insights-woocommerce-by-ppros' ),
 		);
 
 		add_menu_page(
-			__( 'GrowthPilot by Ppros', 'gp-ppros' ),
-			__( 'GrowthPilot by Ppros', 'gp-ppros' ),
+			__( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
+			__( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
 			'manage_woocommerce',
 			self::MENU_SLUG,
 			array( $this, 'render_admin_page' ),
@@ -77,7 +77,7 @@ class GrowthPilot_Admin {
 	 * @return void
 	 */
 	public function setup_admin_screen( $screen ) {
-		if ( ! $this->is_growthpilot_screen( $screen ) ) {
+		if ( ! $this->is_ciwp_screen( $screen ) ) {
 			return;
 		}
 
@@ -96,8 +96,8 @@ class GrowthPilot_Admin {
 	public function admin_body_class( $classes ) {
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		if ( $screen && $this->is_growthpilot_screen( $screen ) ) {
-			$classes .= ' growthpilot-admin-page';
+		if ( $screen && $this->is_ciwp_screen( $screen ) ) {
+			$classes .= ' ciwp-admin-page';
 		}
 
 		return $classes;
@@ -111,9 +111,9 @@ class GrowthPilot_Admin {
 	public function render_admin_page() {
 		$page = $this->get_current_page();
 		?>
-		<div id="growthpilot-admin-shell" class="growthpilot-admin-shell">
+		<div id="ciwp-admin-shell" class="ciwp-admin-shell">
 			<div
-				id="growthpilot-admin-root"
+				id="ciwp-admin-root"
 				data-page="<?php echo esc_attr( $page ); ?>"
 			></div>
 		</div>
@@ -154,7 +154,7 @@ class GrowthPilot_Admin {
 	 * @param WP_Screen $screen Screen.
 	 * @return bool
 	 */
-	private function is_growthpilot_screen( $screen ) {
+	private function is_ciwp_screen( $screen ) {
 		return $screen && false !== strpos( $screen->id, self::MENU_SLUG );
 	}
 
@@ -169,39 +169,39 @@ class GrowthPilot_Admin {
 			return;
 		}
 
-		$js_path  = GROWTHPILOT_PATH . 'assets/admin/growthpilot-admin.js';
-		$css_path = GROWTHPILOT_PATH . 'assets/admin/growthpilot-admin.css';
+		$js_path  = CIWP_PATH . 'assets/admin/ciwp-admin.js';
+		$css_path = CIWP_PATH . 'assets/admin/ciwp-admin.css';
 
 		if ( ! file_exists( $js_path ) ) {
 			return;
 		}
 
 		$js_version  = filemtime( $js_path );
-		$css_version = file_exists( $css_path ) ? filemtime( $css_path ) : GROWTHPILOT_VERSION;
+		$css_version = file_exists( $css_path ) ? filemtime( $css_path ) : CIWP_VERSION;
 
 		if ( file_exists( $css_path ) ) {
 			wp_enqueue_style(
-				'growthpilot-admin',
-				GROWTHPILOT_URL . 'assets/admin/growthpilot-admin.css',
+				'ciwp-admin',
+				CIWP_URL . 'assets/admin/ciwp-admin.css',
 				array(),
 				$css_version
 			);
 
 			wp_add_inline_style(
-				'growthpilot-admin',
-				'body.growthpilot-admin-page #wpbody-content { padding-bottom: 0; }
-body.growthpilot-admin-page #wpbody-content > :not(.growthpilot-admin-shell) { display: none !important; }
-body.growthpilot-admin-page .growthpilot-admin-shell { margin: 0; padding: 0; max-width: none; }
-body.growthpilot-admin-page .woocommerce-layout__header,
-body.growthpilot-admin-page .woo-nav-tab-wrapper,
-body.growthpilot-admin-page #screen-meta,
-body.growthpilot-admin-page #screen-meta-links { display: none !important; }'
+				'ciwp-admin',
+				'body.ciwp-admin-page #wpbody-content { padding-bottom: 0; }
+body.ciwp-admin-page #wpbody-content > :not(.ciwp-admin-shell) { display: none !important; }
+body.ciwp-admin-page .ciwp-admin-shell { margin: 0; padding: 0; max-width: none; }
+body.ciwp-admin-page .woocommerce-layout__header,
+body.ciwp-admin-page .woo-nav-tab-wrapper,
+body.ciwp-admin-page #screen-meta,
+body.ciwp-admin-page #screen-meta-links { display: none !important; }'
 			);
 		}
 
 		wp_enqueue_script(
-			'growthpilot-admin',
-			GROWTHPILOT_URL . 'assets/admin/growthpilot-admin.js',
+			'ciwp-admin',
+			CIWP_URL . 'assets/admin/ciwp-admin.js',
 			array(),
 			$js_version,
 			true
@@ -214,34 +214,34 @@ body.growthpilot-admin-page #screen-meta-links { display: none !important; }'
 		}
 
 		wp_localize_script(
-			'growthpilot-admin',
-			'growthPilotAdmin',
+			'ciwp-admin',
+			'ciwpAdmin',
 			array(
-				'apiUrl'    => rest_url( 'growthpilot/v1/' ),
+				'apiUrl'    => rest_url( 'ciwp/v1/' ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'version'   => GROWTHPILOT_VERSION,
+				'version'   => CIWP_VERSION,
 				'page'      => $this->get_current_page(),
 				'urls'      => $urls,
 				'currency'  => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
 				'i18n'      => array(
-					'pluginName'   => __( 'GrowthPilot by Ppros', 'gp-ppros' ),
-					'tagline'      => __( 'Loyalty, sales, and revenue', 'gp-ppros' ),
-					'dashboard'    => __( 'Dashboard', 'gp-ppros' ),
-					'points'       => __( 'Points', 'gp-ppros' ),
-					'customers'    => __( 'Customers', 'gp-ppros' ),
-					'tiers'        => __( 'VIP Tiers', 'gp-ppros' ),
-					'rewards'      => __( 'Rewards', 'gp-ppros' ),
-					'gamification' => __( 'Gamification', 'gp-ppros' ),
-					'referrals'    => __( 'Referrals', 'gp-ppros' ),
-					'sales'        => __( 'Sales', 'gp-ppros' ),
-					'operations'   => __( 'Operations', 'gp-ppros' ),
-					'analytics'    => __( 'Analytics', 'gp-ppros' ),
-					'revenue'      => __( 'Revenue', 'gp-ppros' ),
-					'ai'           => __( 'AI', 'gp-ppros' ),
-					'settings'     => __( 'Settings', 'gp-ppros' ),
-					'help'         => __( 'Help', 'gp-ppros' ),
-					'saved'        => __( 'Saved successfully.', 'gp-ppros' ),
-					'saveError'    => __( 'Could not save. Please try again.', 'gp-ppros' ),
+					'pluginName'   => __( 'Commerce Insights for WooCommerce by Ppros', 'commerce-insights-woocommerce-by-ppros' ),
+					'tagline'      => __( 'Loyalty, sales, and revenue', 'commerce-insights-woocommerce-by-ppros' ),
+					'dashboard'    => __( 'Dashboard', 'commerce-insights-woocommerce-by-ppros' ),
+					'points'       => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
+					'customers'    => __( 'Customers', 'commerce-insights-woocommerce-by-ppros' ),
+					'tiers'        => __( 'VIP Tiers', 'commerce-insights-woocommerce-by-ppros' ),
+					'rewards'      => __( 'Rewards', 'commerce-insights-woocommerce-by-ppros' ),
+					'gamification' => __( 'Gamification', 'commerce-insights-woocommerce-by-ppros' ),
+					'referrals'    => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
+					'sales'        => __( 'Sales', 'commerce-insights-woocommerce-by-ppros' ),
+					'operations'   => __( 'Operations', 'commerce-insights-woocommerce-by-ppros' ),
+					'analytics'    => __( 'Analytics', 'commerce-insights-woocommerce-by-ppros' ),
+					'revenue'      => __( 'Revenue', 'commerce-insights-woocommerce-by-ppros' ),
+					'ai'           => __( 'AI', 'commerce-insights-woocommerce-by-ppros' ),
+					'settings'     => __( 'Settings', 'commerce-insights-woocommerce-by-ppros' ),
+					'help'         => __( 'Help', 'commerce-insights-woocommerce-by-ppros' ),
+					'saved'        => __( 'Saved successfully.', 'commerce-insights-woocommerce-by-ppros' ),
+					'saveError'    => __( 'Could not save. Please try again.', 'commerce-insights-woocommerce-by-ppros' ),
 				),
 			)
 		);

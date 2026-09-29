@@ -2,7 +2,7 @@
 /**
  * Customer balances REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Customers routes.
  */
-class GrowthPilot_REST_Customers {
+class Ciwp_REST_Customers {
 
 	/**
 	 * Register routes.
@@ -19,7 +19,7 @@ class GrowthPilot_REST_Customers {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,7 +27,7 @@ class GrowthPilot_REST_Customers {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'list_customers' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 
@@ -37,7 +37,7 @@ class GrowthPilot_REST_Customers {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'get_customer' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -55,8 +55,8 @@ class GrowthPilot_REST_Customers {
 		$per_page = min( 100, max( 1, (int) $request->get_param( 'per_page' ) ?: 20 ) );
 		$search   = sanitize_text_field( (string) $request->get_param( 'search' ) );
 		$offset   = ( $page - 1 ) * $per_page;
-		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
-		$tiers    = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
+		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
+		$tiers    = esc_sql( Ciwp::table( 'vip_tiers' ) );
 		$users    = $wpdb->users;
 
 		$like = $search ? '%' . $wpdb->esc_like( $search ) . '%' : '';
@@ -124,13 +124,13 @@ class GrowthPilot_REST_Customers {
 		$user = get_userdata( $id );
 
 		if ( ! $user ) {
-			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'gp-ppros' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Customer not found.', 'commerce-insights-woocommerce-by-ppros' ) ), 404 );
 		}
 
-		$balance  = GrowthPilot_Points_Ledger::get_balance( $id );
-		$history  = GrowthPilot_Points_Ledger::get_history( $id, array( 'page' => 1, 'per_page' => 50 ) );
-		$tier     = $balance->tier_id ? GrowthPilot_VIP_Tiers::get( (int) $balance->tier_id ) : null;
-		$stats    = GrowthPilot_Referral_Program::stats_for( $id );
+		$balance  = Ciwp_Points_Ledger::get_balance( $id );
+		$history  = Ciwp_Points_Ledger::get_history( $id, array( 'page' => 1, 'per_page' => 50 ) );
+		$tier     = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : null;
+		$stats    = Ciwp_Referral_Program::stats_for( $id );
 
 		return rest_ensure_response(
 			array(
@@ -142,10 +142,10 @@ class GrowthPilot_REST_Customers {
 				'lifetime_earned' => (int) $balance->lifetime_earned,
 				'lifetime_redeemed' => (int) $balance->lifetime_redeemed,
 				'lifetime_expired'  => (int) $balance->lifetime_expired,
-				'tier'            => GrowthPilot_VIP_Tiers::to_array( $tier ),
+				'tier'            => Ciwp_VIP_Tiers::to_array( $tier ),
 				'history'         => $history['items'],
 				'referral'        => array(
-					'code'  => GrowthPilot_Referral_Program::get_or_create_code( $id ),
+					'code'  => Ciwp_Referral_Program::get_or_create_code( $id ),
 					'stats' => $stats,
 				),
 				'birthday'        => get_user_meta( $id, 'gp_birthday', true ),

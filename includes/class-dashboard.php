@@ -2,7 +2,7 @@
 /**
  * Home dashboard: revenue, sales, orders, and forecast.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Dashboard summary.
  */
-class GrowthPilot_Dashboard {
+class Ciwp_Dashboard {
 
 	/**
 	 * Dashboard payload for the last 30 days.
@@ -19,10 +19,10 @@ class GrowthPilot_Dashboard {
 	 * @return array<string, mixed>
 	 */
 	public static function report() {
-		$range    = GrowthPilot_Analytics_Query::range( gmdate( 'Y-m-d', time() - ( 29 * DAY_IN_SECONDS ) ), gmdate( 'Y-m-d' ) );
-		$overview = GrowthPilot_Analytics_Revenue::overview( $range );
-		$churn    = GrowthPilot_Analytics_Customers::churn();
-		$forecast = GrowthPilot_AI_Engine::enabled() ? GrowthPilot_AI_Forecast::report() : array();
+		$range    = Ciwp_Analytics_Query::range( gmdate( 'Y-m-d', time() - ( 29 * DAY_IN_SECONDS ) ), gmdate( 'Y-m-d' ) );
+		$overview = Ciwp_Analytics_Revenue::overview( $range );
+		$churn    = Ciwp_Analytics_Customers::churn();
+		$forecast = Ciwp_AI_Engine::enabled() ? Ciwp_AI_Forecast::report() : array();
 		$store    = isset( $forecast['store'] ) ? $forecast['store'] : array();
 
 		return array(
@@ -30,10 +30,10 @@ class GrowthPilot_Dashboard {
 			'kpis'     => $overview['kpis'],
 			'trend'    => $overview['trend'],
 			'sales'    => array(
-				'abandoned' => GrowthPilot_Sales::abandoned()['count'],
-				'recovery'  => GrowthPilot_Sales::recovery()['count'],
+				'abandoned' => Ciwp_Sales::abandoned()['count'],
+				'recovery'  => Ciwp_Sales::recovery()['count'],
 			),
-			'orders'   => GrowthPilot_Operations::orders(),
+			'orders'   => Ciwp_Operations::orders(),
 			'churn'    => array(
 				'active'     => $churn['active'],
 				'at_risk'    => $churn['at_risk'],
@@ -57,9 +57,9 @@ class GrowthPilot_Dashboard {
 	private static function top_products( $range ) {
 		global $wpdb;
 
-		$table     = esc_sql( GrowthPilot_Analytics_Query::products_table() );
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$table     = esc_sql( Ciwp_Analytics_Query::products_table() );
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup tables are escaped. Paid statuses are %s placeholders.

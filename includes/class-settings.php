@@ -2,7 +2,7 @@
 /**
  * Plugin settings.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Settings option helper.
  */
-class GrowthPilot_Settings {
+class Ciwp_Settings {
 
-	const OPTION = 'growthpilot_settings';
+	const OPTION = 'ciwp_settings';
 
 	/**
 	 * Default settings.
@@ -22,13 +22,13 @@ class GrowthPilot_Settings {
 	public static function defaults() {
 		return array(
 			'earn_order_status'          => 'completed',
-			'points_name'                => __( 'Points', 'gp-ppros' ),
+			'points_name'                => __( 'Points', 'commerce-insights-woocommerce-by-ppros' ),
 			'cookie_days'                => 30,
 			'expiration_days'            => 0,
 			'downgrade_enabled'          => true,
 			'downgrade_window_days'      => 365,
-			'myaccount_loyalty_label'    => __( 'Loyalty', 'gp-ppros' ),
-			'myaccount_referrals_label'  => __( 'Referrals', 'gp-ppros' ),
+			'myaccount_loyalty_label'    => __( 'Loyalty', 'commerce-insights-woocommerce-by-ppros' ),
+			'myaccount_referrals_label'  => __( 'Referrals', 'commerce-insights-woocommerce-by-ppros' ),
 			'social_once'                => true,
 			'referral_param'             => 'gp_ref',
 			'ai_enabled'                 => true,

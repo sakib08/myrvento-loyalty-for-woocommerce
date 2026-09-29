@@ -2,7 +2,7 @@
 /**
  * Analytics REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Analytics routes.
  */
-class GrowthPilot_REST_Analytics {
+class Ciwp_REST_Analytics {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class GrowthPilot_REST_Analytics {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		$range_args = array(
 			'from' => array(
@@ -38,7 +38,7 @@ class GrowthPilot_REST_Analytics {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'get_' . $report ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 					'args'                => $range_args,
 				)
 			);
@@ -72,8 +72,8 @@ class GrowthPilot_REST_Analytics {
 	 * @return WP_REST_Response
 	 */
 	public static function get_overview( $request ) {
-		$range = GrowthPilot_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
-		return rest_ensure_response( GrowthPilot_Analytics_Revenue::overview( $range ) );
+		$range = Ciwp_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
+		return rest_ensure_response( Ciwp_Analytics_Revenue::overview( $range ) );
 	}
 
 	/**
@@ -83,8 +83,8 @@ class GrowthPilot_REST_Analytics {
 	 * @return WP_REST_Response
 	 */
 	public static function get_customers( $request ) {
-		$range = GrowthPilot_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
-		return rest_ensure_response( GrowthPilot_Analytics_Customers::report( $range ) );
+		$range = Ciwp_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
+		return rest_ensure_response( Ciwp_Analytics_Customers::report( $range ) );
 	}
 
 	/**
@@ -94,8 +94,8 @@ class GrowthPilot_REST_Analytics {
 	 * @return WP_REST_Response
 	 */
 	public static function get_products( $request ) {
-		$range = GrowthPilot_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
-		return rest_ensure_response( GrowthPilot_Analytics_Products::report( $range ) );
+		$range = Ciwp_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
+		return rest_ensure_response( Ciwp_Analytics_Products::report( $range ) );
 	}
 
 	/**
@@ -105,8 +105,8 @@ class GrowthPilot_REST_Analytics {
 	 * @return WP_REST_Response
 	 */
 	public static function get_marketing( $request ) {
-		$range = GrowthPilot_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
-		return rest_ensure_response( GrowthPilot_Analytics_Marketing::report( $range ) );
+		$range = Ciwp_Analytics_Query::range( $request->get_param( 'from' ), $request->get_param( 'to' ) );
+		return rest_ensure_response( Ciwp_Analytics_Marketing::report( $range ) );
 	}
 
 	/**
@@ -121,7 +121,7 @@ class GrowthPilot_REST_Analytics {
 			return new WP_REST_Response( array( 'ok' => false ), 400 );
 		}
 
-		GrowthPilot_Analytics_Tracker::record(
+		Ciwp_Analytics_Tracker::record(
 			$type,
 			array(
 				'product_id' => (int) $request->get_param( 'product_id' ),
@@ -130,7 +130,7 @@ class GrowthPilot_REST_Analytics {
 		);
 
 		if ( 'email_open' === $type ) {
-			GrowthPilot_Analytics_Tracker::bump_email_stat(
+			Ciwp_Analytics_Tracker::bump_email_stat(
 				sanitize_key( (string) $request->get_param( 'email_key' ) ),
 				'',
 				'opened'
@@ -138,7 +138,7 @@ class GrowthPilot_REST_Analytics {
 		}
 
 		if ( 'email_click' === $type ) {
-			GrowthPilot_Analytics_Tracker::bump_email_stat(
+			Ciwp_Analytics_Tracker::bump_email_stat(
 				sanitize_key( (string) $request->get_param( 'email_key' ) ),
 				'',
 				'clicked'
@@ -157,8 +157,8 @@ class GrowthPilot_REST_Analytics {
 	public static function pixel( $request ) {
 		$key = sanitize_key( (string) $request->get_param( 'email_key' ) );
 		if ( $key ) {
-			GrowthPilot_Analytics_Tracker::bump_email_stat( $key, '', 'opened' );
-			GrowthPilot_Analytics_Tracker::record( 'email_open', array( 'channel' => 'email' ) );
+			Ciwp_Analytics_Tracker::bump_email_stat( $key, '', 'opened' );
+			Ciwp_Analytics_Tracker::record( 'email_open', array( 'channel' => 'email' ) );
 		}
 
 		$gif = base64_decode( 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode

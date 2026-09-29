@@ -2,7 +2,7 @@
 /**
  * Badges, challenges, streaks, leaderboard.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,14 +11,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Gamification.
  */
-class GrowthPilot_Gamification {
+class Ciwp_Gamification {
 
 	/**
 	 * Listen for points and referrals.
 	 */
 	public function __construct() {
-		add_action( 'growthpilot_points_changed', array( $this, 'on_points_changed' ), 20, 1 );
-		add_action( 'growthpilot_referral_converted', array( $this, 'on_referral_converted' ), 20, 1 );
+		add_action( 'ciwp_points_changed', array( $this, 'on_points_changed' ), 20, 1 );
+		add_action( 'ciwp_referral_converted', array( $this, 'on_referral_converted' ), 20, 1 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'on_order_status' ), 30, 4 );
 	}
 
@@ -54,7 +54,7 @@ class GrowthPilot_Gamification {
 	 * @return void
 	 */
 	public function on_order_status( $order_id, $from, $to, $order ) {
-		$earn = GrowthPilot_Settings::get_value( 'earn_order_status', 'completed' );
+		$earn = Ciwp_Settings::get_value( 'earn_order_status', 'completed' );
 		if ( $to !== $earn || ! $order instanceof WC_Order ) {
 			return;
 		}
@@ -93,7 +93,7 @@ class GrowthPilot_Gamification {
 
 		$owned = $wpdb->get_col(
 			$wpdb->prepare(
-				'SELECT badge_id FROM ' . esc_sql( GrowthPilot::table( 'customer_badges' ) ) . ' WHERE customer_id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT badge_id FROM ' . esc_sql( Ciwp::table( 'customer_badges' ) ) . ' WHERE customer_id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$customer_id
 			)
 		);
@@ -113,7 +113,7 @@ class GrowthPilot_Gamification {
 			}
 
 			$wpdb->insert(
-				esc_sql( GrowthPilot::table( 'customer_badges' ) ),
+				esc_sql( Ciwp::table( 'customer_badges' ) ),
 				array(
 					'customer_id' => $customer_id,
 					'badge_id'    => (int) $badge->id,
@@ -122,7 +122,7 @@ class GrowthPilot_Gamification {
 			);
 
 			if ( (int) $badge->points_bonus > 0 ) {
-				GrowthPilot_Points_Ledger::credit(
+				Ciwp_Points_Ledger::credit(
 					$customer_id,
 					(int) $badge->points_bonus,
 					'campaign',
@@ -130,7 +130,7 @@ class GrowthPilot_Gamification {
 						'source_id'   => (int) $badge->id,
 						'description' => sprintf(
 							/* translators: %s badge name */
-							__( 'Badge bonus: %s', 'gp-ppros' ),
+							__( 'Badge bonus: %s', 'commerce-insights-woocommerce-by-ppros' ),
 							$badge->name
 						),
 						'no_expire'   => true,
@@ -157,7 +157,7 @@ class GrowthPilot_Gamification {
 		global $wpdb;
 
 		$now        = current_time( 'mysql' );
-		$table      = esc_sql( GrowthPilot::table( 'challenges' ) );
+		$table      = esc_sql( Ciwp::table( 'challenges' ) );
 		$challenges = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE enabled = 1 AND type = %s AND (starts_at IS NULL OR starts_at <= %s) AND (ends_at IS NULL OR ends_at >= %s)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -171,7 +171,7 @@ class GrowthPilot_Gamification {
 			return;
 		}
 
-		$progress_table = esc_sql( GrowthPilot::table( 'challenge_progress' ) );
+		$progress_table = esc_sql( Ciwp::table( 'challenge_progress' ) );
 		$metrics        = self::metrics( $customer_id );
 
 		foreach ( $challenges as $challenge ) {
@@ -217,7 +217,7 @@ class GrowthPilot_Gamification {
 			}
 
 			if ( $completed && ( ! $row || ! $row->completed_at ) && (int) $challenge->points_reward > 0 ) {
-				GrowthPilot_Points_Ledger::credit(
+				Ciwp_Points_Ledger::credit(
 					$customer_id,
 					(int) $challenge->points_reward,
 					'campaign',
@@ -225,7 +225,7 @@ class GrowthPilot_Gamification {
 						'source_id'   => (int) $challenge->id,
 						'description' => sprintf(
 							/* translators: %s challenge name */
-							__( 'Challenge completed: %s', 'gp-ppros' ),
+							__( 'Challenge completed: %s', 'commerce-insights-woocommerce-by-ppros' ),
 							$challenge->name
 						),
 					)
@@ -243,7 +243,7 @@ class GrowthPilot_Gamification {
 	public static function metrics( $customer_id ) {
 		global $wpdb;
 
-		$metrics = GrowthPilot_VIP_Tiers::customer_metrics( $customer_id );
+		$metrics = Ciwp_VIP_Tiers::customer_metrics( $customer_id );
 		$reviews = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->comments} c INNER JOIN {$wpdb->posts} p ON p.ID = c.comment_post_ID WHERE c.user_id = %d AND c.comment_approved = '1' AND p.post_type = 'product'",
@@ -253,7 +253,7 @@ class GrowthPilot_Gamification {
 
 		$referrals = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . " WHERE referrer_id = %d AND status IN ('converted','rewarded')", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . " WHERE referrer_id = %d AND status IN ('converted','rewarded')", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$customer_id
 			)
 		);
@@ -277,7 +277,7 @@ class GrowthPilot_Gamification {
 	public static function badges( $enabled_only = false ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'badges' ) );
+		$table = esc_sql( Ciwp::table( 'badges' ) );
 		$sql   = $enabled_only
 			? "SELECT * FROM {$table} WHERE enabled = 1 ORDER BY milestone_value ASC, id ASC"
 			: "SELECT * FROM {$table} ORDER BY milestone_value ASC, id ASC";
@@ -296,10 +296,10 @@ class GrowthPilot_Gamification {
 	public static function save_badge( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'badges' ) );
+		$table = esc_sql( Ciwp::table( 'badges' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_badge_name', __( 'Badge name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$row = array(
@@ -330,7 +330,7 @@ class GrowthPilot_Gamification {
 	 */
 	public static function delete_badge( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'badges' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'badges' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -341,7 +341,7 @@ class GrowthPilot_Gamification {
 	public static function challenges() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'challenges' ) );
+		$table = esc_sql( Ciwp::table( 'challenges' ) );
 		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $rows ? $rows : array();
 	}
@@ -356,10 +356,10 @@ class GrowthPilot_Gamification {
 	public static function save_challenge( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'challenges' ) );
+		$table = esc_sql( Ciwp::table( 'challenges' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_challenge_name', __( 'Challenge name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$row = array(
@@ -390,7 +390,7 @@ class GrowthPilot_Gamification {
 	 */
 	public static function delete_challenge( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'challenges' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'challenges' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -402,8 +402,8 @@ class GrowthPilot_Gamification {
 	public static function customer_badges( $customer_id ) {
 		global $wpdb;
 
-		$sql = 'SELECT b.*, cb.earned_at FROM ' . esc_sql( GrowthPilot::table( 'customer_badges' ) ) . ' cb
-			INNER JOIN ' . esc_sql( GrowthPilot::table( 'badges' ) ) . ' b ON b.id = cb.badge_id
+		$sql = 'SELECT b.*, cb.earned_at FROM ' . esc_sql( Ciwp::table( 'customer_badges' ) ) . ' cb
+			INNER JOIN ' . esc_sql( Ciwp::table( 'badges' ) ) . ' b ON b.id = cb.badge_id
 			WHERE cb.customer_id = %d ORDER BY cb.earned_at DESC';
 
 		$rows = $wpdb->get_results( $wpdb->prepare( $sql, (int) $customer_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -420,7 +420,7 @@ class GrowthPilot_Gamification {
 		$challenges = self::challenges();
 		$out        = array();
 		global $wpdb;
-		$table = esc_sql( GrowthPilot::table( 'challenge_progress' ) );
+		$table = esc_sql( Ciwp::table( 'challenge_progress' ) );
 
 		foreach ( $challenges as $challenge ) {
 			if ( ! $challenge->enabled ) {
@@ -461,10 +461,10 @@ class GrowthPilot_Gamification {
 	public static function leaderboard( $limit = 20 ) {
 		global $wpdb;
 
-		$balances = esc_sql( GrowthPilot::table( 'points_balances' ) );
-		$tiers    = esc_sql( GrowthPilot::table( 'vip_tiers' ) );
+		$balances = esc_sql( Ciwp::table( 'points_balances' ) );
+		$tiers    = esc_sql( Ciwp::table( 'vip_tiers' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names from esc_sql( GrowthPilot::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names from esc_sql( Ciwp::table() ).
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT b.customer_id, b.available, b.lifetime_earned, t.name AS tier_name, t.color AS tier_color

@@ -2,7 +2,7 @@
 /**
  * Referral codes and customer referral records.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral program.
  */
-class GrowthPilot_Referral_Program {
+class Ciwp_Referral_Program {
 
 	/**
 	 * Get or create a unique referral code for a customer.
@@ -70,7 +70,7 @@ class GrowthPilot_Referral_Program {
 	 */
 	public static function share_url( $user_id ) {
 		$code     = self::get_or_create_code( $user_id );
-		$param    = GrowthPilot_Settings::get_value( 'referral_param', 'gp_ref' );
+		$param    = Ciwp_Settings::get_value( 'referral_param', 'gp_ref' );
 		$campaign = self::active_campaign();
 		$base     = home_url( '/' );
 
@@ -94,7 +94,7 @@ class GrowthPilot_Referral_Program {
 	public static function active_campaign() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
+		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		$now   = current_time( 'mysql' );
 
 		$row = $wpdb->get_row(
@@ -116,7 +116,7 @@ class GrowthPilot_Referral_Program {
 	public static function campaigns() {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
+		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $rows ? $rows : array();
 	}
@@ -130,7 +130,7 @@ class GrowthPilot_Referral_Program {
 	public static function get_campaign( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
+		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -149,10 +149,10 @@ class GrowthPilot_Referral_Program {
 	public static function save_campaign( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referral_campaigns' ) );
+		$table = esc_sql( Ciwp::table( 'referral_campaigns' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_campaign_name', __( 'Campaign name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$row = array(
@@ -184,7 +184,7 @@ class GrowthPilot_Referral_Program {
 	 */
 	public static function delete_campaign( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'referral_campaigns' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'referral_campaigns' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -196,7 +196,7 @@ class GrowthPilot_Referral_Program {
 	public static function get_for_referee( $referee_id ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referrals' ) );
+		$table = esc_sql( Ciwp::table( 'referrals' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE referee_id = %d ORDER BY id DESC LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -217,7 +217,7 @@ class GrowthPilot_Referral_Program {
 	public static function upsert( $referrer_id, $code, $referee_id = 0, $status = 'clicked' ) {
 		global $wpdb;
 
-		$table     = esc_sql( GrowthPilot::table( 'referrals' ) );
+		$table     = esc_sql( Ciwp::table( 'referrals' ) );
 		$campaign  = self::active_campaign();
 		$code      = strtoupper( sanitize_text_field( $code ) );
 		$existing  = null;
@@ -261,7 +261,7 @@ class GrowthPilot_Referral_Program {
 	public static function list( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( GrowthPilot::table( 'referrals' ) );
+		$table    = esc_sql( Ciwp::table( 'referrals' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -306,7 +306,7 @@ class GrowthPilot_Referral_Program {
 	public static function clicks( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( GrowthPilot::table( 'referral_clicks' ) );
+		$table    = esc_sql( Ciwp::table( 'referral_clicks' ) );
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $args['per_page'] ?? 20 ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
@@ -335,12 +335,12 @@ class GrowthPilot_Referral_Program {
 	public static function stats_for( $user_id ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'referrals' ) );
+		$table = esc_sql( Ciwp::table( 'referrals' ) );
 		$code  = self::get_or_create_code( $user_id );
 
 		$clicks = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referral_clicks' ) ) . ' WHERE code = %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referral_clicks' ) ) . ' WHERE code = %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$code
 			)
 		);

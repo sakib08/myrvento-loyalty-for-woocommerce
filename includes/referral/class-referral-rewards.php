@@ -2,7 +2,7 @@
 /**
  * Referral rewards — always credited through the loyalty ledger.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral → points.
  */
-class GrowthPilot_Referral_Rewards {
+class Ciwp_Referral_Rewards {
 
 	/**
 	 * Referee signup bonus (to the new customer).
@@ -21,7 +21,7 @@ class GrowthPilot_Referral_Rewards {
 	 * @return void
 	 */
 	public static function on_signup( $referee_id, $referrer_id ) {
-		$campaign = GrowthPilot_Referral_Program::active_campaign();
+		$campaign = Ciwp_Referral_Program::active_campaign();
 		if ( ! $campaign || (int) $campaign->referee_signup_points <= 0 ) {
 			return;
 		}
@@ -30,13 +30,13 @@ class GrowthPilot_Referral_Rewards {
 			return;
 		}
 
-		$result = GrowthPilot_Points_Ledger::credit(
+		$result = Ciwp_Points_Ledger::credit(
 			$referee_id,
 			(int) $campaign->referee_signup_points,
 			'referral',
 			array(
 				'source_id'   => $referrer_id,
-				'description' => __( 'Referral welcome bonus', 'gp-ppros' ),
+				'description' => __( 'Referral welcome bonus', 'commerce-insights-woocommerce-by-ppros' ),
 			)
 		);
 
@@ -66,15 +66,15 @@ class GrowthPilot_Referral_Rewards {
 			$code = (string) get_user_meta( $referee_id, 'gp_referred_code', true );
 		}
 
-		$row = GrowthPilot_Referral_Program::get_for_referee( $referee_id );
+		$row = Ciwp_Referral_Program::get_for_referee( $referee_id );
 
 		if ( ! $row && '' !== $code ) {
-			$referrer_id = GrowthPilot_Referral_Program::find_referrer_by_code( $code );
+			$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
 			if ( $referrer_id && $referrer_id !== $referee_id ) {
-				$id  = GrowthPilot_Referral_Program::upsert( $referrer_id, $code, $referee_id, 'signed_up' );
+				$id  = Ciwp_Referral_Program::upsert( $referrer_id, $code, $referee_id, 'signed_up' );
 				$row = null;
 				global $wpdb;
-				$table = esc_sql( GrowthPilot::table( 'referrals' ) );
+				$table = esc_sql( Ciwp::table( 'referrals' ) );
 				$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		}
@@ -89,8 +89,8 @@ class GrowthPilot_Referral_Rewards {
 		}
 
 		$campaign = $row->campaign_id
-			? GrowthPilot_Referral_Program::get_campaign( (int) $row->campaign_id )
-			: GrowthPilot_Referral_Program::active_campaign();
+			? Ciwp_Referral_Program::get_campaign( (int) $row->campaign_id )
+			: Ciwp_Referral_Program::active_campaign();
 
 		if ( ! $campaign ) {
 			return;
@@ -103,7 +103,7 @@ class GrowthPilot_Referral_Rewards {
 				return;
 			}
 
-			$result = GrowthPilot_Points_Ledger::credit(
+			$result = Ciwp_Points_Ledger::credit(
 				$referrer_id,
 				(int) $campaign->first_order_points,
 				'referral',
@@ -112,7 +112,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral first-order bonus (order %s)', 'gp-ppros' ),
+						__( 'Referral first-order bonus (order %s)', 'commerce-insights-woocommerce-by-ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -121,7 +121,7 @@ class GrowthPilot_Referral_Rewards {
 			if ( ! is_wp_error( $result ) ) {
 				global $wpdb;
 				$wpdb->update(
-					esc_sql( GrowthPilot::table( 'referrals' ) ),
+					esc_sql( Ciwp::table( 'referrals' ) ),
 					array(
 						'status'               => 'rewarded',
 						'attributed_order_id'  => $order->get_id(),
@@ -132,7 +132,7 @@ class GrowthPilot_Referral_Rewards {
 				);
 				$order->update_meta_data( '_gp_referral_first_awarded', $result );
 				$order->save();
-				do_action( 'growthpilot_referral_converted', $referrer_id, $referee_id, $order->get_id() );
+				do_action( 'ciwp_referral_converted', $referrer_id, $referee_id, $order->get_id() );
 			}
 
 			return;
@@ -143,7 +143,7 @@ class GrowthPilot_Referral_Rewards {
 				return;
 			}
 
-			$result = GrowthPilot_Points_Ledger::credit(
+			$result = Ciwp_Points_Ledger::credit(
 				$referrer_id,
 				(int) $campaign->recurring_points,
 				'referral',
@@ -152,7 +152,7 @@ class GrowthPilot_Referral_Rewards {
 					'source_id'   => (int) $row->id,
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Referral recurring bonus (order %s)', 'gp-ppros' ),
+						__( 'Referral recurring bonus (order %s)', 'commerce-insights-woocommerce-by-ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -162,7 +162,7 @@ class GrowthPilot_Referral_Rewards {
 				global $wpdb;
 				$wpdb->query(
 					$wpdb->prepare(
-						'UPDATE ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+						'UPDATE ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' SET recurring_orders_count = recurring_orders_count + 1, status = %s WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 						'rewarded',
 						(int) $row->id
 					)

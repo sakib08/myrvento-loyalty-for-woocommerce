@@ -27,7 +27,7 @@ module.exports = [
     entry: path.resolve(__dirname, "admin/src/main.jsx"),
     output: {
       path: path.resolve(__dirname, "assets/admin"),
-      filename: "growthpilot-admin.js",
+      filename: "ciwp-admin.js",
       clean: true,
     },
     resolve: {
@@ -46,7 +46,7 @@ module.exports = [
         },
       ],
     },
-    plugins: [new MiniCssExtractPlugin({ filename: "growthpilot-admin.css" })],
+    plugins: [new MiniCssExtractPlugin({ filename: "ciwp-admin.css" })],
     mode: process.env.NODE_ENV === "development" ? "development" : "production",
     devtool: process.env.NODE_ENV === "development" ? "source-map" : false,
     stats: "minimal",
@@ -56,7 +56,7 @@ module.exports = [
     entry: path.resolve(__dirname, "frontend/src/main.js"),
     output: {
       path: path.resolve(__dirname, "assets/frontend"),
-      filename: "growthpilot.js",
+      filename: "ciwp.js",
       clean: true,
     },
     module: {
@@ -72,7 +72,7 @@ module.exports = [
         },
       ],
     },
-    plugins: [new MiniCssExtractPlugin({ filename: "growthpilot.css" })],
+    plugins: [new MiniCssExtractPlugin({ filename: "ciwp.css" })],
     mode: process.env.NODE_ENV === "development" ? "development" : "production",
     devtool: process.env.NODE_ENV === "development" ? "source-map" : false,
     stats: "minimal",

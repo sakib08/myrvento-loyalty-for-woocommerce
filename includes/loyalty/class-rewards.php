@@ -2,7 +2,7 @@
 /**
  * Reward catalog and redemption via WooCommerce coupons.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Rewards.
  */
-class GrowthPilot_Rewards {
+class Ciwp_Rewards {
 
 	/**
 	 * List rewards.
@@ -22,7 +22,7 @@ class GrowthPilot_Rewards {
 	public static function all( $enabled_only = false ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
+		$table = esc_sql( Ciwp::table( 'rewards' ) );
 		$sql   = $enabled_only
 			? "SELECT * FROM {$table} WHERE enabled = 1 ORDER BY points_cost ASC, id ASC"
 			: "SELECT * FROM {$table} ORDER BY points_cost ASC, id ASC";
@@ -40,7 +40,7 @@ class GrowthPilot_Rewards {
 	public static function get( $id ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
+		$table = esc_sql( Ciwp::table( 'rewards' ) );
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -59,11 +59,11 @@ class GrowthPilot_Rewards {
 	public static function save( $data, $id = 0 ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'rewards' ) );
+		$table = esc_sql( Ciwp::table( 'rewards' ) );
 		$name  = sanitize_text_field( $data['name'] ?? '' );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_reward_name', __( 'Reward name is required.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$row = array(
@@ -94,7 +94,7 @@ class GrowthPilot_Rewards {
 	 */
 	public static function delete( $id ) {
 		global $wpdb;
-		return (bool) $wpdb->delete( esc_sql( GrowthPilot::table( 'rewards' ) ), array( 'id' => (int) $id ), array( '%d' ) );
+		return (bool) $wpdb->delete( esc_sql( Ciwp::table( 'rewards' ) ), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
 	/**
@@ -109,25 +109,25 @@ class GrowthPilot_Rewards {
 
 		$reward = self::get( $reward_id );
 		if ( ! $reward || ! $reward->enabled ) {
-			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_reward_missing', __( 'Reward is not available.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		if ( null !== $reward->stock && (int) $reward->redeemed_count >= (int) $reward->stock ) {
-			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_reward_stock', __( 'This reward is out of stock.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
-		$balance = GrowthPilot_Points_Ledger::get_balance( $customer_id );
+		$balance = Ciwp_Points_Ledger::get_balance( $customer_id );
 		if ( (int) $reward->tier_id ) {
-			$required = GrowthPilot_VIP_Tiers::get( (int) $reward->tier_id );
-			$current  = $balance->tier_id ? GrowthPilot_VIP_Tiers::get( (int) $balance->tier_id ) : null;
+			$required = Ciwp_VIP_Tiers::get( (int) $reward->tier_id );
+			$current  = $balance->tier_id ? Ciwp_VIP_Tiers::get( (int) $balance->tier_id ) : null;
 			if ( $required && ( ! $current || (int) $current->sort_order < (int) $required->sort_order ) ) {
-				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'gp-ppros' ) );
+				return new WP_Error( 'gp_reward_tier', __( 'Your VIP tier cannot redeem this reward.', 'commerce-insights-woocommerce-by-ppros' ) );
 			}
 		}
 
 		$cost = (int) $reward->points_cost;
 		if ( $cost > 0 ) {
-			$ledger_id = GrowthPilot_Points_Ledger::debit(
+			$ledger_id = Ciwp_Points_Ledger::debit(
 				$customer_id,
 				$cost,
 				'redeem',
@@ -136,7 +136,7 @@ class GrowthPilot_Rewards {
 					'source_id'   => (int) $reward->id,
 					'description' => sprintf(
 						/* translators: %s reward name */
-						__( 'Redeemed: %s', 'gp-ppros' ),
+						__( 'Redeemed: %s', 'commerce-insights-woocommerce-by-ppros' ),
 						$reward->name
 					),
 				)
@@ -150,11 +150,11 @@ class GrowthPilot_Rewards {
 		}
 
 		$user   = get_userdata( $customer_id );
-		$config = GrowthPilot::decode( $reward->config );
+		$config = Ciwp::decode( $reward->config );
 		$coupon = self::create_coupon( $reward, $config, $user );
 
 		$wpdb->insert(
-			esc_sql( GrowthPilot::table( 'redemptions' ) ),
+			esc_sql( Ciwp::table( 'redemptions' ) ),
 			array(
 				'customer_id'  => $customer_id,
 				'reward_id'    => (int) $reward->id,
@@ -171,7 +171,7 @@ class GrowthPilot_Rewards {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE " . esc_sql( GrowthPilot::table( 'rewards' ) ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"UPDATE " . esc_sql( Ciwp::table( 'rewards' ) ) . " SET redeemed_count = redeemed_count + 1 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				(int) $reward->id
 			)
 		);
@@ -290,7 +290,7 @@ class GrowthPilot_Rewards {
 	public static function redemptions( $args = array() ) {
 		global $wpdb;
 
-		$table    = esc_sql( GrowthPilot::table( 'redemptions' ) );
+		$table    = esc_sql( Ciwp::table( 'redemptions' ) );
 		$where    = array( '1=1' );
 		$params   = array();
 		$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
@@ -336,7 +336,7 @@ class GrowthPilot_Rewards {
 			'tier_id'        => $reward->tier_id ? (int) $reward->tier_id : null,
 			'stock'          => null === $reward->stock ? null : (int) $reward->stock,
 			'redeemed_count' => (int) $reward->redeemed_count,
-			'config'         => GrowthPilot::decode( $reward->config ),
+			'config'         => Ciwp::decode( $reward->config ),
 		);
 	}
 }

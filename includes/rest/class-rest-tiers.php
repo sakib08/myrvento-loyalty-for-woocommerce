@@ -2,7 +2,7 @@
 /**
  * VIP tiers REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Tiers routes.
  */
-class GrowthPilot_REST_Tiers {
+class Ciwp_REST_Tiers {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class GrowthPilot_REST_Tiers {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,12 +27,12 @@ class GrowthPilot_REST_Tiers {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_tiers' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -44,12 +44,12 @@ class GrowthPilot_REST_Tiers {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -62,8 +62,8 @@ class GrowthPilot_REST_Tiers {
 	 */
 	public static function list_tiers() {
 		$out = array();
-		foreach ( GrowthPilot_VIP_Tiers::all() as $tier ) {
-			$out[] = GrowthPilot_VIP_Tiers::to_array( $tier );
+		foreach ( Ciwp_VIP_Tiers::all() as $tier ) {
+			$out[] = Ciwp_VIP_Tiers::to_array( $tier );
 		}
 		return rest_ensure_response( $out );
 	}
@@ -75,11 +75,11 @@ class GrowthPilot_REST_Tiers {
 	 * @return WP_REST_Response
 	 */
 	public static function create( $request ) {
-		$id = GrowthPilot_VIP_Tiers::save( self::payload( $request ) );
+		$id = Ciwp_VIP_Tiers::save( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
-		return rest_ensure_response( GrowthPilot_VIP_Tiers::to_array( GrowthPilot_VIP_Tiers::get( $id ) ) );
+		return rest_ensure_response( Ciwp_VIP_Tiers::to_array( Ciwp_VIP_Tiers::get( $id ) ) );
 	}
 
 	/**
@@ -89,11 +89,11 @@ class GrowthPilot_REST_Tiers {
 	 * @return WP_REST_Response
 	 */
 	public static function update( $request ) {
-		$id = GrowthPilot_VIP_Tiers::save( self::payload( $request ), (int) $request['id'] );
+		$id = Ciwp_VIP_Tiers::save( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
-		return rest_ensure_response( GrowthPilot_VIP_Tiers::to_array( GrowthPilot_VIP_Tiers::get( $id ) ) );
+		return rest_ensure_response( Ciwp_VIP_Tiers::to_array( Ciwp_VIP_Tiers::get( $id ) ) );
 	}
 
 	/**
@@ -103,7 +103,7 @@ class GrowthPilot_REST_Tiers {
 	 * @return WP_REST_Response
 	 */
 	public static function delete( $request ) {
-		GrowthPilot_VIP_Tiers::delete( (int) $request['id'] );
+		Ciwp_VIP_Tiers::delete( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 

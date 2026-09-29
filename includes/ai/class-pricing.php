@@ -2,7 +2,7 @@
 /**
  * Dynamic pricing and discount optimization.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Pricing AI.
  */
-class GrowthPilot_AI_Pricing {
+class Ciwp_AI_Pricing {
 
 	/**
 	 * Pricing report.
@@ -19,8 +19,8 @@ class GrowthPilot_AI_Pricing {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return GrowthPilot_AI_Engine::remember(
-			'growthpilot_ai_pricing',
+		return Ciwp_AI_Engine::remember(
+			'ciwp_ai_pricing',
 			static function () {
 				return self::compute();
 			},
@@ -34,8 +34,8 @@ class GrowthPilot_AI_Pricing {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$sales   = GrowthPilot_AI_Engine::product_sales();
-		$monthly = GrowthPilot_AI_Engine::product_monthly();
+		$sales   = Ciwp_AI_Engine::product_sales();
+		$monthly = Ciwp_AI_Engine::product_monthly();
 		$days    = 365;
 		$out     = array();
 		$persist = array();
@@ -54,7 +54,7 @@ class GrowthPilot_AI_Pricing {
 			$sale      = $product->get_sale_price();
 			$sale      = ( '' === $sale || false === $sale ) ? null : (float) $sale;
 			$current   = (float) $product->get_price();
-			$cost      = GrowthPilot_AI_Engine::unit_cost( $product );
+			$cost      = Ciwp_AI_Engine::unit_cost( $product );
 			$stock     = $product->managing_stock() ? (float) $product->get_stock_quantity() : null;
 			$cover     = ( null !== $stock && $daily > 0 ) ? $stock / $daily : null;
 			$disc_rate = ( $revenue + $discounts ) > 0 ? ( $discounts / ( $revenue + $discounts ) ) * 100 : 0;
@@ -63,7 +63,7 @@ class GrowthPilot_AI_Pricing {
 			$action      = 'hold';
 			$suggested   = $current;
 			$discount_to = null;
-			$reason      = __( 'Velocity and stock look balanced — keep the current price.', 'gp-ppros' );
+			$reason      = __( 'Velocity and stock look balanced — keep the current price.', 'commerce-insights-woocommerce-by-ppros' );
 
 			if ( null !== $cover && $cover < 21 && $daily > 0 && $current > 0 ) {
 				$lift        = $cover < 10 ? 0.12 : 0.06;
@@ -71,7 +71,7 @@ class GrowthPilot_AI_Pricing {
 				$action      = 'raise';
 				$reason      = sprintf(
 					/* translators: days of cover */
-					__( 'Demand is outrunning stock (~%s days of cover). A modest increase can slow sell-through.', 'gp-ppros' ),
+					__( 'Demand is outrunning stock (~%s days of cover). A modest increase can slow sell-through.', 'commerce-insights-woocommerce-by-ppros' ),
 					number_format_i18n( $cover, 0 )
 				);
 			} elseif ( ( null !== $cover && $cover > 120 ) || ( $units < 3 && $current > 0 ) ) {
@@ -79,20 +79,20 @@ class GrowthPilot_AI_Pricing {
 				$suggested   = round( $current * ( 1 - $cut ), 2 );
 				$action      = 'discount';
 				$discount_to = $suggested;
-				$reason      = __( 'Slow mover or excess cover — a targeted discount should clear inventory.', 'gp-ppros' );
+				$reason      = __( 'Slow mover or excess cover — a targeted discount should clear inventory.', 'commerce-insights-woocommerce-by-ppros' );
 			} elseif ( $disc_rate > 18 && $current > 0 ) {
 				$suggested   = round( $current * 1.04, 2 );
 				$action      = 'tighten_discount';
 				$reason      = sprintf(
 					/* translators: discount rate */
-					__( 'Coupons already take %s%% of revenue. Tighten promotions before they train customers to wait.', 'gp-ppros' ),
+					__( 'Coupons already take %s%% of revenue. Tighten promotions before they train customers to wait.', 'commerce-insights-woocommerce-by-ppros' ),
 					number_format_i18n( $disc_rate, 1 )
 				);
 			}
 
 			if ( null !== $cost && $suggested < $cost ) {
 				$suggested = round( $cost * 1.15, 2 );
-				$reason   .= ' ' . __( 'Floor raised to protect cost of goods.', 'gp-ppros' );
+				$reason   .= ' ' . __( 'Floor raised to protect cost of goods.', 'commerce-insights-woocommerce-by-ppros' );
 			}
 
 			$max_off = null;
@@ -138,7 +138,7 @@ class GrowthPilot_AI_Pricing {
 			}
 		);
 
-		GrowthPilot_AI_Engine::persist( 'price', $persist );
+		Ciwp_AI_Engine::persist( 'price', $persist );
 
 		$counts = array( 'raise' => 0, 'discount' => 0, 'tighten_discount' => 0, 'hold' => 0 );
 		foreach ( $out as $row ) {
@@ -197,12 +197,12 @@ class GrowthPilot_AI_Pricing {
 	public static function apply( $product_id, $price, $mode = 'sale' ) {
 		$product = wc_get_product( (int) $product_id );
 		if ( ! $product ) {
-			return new WP_Error( 'not_found', __( 'Product not found.', 'gp-ppros' ) );
+			return new WP_Error( 'not_found', __( 'Product not found.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$price = round( (float) $price, 2 );
 		if ( $price < 0 ) {
-			return new WP_Error( 'invalid', __( 'Price must be zero or greater.', 'gp-ppros' ) );
+			return new WP_Error( 'invalid', __( 'Price must be zero or greater.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		if ( 'regular' === $mode ) {

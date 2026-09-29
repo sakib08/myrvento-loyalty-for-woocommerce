@@ -2,7 +2,7 @@
 /**
  * Next purchase, churn, and high-value customer models.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Predictive AI.
  */
-class GrowthPilot_AI_Predict {
+class Ciwp_AI_Predict {
 
 	/**
 	 * Full prediction report.
@@ -19,8 +19,8 @@ class GrowthPilot_AI_Predict {
 	 * @return array<string, mixed>
 	 */
 	public static function report( $fresh = false ) {
-		return GrowthPilot_AI_Engine::remember(
-			'growthpilot_ai_predict',
+		return Ciwp_AI_Engine::remember(
+			'ciwp_ai_predict',
 			static function () {
 				return self::compute();
 			},
@@ -34,7 +34,7 @@ class GrowthPilot_AI_Predict {
 	 * @return array<string, mixed>
 	 */
 	public static function compute() {
-		$features = GrowthPilot_AI_Engine::customer_features();
+		$features = Ciwp_AI_Engine::customer_features();
 		$rows     = $features['rows'];
 		$gap      = max( 14.0, (float) $features['median_gap'] );
 		$max_rev  = max( 1.0, (float) $features['max_revenue'] );
@@ -45,8 +45,8 @@ class GrowthPilot_AI_Predict {
 		foreach ( $rows as $row ) {
 			$ids[] = (int) $row->customer_id;
 		}
-		$labels   = GrowthPilot_AI_Engine::customer_labels( $ids );
-		$last_sku = GrowthPilot_AI_Engine::last_products( $ids );
+		$labels   = Ciwp_AI_Engine::customer_labels( $ids );
+		$last_sku = Ciwp_AI_Engine::last_products( $ids );
 
 		$churn       = array();
 		$next        = array();
@@ -61,13 +61,13 @@ class GrowthPilot_AI_Predict {
 			$own_gap    = ( $orders >= 2 && (int) $row->span_days > 0 ) ? ( (int) $row->span_days / max( 1, $orders - 1 ) ) : $gap;
 			$expected   = max( 14.0, (float) $own_gap );
 			$ratio      = $days / $expected;
-			$churn_p    = GrowthPilot_AI_Engine::logistic( 1.6 * ( $ratio - 1.35 ) );
+			$churn_p    = Ciwp_AI_Engine::logistic( 1.6 * ( $ratio - 1.35 ) );
 			$churn_pct  = round( $churn_p * 100, 1 );
-			$conf       = GrowthPilot_AI_Engine::clamp( 38 + ( $orders * 11 ), 40, 96 );
+			$conf       = Ciwp_AI_Engine::clamp( 38 + ( $orders * 11 ), 40, 96 );
 
-			$recency    = GrowthPilot_AI_Engine::clamp( 100 - ( $days / 1.8 ), 0, 100 );
-			$frequency  = GrowthPilot_AI_Engine::clamp( ( $orders / $max_ord ) * 100, 0, 100 );
-			$monetary   = GrowthPilot_AI_Engine::clamp( ( $revenue / $max_rev ) * 100, 0, 100 );
+			$recency    = Ciwp_AI_Engine::clamp( 100 - ( $days / 1.8 ), 0, 100 );
+			$frequency  = Ciwp_AI_Engine::clamp( ( $orders / $max_ord ) * 100, 0, 100 );
+			$monetary   = Ciwp_AI_Engine::clamp( ( $revenue / $max_rev ) * 100, 0, 100 );
 			$value      = round( ( 0.2 * $recency ) + ( 0.3 * $frequency ) + ( 0.5 * $monetary ), 1 );
 			$span       = max( 30, (int) $row->span_days, $days );
 			$pred_90    = round( ( $revenue / $span ) * 90, 2 );
@@ -78,10 +78,10 @@ class GrowthPilot_AI_Predict {
 			$label      = isset( $labels[ $cid ] ) ? $labels[ $cid ] : array( 'name' => '#' . $cid, 'email' => '' );
 
 			$reason_churn = $days <= 60
-				? __( 'Still inside a typical repurchase window.', 'gp-ppros' )
+				? __( 'Still inside a typical repurchase window.', 'commerce-insights-woocommerce-by-ppros' )
 				: sprintf(
 					/* translators: 1: days since order, 2: expected gap */
-					__( 'No order in %1$d days; typical gap is %2$d days.', 'gp-ppros' ),
+					__( 'No order in %1$d days; typical gap is %2$d days.', 'commerce-insights-woocommerce-by-ppros' ),
 					$days,
 					(int) round( $expected )
 				);
@@ -116,8 +116,8 @@ class GrowthPilot_AI_Predict {
 					'product_id'       => $sku['product_id'],
 					'reason'           => sprintf(
 						/* translators: 1: product name, 2: expected days */
-						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'gp-ppros' ),
-						$sku['name'] ? $sku['name'] : __( 'their usual items', 'gp-ppros' ),
+						__( 'Median repurchase every %2$d days; last basket featured %1$s.', 'commerce-insights-woocommerce-by-ppros' ),
+						$sku['name'] ? $sku['name'] : __( 'their usual items', 'commerce-insights-woocommerce-by-ppros' ),
 						(int) round( $expected )
 					),
 				)
@@ -132,7 +132,7 @@ class GrowthPilot_AI_Predict {
 					'is_high_value'   => $revenue >= $cutoff && $cutoff > 0,
 					'reason'          => sprintf(
 						/* translators: score */
-						__( 'RFM value score %s (recency, frequency, spend).', 'gp-ppros' ),
+						__( 'RFM value score %s (recency, frequency, spend).', 'commerce-insights-woocommerce-by-ppros' ),
 						number_format_i18n( $value, 1 )
 					),
 				)
@@ -161,7 +161,7 @@ class GrowthPilot_AI_Predict {
 			}
 		);
 
-		GrowthPilot_AI_Engine::persist( 'churn', $persist );
+		Ciwp_AI_Engine::persist( 'churn', $persist );
 
 		$high_n  = 0;
 		$watch_n = 0;

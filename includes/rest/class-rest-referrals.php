@@ -2,7 +2,7 @@
 /**
  * Referrals REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral routes.
  */
-class GrowthPilot_REST_Referrals {
+class Ciwp_REST_Referrals {
 
 	/**
 	 * Register routes.
@@ -18,7 +18,7 @@ class GrowthPilot_REST_Referrals {
 	 * @return void
 	 */
 	public static function register() {
-		$ns = GrowthPilot_REST::NAMESPACE;
+		$ns = Ciwp_REST::NAMESPACE;
 
 		register_rest_route(
 			$ns,
@@ -27,12 +27,12 @@ class GrowthPilot_REST_Referrals {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'list_campaigns' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'create_campaign' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -44,12 +44,12 @@ class GrowthPilot_REST_Referrals {
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'update_campaign' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( __CLASS__, 'delete_campaign' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class GrowthPilot_REST_Referrals {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'list_referrals' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 
@@ -70,7 +70,7 @@ class GrowthPilot_REST_Referrals {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'clicks' ),
-				'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+				'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 			)
 		);
 	}
@@ -82,7 +82,7 @@ class GrowthPilot_REST_Referrals {
 	 */
 	public static function list_campaigns() {
 		$out = array();
-		foreach ( GrowthPilot_Referral_Program::campaigns() as $row ) {
+		foreach ( Ciwp_Referral_Program::campaigns() as $row ) {
 			$out[] = self::format_campaign( $row );
 		}
 		return rest_ensure_response( $out );
@@ -95,11 +95,11 @@ class GrowthPilot_REST_Referrals {
 	 * @return WP_REST_Response
 	 */
 	public static function create_campaign( $request ) {
-		$id = GrowthPilot_Referral_Program::save_campaign( self::payload( $request ) );
+		$id = Ciwp_Referral_Program::save_campaign( self::payload( $request ) );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
-		return rest_ensure_response( self::format_campaign( GrowthPilot_Referral_Program::get_campaign( $id ) ) );
+		return rest_ensure_response( self::format_campaign( Ciwp_Referral_Program::get_campaign( $id ) ) );
 	}
 
 	/**
@@ -109,11 +109,11 @@ class GrowthPilot_REST_Referrals {
 	 * @return WP_REST_Response
 	 */
 	public static function update_campaign( $request ) {
-		$id = GrowthPilot_Referral_Program::save_campaign( self::payload( $request ), (int) $request['id'] );
+		$id = Ciwp_Referral_Program::save_campaign( self::payload( $request ), (int) $request['id'] );
 		if ( is_wp_error( $id ) ) {
-			return GrowthPilot_REST::error( $id );
+			return Ciwp_REST::error( $id );
 		}
-		return rest_ensure_response( self::format_campaign( GrowthPilot_Referral_Program::get_campaign( $id ) ) );
+		return rest_ensure_response( self::format_campaign( Ciwp_Referral_Program::get_campaign( $id ) ) );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class GrowthPilot_REST_Referrals {
 	 * @return WP_REST_Response
 	 */
 	public static function delete_campaign( $request ) {
-		GrowthPilot_Referral_Program::delete_campaign( (int) $request['id'] );
+		Ciwp_Referral_Program::delete_campaign( (int) $request['id'] );
 		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 
@@ -134,7 +134,7 @@ class GrowthPilot_REST_Referrals {
 	 * @return WP_REST_Response
 	 */
 	public static function list_referrals( $request ) {
-		$data  = GrowthPilot_Referral_Program::list(
+		$data  = Ciwp_Referral_Program::list(
 			array(
 				'page'        => $request->get_param( 'page' ),
 				'per_page'    => $request->get_param( 'per_page' ),
@@ -180,7 +180,7 @@ class GrowthPilot_REST_Referrals {
 	 */
 	public static function clicks( $request ) {
 		return rest_ensure_response(
-			GrowthPilot_Referral_Program::clicks(
+			Ciwp_Referral_Program::clicks(
 				array(
 					'page'     => $request->get_param( 'page' ),
 					'per_page' => $request->get_param( 'per_page' ),

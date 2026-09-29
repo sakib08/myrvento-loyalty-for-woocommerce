@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.gp-ppros-account {
+.ciwp-account {
   display: grid;
   gap: 1.5rem;
 }
 
-.gp-ppros-account__hero {
+.ciwp-account__hero {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -18,7 +18,7 @@
   background: #f8fafc;
 }
 
-.gp-ppros-account__kicker {
+.ciwp-account__kicker {
   margin: 0;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -26,84 +26,84 @@
   color: #64748b;
 }
 
-.gp-ppros-account__balance {
+.ciwp-account__balance {
   margin: 0.25rem 0;
   font-size: 2rem;
   font-weight: 700;
   color: #0f766e;
 }
 
-.gp-ppros-account__muted {
+.ciwp-account__muted {
   margin: 0;
   color: #64748b;
 }
 
-.gp-ppros-account__tier {
+.ciwp-account__tier {
   min-width: 10rem;
   padding: 0.85rem 1rem;
   border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--gp-ppros-tier, #0f766e) 12%, white);
+  background: color-mix(in srgb, var(--ciwp-tier, #0f766e) 12%, white);
   color: #0f172a;
 }
 
-.gp-ppros-account__tier ul {
+.ciwp-account__tier ul {
   margin: 0.5rem 0 0;
   padding-left: 1.1rem;
 }
 
-.gp-ppros-account__stats {
+.ciwp-account__stats {
   display: flex;
   gap: 1.25rem;
 }
 
-.gp-ppros-account__stats strong {
+.ciwp-account__stats strong {
   display: block;
   font-size: 1.25rem;
 }
 
-.gp-ppros-account__stats span {
+.ciwp-account__stats span {
   color: #64748b;
   font-size: 0.8rem;
 }
 
-.gp-ppros-account__grid {
+.ciwp-account__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.85rem;
 }
 
-.gp-ppros-account__card {
+.ciwp-account__card {
   padding: 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.85rem;
 }
 
-.gp-ppros-account__card p {
+.ciwp-account__card p {
   margin: 0.35rem 0 0.75rem;
   color: #64748b;
 }
 
-.gp-ppros-progress {
+.ciwp-progress {
   height: 0.5rem;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
 
-.gp-ppros-progress span {
+.ciwp-progress span {
   display: block;
   height: 100%;
   background: #0d9488;
 }
 
-.gp-ppros-account__challenge-head {
+.ciwp-account__challenge-head {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.4rem;
 }
 
-.gp-ppros-account__badges {
+.ciwp-account__badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -112,7 +112,7 @@
   margin: 0;
 }
 
-.gp-ppros-account__badges li {
+.ciwp-account__badges li {
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
   background: #ccfbf1;
@@ -120,27 +120,27 @@
   font-size: 0.85rem;
 }
 
-.gp-ppros-share {
+.ciwp-share {
   display: grid;
   gap: 0.75rem;
 }
 
-.gp-ppros-share label {
+.ciwp-share label {
   display: grid;
   gap: 0.35rem;
 }
 
-.gp-ppros-share input {
+.ciwp-share input {
   width: 100%;
 }
 
-.gp-ppros-share__channels {
+.ciwp-share__channels {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.gp-ppros-account__birthday {
+.ciwp-account__birthday {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;

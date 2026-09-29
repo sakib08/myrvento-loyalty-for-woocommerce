@@ -2,7 +2,7 @@
 /**
  * Revenue, AOV, LTV, repeat purchase, trends.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Revenue intelligence.
  */
-class GrowthPilot_Analytics_Revenue {
+class Ciwp_Analytics_Revenue {
 
 	/**
 	 * Overview KPIs + trend.
@@ -22,8 +22,8 @@ class GrowthPilot_Analytics_Revenue {
 	public static function overview( $range ) {
 		$current  = self::totals( $range['from_sql'], $range['to_sql'] );
 		$previous = self::totals(
-			GrowthPilot_Analytics_Query::previous_range( $range )['from_sql'],
-			GrowthPilot_Analytics_Query::previous_range( $range )['to_sql']
+			Ciwp_Analytics_Query::previous_range( $range )['from_sql'],
+			Ciwp_Analytics_Query::previous_range( $range )['to_sql']
 		);
 
 		$kpis = array();
@@ -48,11 +48,11 @@ class GrowthPilot_Analytics_Revenue {
 				'label'    => $row[0],
 				'value'    => $row[1],
 				'previous' => $row[2],
-				'delta'    => GrowthPilot_Analytics_Query::delta( (float) $row[1], (float) $row[2] ),
+				'delta'    => Ciwp_Analytics_Query::delta( (float) $row[1], (float) $row[2] ),
 			);
 		}
 
-		$interval = GrowthPilot_Analytics_Query::interval_for_days( $range['days'] );
+		$interval = Ciwp_Analytics_Query::interval_for_days( $range['days'] );
 
 		return array(
 			'range'    => array( 'from' => $range['from'], 'to' => $range['to'] ),
@@ -72,8 +72,8 @@ class GrowthPilot_Analytics_Revenue {
 	public static function totals( $from, $to ) {
 		global $wpdb;
 
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Lookup table is escaped. Paid statuses are %s placeholders.
@@ -103,7 +103,7 @@ class GrowthPilot_Analytics_Revenue {
 
 		$discounts = (float) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COALESCE(SUM(discount_amount), 0) FROM ' . esc_sql( GrowthPilot_Analytics_Query::coupons_table() ) . ' WHERE date_created BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COALESCE(SUM(discount_amount), 0) FROM ' . esc_sql( Ciwp_Analytics_Query::coupons_table() ) . ' WHERE date_created BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$from,
 				$to
 			)
@@ -172,8 +172,8 @@ class GrowthPilot_Analytics_Revenue {
 	public static function trend( $from, $to, $interval ) {
 		global $wpdb;
 
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		if ( 'week' === $interval ) {
 			$bucket = esc_sql( 'DATE( DATE_SUB( date_created, INTERVAL WEEKDAY(date_created) DAY ) )' );

@@ -2,7 +2,7 @@
 /**
  * Share channel helpers for referral links.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Share & invite URLs.
  */
-class GrowthPilot_Share {
+class Ciwp_Share {
 
 	/**
 	 * Share payload for a customer.
@@ -19,12 +19,12 @@ class GrowthPilot_Share {
 	 * @return array<string, mixed>
 	 */
 	public static function payload( $user_id ) {
-		$url  = GrowthPilot_Referral_Program::share_url( $user_id );
-		$code = GrowthPilot_Referral_Program::get_or_create_code( $user_id );
+		$url  = Ciwp_Referral_Program::share_url( $user_id );
+		$code = Ciwp_Referral_Program::get_or_create_code( $user_id );
 		$text = rawurlencode(
 			sprintf(
 				/* translators: %s site name */
-				__( 'Join me at %s and get a welcome bonus.', 'gp-ppros' ),
+				__( 'Join me at %s and get a welcome bonus.', 'commerce-insights-woocommerce-by-ppros' ),
 				wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 			)
 		);

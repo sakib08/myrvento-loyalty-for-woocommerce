@@ -3,32 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-#growthpilot-admin-root {
+#ciwp-admin-root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1e293b;
 }
 
-#growthpilot-admin-root *,
-#growthpilot-admin-root *::before,
-#growthpilot-admin-root *::after {
+#ciwp-admin-root *,
+#ciwp-admin-root *::before,
+#ciwp-admin-root *::after {
   box-sizing: border-box;
 }
 
-.growthpilot-app__header h1,
-.growthpilot-app__header p {
+.ciwp-app__header h1,
+.ciwp-app__header p {
   margin: 0;
   padding: 0;
 }
 
-#growthpilot-admin-root input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
-#growthpilot-admin-root select,
-#growthpilot-admin-root textarea {
+#ciwp-admin-root input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
+#ciwp-admin-root select,
+#ciwp-admin-root textarea {
   border-style: solid;
 }
 
-#growthpilot-admin-root input.gp-ppros-color-input {
+#ciwp-admin-root input.ciwp-color-input {
   -webkit-appearance: none;
   appearance: none;
   height: 2.5rem;
@@ -37,16 +37,16 @@
   cursor: pointer;
 }
 
-#growthpilot-admin-root input.gp-ppros-color-input::-webkit-color-swatch-wrapper {
+#ciwp-admin-root input.ciwp-color-input::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-#growthpilot-admin-root input.gp-ppros-color-input::-webkit-color-swatch {
+#ciwp-admin-root input.ciwp-color-input::-webkit-color-swatch {
   border: 0;
   border-radius: 0.25rem;
 }
 
-#growthpilot-admin-root button.gp-ppros-switch {
+#ciwp-admin-root button.ciwp-switch {
   appearance: none;
   -webkit-appearance: none;
   display: inline-block;
@@ -60,20 +60,20 @@
   cursor: pointer;
 }
 
-#growthpilot-admin-root table {
+#ciwp-admin-root table {
   width: 100%;
   border-collapse: collapse;
 }
 
-#growthpilot-admin-root th,
-#growthpilot-admin-root td {
+#ciwp-admin-root th,
+#ciwp-admin-root td {
   text-align: left;
   padding: 0.7rem 0.5rem;
   border-bottom: 1px solid #e2e8f0;
   font-size: 0.875rem;
 }
 
-#growthpilot-admin-root th {
+#ciwp-admin-root th {
   color: #64748b;
   font-weight: 600;
 }

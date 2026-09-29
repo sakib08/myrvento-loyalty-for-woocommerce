@@ -2,7 +2,7 @@
 /**
  * Translation files are loaded from this directory.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 // Silence is golden.

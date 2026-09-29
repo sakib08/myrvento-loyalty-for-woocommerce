@@ -2,7 +2,7 @@
 /**
  * Cookie + click attribution for referral codes.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Referral tracking.
  */
-class GrowthPilot_Referral_Tracking {
+class Ciwp_Referral_Tracking {
 
 	/**
 	 * Hooks.
@@ -34,7 +34,7 @@ class GrowthPilot_Referral_Tracking {
 			return;
 		}
 
-		$param = GrowthPilot_Settings::get_value( 'referral_param', 'gp_ref' );
+		$param = Ciwp_Settings::get_value( 'referral_param', 'gp_ref' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET[ $param ] ) ) {
@@ -47,7 +47,7 @@ class GrowthPilot_Referral_Tracking {
 			return;
 		}
 
-		$referrer_id = GrowthPilot_Referral_Program::find_referrer_by_code( $code );
+		$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
 		if ( $referrer_id <= 0 ) {
 			return;
 		}
@@ -56,8 +56,8 @@ class GrowthPilot_Referral_Tracking {
 			return;
 		}
 
-		$campaign    = GrowthPilot_Referral_Program::active_campaign();
-		$cookie_days = $campaign ? (int) $campaign->cookie_days : (int) GrowthPilot_Settings::get_value( 'cookie_days', 30 );
+		$campaign    = Ciwp_Referral_Program::active_campaign();
+		$cookie_days = $campaign ? (int) $campaign->cookie_days : (int) Ciwp_Settings::get_value( 'cookie_days', 30 );
 		$expire      = time() + ( max( 1, $cookie_days ) * DAY_IN_SECONDS );
 
 		if ( ! headers_sent() ) {
@@ -66,7 +66,7 @@ class GrowthPilot_Referral_Tracking {
 		$_COOKIE['gp_ref'] = $code;
 
 		self::log_click( $code, $campaign ? (int) $campaign->id : 0 );
-		GrowthPilot_Referral_Program::upsert( $referrer_id, $code, 0, 'clicked' );
+		Ciwp_Referral_Program::upsert( $referrer_id, $code, 0, 'clicked' );
 	}
 
 	/**
@@ -83,7 +83,7 @@ class GrowthPilot_Referral_Tracking {
 		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
 		$wpdb->insert(
-			esc_sql( GrowthPilot::table( 'referral_clicks' ) ),
+			esc_sql( Ciwp::table( 'referral_clicks' ) ),
 			array(
 				'code'        => $code,
 				'campaign_id' => $campaign_id ? $campaign_id : null,
@@ -126,20 +126,20 @@ class GrowthPilot_Referral_Tracking {
 			return;
 		}
 
-		$referrer_id = GrowthPilot_Referral_Program::find_referrer_by_code( $code );
+		$referrer_id = Ciwp_Referral_Program::find_referrer_by_code( $code );
 		if ( $referrer_id <= 0 || $referrer_id === $user_id ) {
 			return;
 		}
 
-		if ( GrowthPilot_Referral_Program::get_for_referee( $user_id ) ) {
+		if ( Ciwp_Referral_Program::get_for_referee( $user_id ) ) {
 			return;
 		}
 
-		GrowthPilot_Referral_Program::upsert( $referrer_id, $code, $user_id, 'signed_up' );
+		Ciwp_Referral_Program::upsert( $referrer_id, $code, $user_id, 'signed_up' );
 		update_user_meta( $user_id, 'gp_referred_by', $referrer_id );
 		update_user_meta( $user_id, 'gp_referred_code', $code );
 
-		GrowthPilot_Referral_Rewards::on_signup( $user_id, $referrer_id );
+		Ciwp_Referral_Rewards::on_signup( $user_id, $referrer_id );
 	}
 
 	/**

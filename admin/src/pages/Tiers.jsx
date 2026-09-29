@@ -56,18 +56,18 @@ export default function Tiers() {
   }
 
   return (
-    <div className="gp-ppros-grid gp-ppros-gap-5">
+    <div className="ciwp-grid ciwp-gap-5">
       <AdminToast message={toast?.message} type={toast?.type} />
       <Card title="VIP tiers" description="Upgrades run automatically. Downgrades respect the window in Settings.">
-        <div className="gp-ppros-grid gp-ppros-gap-4">
+        <div className="ciwp-grid ciwp-gap-4">
           {tiers.map((tier) => (
-            <div key={tier.id} className="gp-ppros-rounded-xl gp-ppros-border gp-ppros-border-slate-100 gp-ppros-p-4">
-              <div className="gp-ppros-grid gp-ppros-grid-cols-1 gp-ppros-gap-3 md:gp-ppros-grid-cols-[minmax(0,1.4fr)_8.5rem_minmax(0,1.2fr)_7.5rem_6rem_auto] md:gp-ppros-items-end">
+            <div key={tier.id} className="ciwp-rounded-xl ciwp-border ciwp-border-slate-100 ciwp-p-4">
+              <div className="ciwp-grid ciwp-grid-cols-1 ciwp-gap-3 md:ciwp-grid-cols-[minmax(0,1.4fr)_8.5rem_minmax(0,1.2fr)_7.5rem_6rem_auto] md:ciwp-items-end">
                 <Field label="Name">
                   <input className={inputClass} value={tier.name} onChange={(e) => setTiers((c) => c.map((t) => t.id === tier.id ? { ...t, name: e.target.value } : t))} />
                 </Field>
                 <Field label="Color">
-                  <input className={`${inputClass} gp-ppros-color-input`} type="color" value={tier.color} onChange={(e) => setTiers((c) => c.map((t) => t.id === tier.id ? { ...t, color: e.target.value } : t))} />
+                  <input className={`${inputClass} ciwp-color-input`} type="color" value={tier.color} onChange={(e) => setTiers((c) => c.map((t) => t.id === tier.id ? { ...t, color: e.target.value } : t))} />
                 </Field>
                 <Field label="Qualifier">
                   <select className={inputClass} value={tier.qualifier_type} onChange={(e) => setTiers((c) => c.map((t) => t.id === tier.id ? { ...t, qualifier_type: e.target.value } : t))}>
@@ -82,12 +82,12 @@ export default function Tiers() {
                 <Field label="Order">
                   <input className={inputClass} type="number" value={tier.sort_order} onChange={(e) => setTiers((c) => c.map((t) => t.id === tier.id ? { ...t, sort_order: Number(e.target.value) } : t))} />
                 </Field>
-                <div className="gp-ppros-flex gp-ppros-gap-2">
+                <div className="ciwp-flex ciwp-gap-2">
                   <Button onClick={() => save(tier)}>Save</Button>
                   <Button variant="danger" onClick={async () => { await api.deleteTier(tier.id); load(); }}>Delete</Button>
                 </div>
               </div>
-              <div className="gp-ppros-mt-4 gp-ppros-grid gp-ppros-gap-3">
+              <div className="ciwp-mt-4 ciwp-grid ciwp-gap-3">
                 <Field label="Benefits (one per line)">
                   <textarea
                     className={inputClass}
@@ -104,7 +104,7 @@ export default function Tiers() {
       </Card>
 
       <Card title="Add custom tier">
-        <div className="gp-ppros-grid gp-ppros-gap-3 md:gp-ppros-grid-cols-4 md:gp-ppros-items-end">
+        <div className="ciwp-grid ciwp-gap-3 md:ciwp-grid-cols-4 md:ciwp-items-end">
           <Field label="Name">
             <input className={inputClass} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
           </Field>

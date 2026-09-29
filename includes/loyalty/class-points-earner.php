@@ -2,7 +2,7 @@
 /**
  * Award points from WooCommerce, reviews, signup, birthday, social.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Points earner.
  */
-class GrowthPilot_Points_Earner {
+class Ciwp_Points_Earner {
 
 	/**
 	 * Hook into WooCommerce and WordPress.
@@ -41,12 +41,12 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$earn_status = GrowthPilot_Settings::get_value( 'earn_order_status', 'completed' );
+		$earn_status = Ciwp_Settings::get_value( 'earn_order_status', 'completed' );
 
 		if ( $to === $earn_status ) {
 			$this->award_order( $order );
-			GrowthPilot_Referral_Rewards::on_order( $order );
-			GrowthPilot_VIP_Tiers::evaluate( (int) $order->get_customer_id() );
+			Ciwp_Referral_Rewards::on_order( $order );
+			Ciwp_VIP_Tiers::evaluate( (int) $order->get_customer_id() );
 			return;
 		}
 
@@ -72,11 +72,11 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$calc   = GrowthPilot_Points_Rules::calculate_for_order( $order );
+		$calc   = Ciwp_Points_Rules::calculate_for_order( $order );
 		$points = (int) $calc['points'];
 
 		if ( $points > 0 ) {
-			$result = GrowthPilot_Points_Ledger::credit(
+			$result = Ciwp_Points_Ledger::credit(
 				$customer_id,
 				$points,
 				'purchase',
@@ -85,7 +85,7 @@ class GrowthPilot_Points_Earner {
 					'source_id'   => $order->get_id(),
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Purchase — order %s', 'gp-ppros' ),
+						__( 'Purchase — order %s', 'commerce-insights-woocommerce-by-ppros' ),
 						$order->get_order_number()
 					),
 					'meta'        => array( 'breakdown' => $calc['breakdown'] ),
@@ -111,7 +111,7 @@ class GrowthPilot_Points_Earner {
 	 * @return void
 	 */
 	private function maybe_first_purchase( $order, $customer_id ) {
-		$rule = GrowthPilot_Points_Rules::get_global( 'first_purchase' );
+		$rule = Ciwp_Points_Rules::get_global( 'first_purchase' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
@@ -134,14 +134,14 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$result = GrowthPilot_Points_Ledger::credit(
+		$result = Ciwp_Points_Ledger::credit(
 			$customer_id,
 			(int) $rule->points,
 			'first_purchase',
 			array(
 				'order_id'    => $order->get_id(),
 				'source_id'   => $order->get_id(),
-				'description' => __( 'First purchase bonus', 'gp-ppros' ),
+				'description' => __( 'First purchase bonus', 'commerce-insights-woocommerce-by-ppros' ),
 			)
 		);
 
@@ -167,11 +167,11 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$available = GrowthPilot_Points_Ledger::available( $customer_id );
+		$available = Ciwp_Points_Ledger::available( $customer_id );
 		$revoke    = min( $awarded, $available );
 
 		if ( $revoke > 0 ) {
-			$result = GrowthPilot_Points_Ledger::debit(
+			$result = Ciwp_Points_Ledger::debit(
 				$customer_id,
 				$revoke,
 				'purchase',
@@ -181,7 +181,7 @@ class GrowthPilot_Points_Earner {
 					'source_id'   => $order->get_id(),
 					'description' => sprintf(
 						/* translators: %s order number */
-						__( 'Revoked — order %s refunded/cancelled', 'gp-ppros' ),
+						__( 'Revoked — order %s refunded/cancelled', 'commerce-insights-woocommerce-by-ppros' ),
 						$order->get_order_number()
 					),
 				)
@@ -225,18 +225,18 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$rule = GrowthPilot_Points_Rules::get_global( 'signup' );
+		$rule = Ciwp_Points_Rules::get_global( 'signup' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
 
-		$result = GrowthPilot_Points_Ledger::credit(
+		$result = Ciwp_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'signup',
 			array(
 				'source_id'   => $user_id,
-				'description' => __( 'Welcome points', 'gp-ppros' ),
+				'description' => __( 'Welcome points', 'commerce-insights-woocommerce-by-ppros' ),
 			)
 		);
 
@@ -294,18 +294,18 @@ class GrowthPilot_Points_Earner {
 			return;
 		}
 
-		$rule = GrowthPilot_Points_Rules::get_global( 'review' );
+		$rule = Ciwp_Points_Rules::get_global( 'review' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return;
 		}
 
-		$result = GrowthPilot_Points_Ledger::credit(
+		$result = Ciwp_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'review',
 			array(
 				'source_id'   => (int) $comment->comment_ID,
-				'description' => __( 'Product review reward', 'gp-ppros' ),
+				'description' => __( 'Product review reward', 'commerce-insights-woocommerce-by-ppros' ),
 			)
 		);
 
@@ -320,7 +320,7 @@ class GrowthPilot_Points_Earner {
 	 * @return int Awarded count.
 	 */
 	public static function award_birthdays() {
-		$rule = GrowthPilot_Points_Rules::get_global( 'birthday' );
+		$rule = Ciwp_Points_Rules::get_global( 'birthday' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
 			return 0;
 		}
@@ -343,13 +343,13 @@ class GrowthPilot_Points_Earner {
 				continue;
 			}
 
-			$result = GrowthPilot_Points_Ledger::credit(
+			$result = Ciwp_Points_Ledger::credit(
 				(int) $user_id,
 				(int) $rule->points,
 				'birthday',
 				array(
 					'source_id'   => (int) $year,
-					'description' => __( 'Birthday reward', 'gp-ppros' ),
+					'description' => __( 'Birthday reward', 'commerce-insights-woocommerce-by-ppros' ),
 				)
 			);
 
@@ -370,30 +370,30 @@ class GrowthPilot_Points_Earner {
 	 * @return int|WP_Error
 	 */
 	public static function award_social( $user_id, $channel ) {
-		$rule = GrowthPilot_Points_Rules::get_global( 'social' );
+		$rule = Ciwp_Points_Rules::get_global( 'social' );
 		if ( ! $rule || (int) $rule->points <= 0 ) {
-			return new WP_Error( 'gp_social_disabled', __( 'Social sharing rewards are disabled.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_social_disabled', __( 'Social sharing rewards are disabled.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
-		$once = (bool) GrowthPilot_Settings::get_value( 'social_once', true );
+		$once = (bool) Ciwp_Settings::get_value( 'social_once', true );
 
 		if ( $once && get_user_meta( $user_id, '_gp_social_share', true ) ) {
-			return new WP_Error( 'gp_social_once', __( 'Social sharing points were already awarded.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_social_once', __( 'Social sharing points were already awarded.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
 		$meta_key = '_gp_social_share_' . sanitize_key( $channel );
 		if ( ! $once && get_user_meta( $user_id, $meta_key, true ) ) {
-			return new WP_Error( 'gp_social_channel', __( 'This channel was already rewarded.', 'gp-ppros' ) );
+			return new WP_Error( 'gp_social_channel', __( 'This channel was already rewarded.', 'commerce-insights-woocommerce-by-ppros' ) );
 		}
 
-		$result = GrowthPilot_Points_Ledger::credit(
+		$result = Ciwp_Points_Ledger::credit(
 			$user_id,
 			(int) $rule->points,
 			'social',
 			array(
 				'description' => sprintf(
 					/* translators: %s share channel */
-					__( 'Social share (%s)', 'gp-ppros' ),
+					__( 'Social share (%s)', 'commerce-insights-woocommerce-by-ppros' ),
 					sanitize_key( $channel )
 				),
 				'meta'        => array( 'channel' => $channel ),

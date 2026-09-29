@@ -2,7 +2,7 @@
 /**
  * Campaign ROI, email, funnel, attribution.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Marketing intelligence.
  */
-class GrowthPilot_Analytics_Marketing {
+class Ciwp_Analytics_Marketing {
 
 	/**
 	 * Marketing report.
@@ -39,13 +39,13 @@ class GrowthPilot_Analytics_Marketing {
 	public static function funnel( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
+		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
 		$steps = array(
-			'visit'        => __( 'Visitors', 'gp-ppros' ),
-			'product_view' => __( 'Product views', 'gp-ppros' ),
-			'add_to_cart'  => __( 'Add to cart', 'gp-ppros' ),
-			'checkout'     => __( 'Checkout', 'gp-ppros' ),
-			'purchase'     => __( 'Purchase', 'gp-ppros' ),
+			'visit'        => __( 'Visitors', 'commerce-insights-woocommerce-by-ppros' ),
+			'product_view' => __( 'Product views', 'commerce-insights-woocommerce-by-ppros' ),
+			'add_to_cart'  => __( 'Add to cart', 'commerce-insights-woocommerce-by-ppros' ),
+			'checkout'     => __( 'Checkout', 'commerce-insights-woocommerce-by-ppros' ),
+			'purchase'     => __( 'Purchase', 'commerce-insights-woocommerce-by-ppros' ),
 		);
 
 		$out      = array();
@@ -106,8 +106,8 @@ class GrowthPilot_Analytics_Marketing {
 		global $wpdb;
 
 		$build = static function ( $touch ) use ( $wpdb, $range ) {
-			$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
+			$table = esc_sql( Ciwp::table( 'analytics_events' ) );
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -134,9 +134,9 @@ class GrowthPilot_Analytics_Marketing {
 			return $out;
 		};
 
-		$table = esc_sql( GrowthPilot::table( 'analytics_events' ) );
+		$table = esc_sql( Ciwp::table( 'analytics_events' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
 		$multi = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT COALESCE(NULLIF(utm_source, ''), channel, 'direct') AS source,
@@ -162,7 +162,7 @@ class GrowthPilot_Analytics_Marketing {
 
 		$referral_orders = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE attributed_order_id IS NOT NULL AND converted_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$range['from_sql'],
 				$range['to_sql']
 			)
@@ -185,17 +185,17 @@ class GrowthPilot_Analytics_Marketing {
 	public static function campaigns( $range ) {
 		global $wpdb;
 
-		$campaigns = GrowthPilot_Referral_Program::campaigns();
-		$ledger    = esc_sql( GrowthPilot::table( 'points_ledger' ) );
-		$stats     = esc_sql( GrowthPilot_Analytics_Query::stats_table() );
-		$statuses  = GrowthPilot_Analytics_Query::paid_statuses();
+		$campaigns = Ciwp_Referral_Program::campaigns();
+		$ledger    = esc_sql( Ciwp::table( 'points_ledger' ) );
+		$stats     = esc_sql( Ciwp_Analytics_Query::stats_table() );
+		$statuses  = Ciwp_Analytics_Query::paid_statuses();
 		$status_in = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$out       = array();
 
 		foreach ( $campaigns as $campaign ) {
 			$referrals = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT attributed_order_id FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT attributed_order_id FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND attributed_order_id IS NOT NULL', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id
 				)
 			);
@@ -234,7 +234,7 @@ class GrowthPilot_Analytics_Marketing {
 
 			$signups = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referrals' ) ) . ' WHERE campaign_id = %d AND referee_id IS NOT NULL AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -244,7 +244,7 @@ class GrowthPilot_Analytics_Marketing {
 
 			$clicks = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . esc_sql( GrowthPilot::table( 'referral_clicks' ) ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					'SELECT COUNT(*) FROM ' . esc_sql( Ciwp::table( 'referral_clicks' ) ) . ' WHERE campaign_id = %d AND created_at BETWEEN %s AND %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					(int) $campaign->id,
 					$range['from_sql'],
 					$range['to_sql']
@@ -275,7 +275,7 @@ class GrowthPilot_Analytics_Marketing {
 	public static function coupons( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot_Analytics_Query::coupons_table() );
+		$table = esc_sql( Ciwp_Analytics_Query::coupons_table() );
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Coupon lookup table name is trusted.
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
@@ -314,8 +314,8 @@ class GrowthPilot_Analytics_Marketing {
 	public static function email( $range ) {
 		global $wpdb;
 
-		$table = esc_sql( GrowthPilot::table( 'email_stats' ) );
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( GrowthPilot::table() ).
+		$table = esc_sql( Ciwp::table( 'email_stats' ) );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from esc_sql( Ciwp::table() ).
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT email_key, email_title,

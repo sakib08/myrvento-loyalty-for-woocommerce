@@ -15,9 +15,9 @@ function topics(urls) {
     {
       id: "overview",
       tab: "start",
-      title: "What GrowthPilot by Ppros does",
+      title: "What Commerce Insights for WooCommerce by Ppros does",
       paragraphs: [
-        "GrowthPilot by Ppros is a WooCommerce loyalty and growth toolkit. Purchases, reviews, signups, birthdays, social shares, campaigns, and referrals all write to one points ledger. There is no separate referral wallet and no cash payout.",
+        "Commerce Insights for WooCommerce by Ppros is a WooCommerce loyalty and growth toolkit. Purchases, reviews, signups, birthdays, social shares, campaigns, and referrals all write to one points ledger. There is no separate referral wallet and no cash payout.",
         "Sales, operations, analytics, and revenue screens read WooCommerce orders. The AI models run on the store. An optional language model only rewrites Commerce Brain wording. Suggested prices are never applied to products.",
       ],
     },
@@ -26,7 +26,7 @@ function topics(urls) {
       tab: "start",
       title: "Requirements",
       items: [
-        "WooCommerce must be active. GrowthPilot by Ppros follows High-Performance Order Storage.",
+        "WooCommerce must be active. Commerce Insights for WooCommerce by Ppros follows High-Performance Order Storage.",
         "Shop managers need the manage WooCommerce capability.",
         "WordPress 6.0 or newer, and PHP 7.4 or newer.",
         "WooCommerce Subscriptions is optional. Operations shows an empty note when it is not active.",
@@ -131,7 +131,7 @@ function topics(urls) {
         "Recovery lists customers who have not ordered for 60 days or more. After 180 days the suggested action is a win-back offer. Before that it is a loyalty reminder.",
       ],
       paragraphs: [
-        "These screens are queues for the shop. GrowthPilot by Ppros does not email the customer from them.",
+        "These screens are queues for the shop. Commerce Insights for WooCommerce by Ppros does not email the customer from them.",
       ],
       links: [{ href: urls.sales, label: "Sales" }],
     },
@@ -198,8 +198,8 @@ function topics(urls) {
       tab: "account",
       title: "Shortcodes",
       items: [
-        "[growthpilot_loyalty] prints the loyalty account. Guests are asked to log in.",
-        "[growthpilot_referral] prints the share code and history. Guests are asked to log in.",
+        "[ciwp_loyalty] prints the loyalty account. Guests are asked to log in.",
+        "[ciwp_referral] prints the share code and history. Guests are asked to log in.",
       ],
     },
     {
@@ -229,12 +229,12 @@ function Topic({ topic }) {
       title={topic.title}
       actions={
         topic.links?.length ? (
-          <div className="gp-ppros-flex gp-ppros-flex-wrap gp-ppros-gap-2">
+          <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-2">
             {topic.links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="gp-ppros-rounded-lg gp-ppros-bg-brand-50 gp-ppros-px-3 gp-ppros-py-1.5 gp-ppros-text-sm gp-ppros-font-semibold gp-ppros-text-brand-700 gp-ppros-no-underline hover:gp-ppros-bg-brand-100"
+                className="ciwp-rounded-lg ciwp-bg-brand-50 ciwp-px-3 ciwp-py-1.5 ciwp-text-sm ciwp-font-semibold ciwp-text-brand-700 ciwp-no-underline hover:ciwp-bg-brand-100"
               >
                 {link.label}
               </a>
@@ -243,14 +243,14 @@ function Topic({ topic }) {
         ) : null
       }
     >
-      <div className="gp-ppros-grid gp-ppros-gap-3">
+      <div className="ciwp-grid ciwp-gap-3">
         {(topic.paragraphs || []).map((paragraph) => (
-          <p key={paragraph} className="gp-ppros-m-0 gp-ppros-text-sm gp-ppros-leading-6 gp-ppros-text-slate-600">
+          <p key={paragraph} className="ciwp-m-0 ciwp-text-sm ciwp-leading-6 ciwp-text-slate-600">
             {paragraph}
           </p>
         ))}
         {topic.items?.length ? (
-          <ul className="gp-ppros-m-0 gp-ppros-list-disc gp-ppros-space-y-1 gp-ppros-pl-5 gp-ppros-text-sm gp-ppros-leading-6 gp-ppros-text-slate-600">
+          <ul className="ciwp-m-0 ciwp-list-disc ciwp-space-y-1 ciwp-pl-5 ciwp-text-sm ciwp-leading-6 ciwp-text-slate-600">
             {topic.items.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -271,19 +271,19 @@ export default function Help() {
   const visible = all.filter((topic) => (needle ? matches(topic, needle) : topic.tab === tab));
 
   return (
-    <div className="gp-ppros-grid gp-ppros-gap-5">
-      <div className="gp-ppros-flex gp-ppros-flex-wrap gp-ppros-items-end gp-ppros-justify-between gp-ppros-gap-4">
+    <div className="ciwp-grid ciwp-gap-5">
+      <div className="ciwp-flex ciwp-flex-wrap ciwp-items-end ciwp-justify-between ciwp-gap-4">
         <div>
-          <h2 className="gp-ppros-m-0 gp-ppros-text-xl gp-ppros-font-bold gp-ppros-text-slate-900">Help</h2>
-          <p className="gp-ppros-m-0 gp-ppros-mt-1 gp-ppros-text-sm gp-ppros-text-slate-500">
+          <h2 className="ciwp-m-0 ciwp-text-xl ciwp-font-bold ciwp-text-slate-900">Help</h2>
+          <p className="ciwp-m-0 ciwp-mt-1 ciwp-text-sm ciwp-text-slate-500">
             How loyalty, sales, analytics, and the customer account fit together
-            {version ? ` · GrowthPilot by Ppros ${version}` : ""}.
+            {version ? ` · Commerce Insights for WooCommerce by Ppros ${version}` : ""}.
           </p>
         </div>
-        <label className="gp-ppros-block gp-ppros-min-w-[16rem] gp-ppros-flex-1 md:gp-ppros-max-w-sm">
-          <span className="gp-ppros-sr-only">Search help</span>
+        <label className="ciwp-block ciwp-min-w-[16rem] ciwp-flex-1 md:ciwp-max-w-sm">
+          <span className="ciwp-sr-only">Search help</span>
           <input
-            className="gp-ppros-w-full gp-ppros-rounded-lg gp-ppros-border gp-ppros-border-slate-200 gp-ppros-bg-white gp-ppros-px-3 gp-ppros-py-2 gp-ppros-text-sm focus:gp-ppros-border-brand-400 focus:gp-ppros-outline-none focus:gp-ppros-ring-2 focus:gp-ppros-ring-brand-100"
+            className="ciwp-w-full ciwp-rounded-lg ciwp-border ciwp-border-slate-200 ciwp-bg-white ciwp-px-3 ciwp-py-2 ciwp-text-sm focus:ciwp-border-brand-400 focus:ciwp-outline-none focus:ciwp-ring-2 focus:ciwp-ring-brand-100"
             type="search"
             value={query}
             placeholder="Search help"
@@ -292,7 +292,7 @@ export default function Help() {
         </label>
       </div>
 
-      <div className="gp-ppros-flex gp-ppros-flex-wrap gp-ppros-gap-1 gp-ppros-rounded-xl gp-ppros-bg-slate-100 gp-ppros-p-1">
+      <div className="ciwp-flex ciwp-flex-wrap ciwp-gap-1 ciwp-rounded-xl ciwp-bg-slate-100 ciwp-p-1">
         {TABS.map((item) => (
           <button
             key={item.id}
@@ -301,10 +301,10 @@ export default function Help() {
               setTab(item.id);
               setQuery("");
             }}
-            className={`gp-ppros-rounded-lg gp-ppros-border-0 gp-ppros-px-3 gp-ppros-py-2 gp-ppros-text-sm gp-ppros-font-semibold gp-ppros-transition ${
+            className={`ciwp-rounded-lg ciwp-border-0 ciwp-px-3 ciwp-py-2 ciwp-text-sm ciwp-font-semibold ciwp-transition ${
               !needle && tab === item.id
-                ? "gp-ppros-bg-white gp-ppros-text-brand-700 gp-ppros-shadow-sm"
-                : "gp-ppros-bg-transparent gp-ppros-text-slate-600 hover:gp-ppros-text-slate-900"
+                ? "ciwp-bg-white ciwp-text-brand-700 ciwp-shadow-sm"
+                : "ciwp-bg-transparent ciwp-text-slate-600 hover:ciwp-text-slate-900"
             }`}
           >
             {item.label}
@@ -313,14 +313,14 @@ export default function Help() {
       </div>
 
       {visible.length ? (
-        <div className="gp-ppros-grid gp-ppros-gap-4">
+        <div className="ciwp-grid ciwp-gap-4">
           {visible.map((topic) => (
             <Topic key={topic.id} topic={topic} />
           ))}
         </div>
       ) : (
         <Card title="No matching topics">
-          <p className="gp-ppros-m-0 gp-ppros-text-sm gp-ppros-text-slate-500">
+          <p className="ciwp-m-0 ciwp-text-sm ciwp-text-slate-500">
             Try points, referral, churn, or shortcode.
           </p>
         </Card>

@@ -2,7 +2,7 @@
 /**
  * Settings REST.
  *
- * @package GrowthPilot
+ * @package Ciwp
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Settings routes.
  */
-class GrowthPilot_REST_Settings {
+class Ciwp_REST_Settings {
 
 	/**
 	 * Register routes.
@@ -19,18 +19,18 @@ class GrowthPilot_REST_Settings {
 	 */
 	public static function register() {
 		register_rest_route(
-			GrowthPilot_REST::NAMESPACE,
+			Ciwp_REST::NAMESPACE,
 			'/settings',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'get' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'save' ),
-					'permission_callback' => array( 'GrowthPilot_REST', 'can_manage' ),
+					'permission_callback' => array( 'Ciwp_REST', 'can_manage' ),
 				),
 			)
 		);
@@ -42,7 +42,7 @@ class GrowthPilot_REST_Settings {
 	 * @return WP_REST_Response
 	 */
 	public static function get() {
-		return rest_ensure_response( GrowthPilot_Settings::for_admin() );
+		return rest_ensure_response( Ciwp_Settings::for_admin() );
 	}
 
 	/**
@@ -57,6 +57,6 @@ class GrowthPilot_REST_Settings {
 			$params = $request->get_params();
 		}
 
-		return rest_ensure_response( GrowthPilot_Settings::update( $params ) );
+		return rest_ensure_response( Ciwp_Settings::update( $params ) );
 	}
 }
